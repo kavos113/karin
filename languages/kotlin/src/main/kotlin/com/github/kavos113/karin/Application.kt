@@ -1,20 +1,20 @@
 package com.github.kavos113.karin
 
 class Application : AutoCloseable {
-    internal var nativePtr: Long = KarinJni.applicationCreate()
+    internal var nativePtr: Long = JniApplication.create()
 
     fun createWindow(title: String, x: Int, y: Int, width: Int, height: Int): Window {
-        val windowPtr = KarinJni.applicationCreateWindow(nativePtr, title, x, y, width, height)
+        val windowPtr = JniApplication.createWindow(nativePtr, title, x, y, width, height)
         return Window(windowPtr)
     }
 
     fun run() {
-        KarinJni.applicationRun(nativePtr)
+        JniApplication.run(nativePtr)
     }
 
     override fun close() {
         if (nativePtr != 0L) {
-            KarinJni.applicationDestroy(nativePtr)
+            JniApplication.destroy(nativePtr)
             nativePtr = 0L
         }
     }

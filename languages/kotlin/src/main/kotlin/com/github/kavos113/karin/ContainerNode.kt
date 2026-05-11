@@ -13,25 +13,25 @@ open class ContainerNode internal constructor(ptr: Long) : ViewNode(ptr) {
         WrapReverse(2)
     }
 
-    constructor(): this(KarinJni.containerNodeCreate())
-    constructor(size: Size) : this(KarinJni.containerNodeCreate(size.width, size.height))
+    constructor(): this(JniContainerNode.create())
+    constructor(size: Size) : this(JniContainerNode.create(size.width, size.height))
 
     fun addChild(child: ViewNode) {
         require(child.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
 
-        KarinJni.containerNodeAddChild(nativePtr, child.nativePtr)
+        JniContainerNode.addChild(nativePtr, child.nativePtr)
         child.nativePtr = 0L
     }
 
     fun setLayoutDirection(direction: LayoutDirection) {
-        KarinJni.containerNodeSetLayoutDirection(nativePtr, direction.value)
+        JniContainerNode.setLayoutDirection(nativePtr, direction.value)
     }
 
     fun setWrapMode(wrapMode: WrapMode) {
-        KarinJni.containerNodeSetWrapMode(nativePtr, wrapMode.value)
+        JniContainerNode.setWrapMode(nativePtr, wrapMode.value)
     }
 
     fun setGap(gap: Float) {
-        KarinJni.containerNodeSetGap(nativePtr, gap)
+        JniContainerNode.setGap(nativePtr, gap)
     }
 }

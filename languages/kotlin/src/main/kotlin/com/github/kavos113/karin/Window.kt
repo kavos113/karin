@@ -8,13 +8,13 @@ class Window internal constructor(
     fun setRootView(view: ViewNode) {
         require(view.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
 
-        KarinJni.windowSetRootView(nativePtr, view.nativePtr)
+        JniWindow.setRootView(nativePtr, view.nativePtr)
         view.nativePtr = 0L
     }
 
     override fun close() {
         if (nativePtr != 0L) {
-            KarinJni.windowDestroy(nativePtr)
+            JniWindow.destroy(nativePtr)
             nativePtr = 0L
         }
     }

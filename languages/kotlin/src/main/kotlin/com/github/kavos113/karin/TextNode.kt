@@ -8,7 +8,7 @@ class TextNode internal constructor(ptr: Long) : ViewNode(ptr) {
         paragraphStyle: ParagraphStyle = ParagraphStyle(),
         color: Color = Color.Black
     ) : this(
-        KarinJni.textNodeCreate(
+        JniTextNode.create(
             text,
             style.fontFamily,
             style.fontStyle.toInt(),
