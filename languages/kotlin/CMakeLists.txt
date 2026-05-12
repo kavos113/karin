@@ -3,8 +3,13 @@ project(karin_java)
 find_package(Java REQUIRED)
 find_package(JNI REQUIRED)
 add_library(karin_languages_java SHARED
-        src/main/cpp/karin.cpp
         src/main/cpp/jni_global_ref.cpp
+        src/main/cpp/jni_application.cpp
+        src/main/cpp/jni_container_node.cpp
+        src/main/cpp/jni_rectangle_node.cpp
+        src/main/cpp/jni_text_node.cpp
+        src/main/cpp/jni_view_node.cpp
+        src/main/cpp/jni_window.cpp
 )
 
 target_include_directories(karin_languages_java PRIVATE
