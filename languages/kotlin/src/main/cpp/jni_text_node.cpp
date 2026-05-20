@@ -7,7 +7,7 @@
 
 using namespace karin::gui;
 
-JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_JniTextNode_create
+JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_create
     (JNIEnv *env, jclass cls, jstring text, jstring fontFamily,
      jint fontStyle, jint fontStretch, jint fontWeight, jfloat fontSize, jstring locale,
      jboolean underline, jboolean strikethrough, jint horizontalAlignment, jint verticalAlignment,

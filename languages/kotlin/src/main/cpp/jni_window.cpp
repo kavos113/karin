@@ -5,7 +5,7 @@
 
 using namespace karin::gui;
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniWindow_setRootView
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniWindow_setRootView
     (JNIEnv *env, jclass cls, jlong windowPtr, jlong viewPtr)
 {
     auto *window = reinterpret_cast<std::shared_ptr<Window> *>(windowPtr);
@@ -14,7 +14,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniWindow_setRootView
     (*window)->setRootView(std::unique_ptr<ViewNode>(view));
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniWindow_destroy
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniWindow_destroy
     (JNIEnv *env, jclass cls, jlong windowPtr)
 {
     auto *window = reinterpret_cast<std::shared_ptr<Window> *>(windowPtr);

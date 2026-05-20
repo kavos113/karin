@@ -6,7 +6,7 @@
 
 using namespace karin::gui;
 
-JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_JniRectangleNode_create
+JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniRectangleNode_create
     (JNIEnv *env, jclass cls, jfloat width, jfloat height, jfloat r, jfloat g, jfloat b, jfloat a)
 {
     karin::Size size(width, height);

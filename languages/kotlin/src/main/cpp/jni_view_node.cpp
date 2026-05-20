@@ -9,7 +9,7 @@
 using namespace karin::gui;
 using namespace karin::jni;
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniViewNode_setClickListener
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
     (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
 {
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);

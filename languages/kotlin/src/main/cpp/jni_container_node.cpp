@@ -6,14 +6,14 @@
 
 using namespace karin::gui;
 
-JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_JniContainerNode_create__
+JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_create__
     (JNIEnv *, jclass)
 {
     auto *container = new ContainerNode();
     return reinterpret_cast<jlong>(container);
 }
 
-JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_JniContainerNode_create__FF
+JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_create__FF
     (JNIEnv *env, jclass cls, jfloat width, jfloat height)
 {
     karin::Size size(width, height);
@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_JniContainerNode_create__
     return reinterpret_cast<jlong>(container);
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniContainerNode_addChild
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_addChild
     (JNIEnv *env, jclass cls, jlong containerPtr, jlong childPtr)
 {
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
@@ -29,21 +29,21 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniContainerNode_addChild
     container->addChild(std::unique_ptr<ViewNode>(child));
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniContainerNode_setLayoutDirection
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setLayoutDirection
     (JNIEnv *env, jclass cls, jlong containerPtr, jint direction)
 {
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     container->setLayoutDirection(static_cast<ContainerNode::LayoutDirection>(direction));
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniContainerNode_setGap
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setGap
     (JNIEnv *env, jclass cls, jlong containerPtr, jfloat gap)
 {
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     container->setGap(gap);
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniContainerNode_setWrapMode
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setWrapMode
     (JNIEnv *env, jclass cls, jlong containerPtr, jint mode)
 {
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
