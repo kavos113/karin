@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setClickListener
- * Signature: (JLcom/github/kavos113/karin/ViewNode;)V
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
   (JNIEnv *, jclass, jlong, jobject);

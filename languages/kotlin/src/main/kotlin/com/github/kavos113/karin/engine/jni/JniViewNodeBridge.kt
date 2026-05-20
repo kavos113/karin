@@ -1,8 +1,8 @@
 package com.github.kavos113.karin.engine.jni
 
-import com.github.kavos113.karin.ViewNode
+import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 
-object JniViewNodeBridge {
-    fun setClickListener(nodePtr: Long, node: ViewNode) = JniViewNode.setClickListener(nodePtr, node)
+internal object JniViewNodeBridge {
+    fun setClickListener(nodePtr: Long, node: ViewNodeHandle) = JniViewNode.setClickListener(nodePtr, node)
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }

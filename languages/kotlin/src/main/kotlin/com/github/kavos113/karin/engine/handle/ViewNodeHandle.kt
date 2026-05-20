@@ -8,6 +8,8 @@ internal open class ViewNodeHandle(ptr: Long) {
     private var internalPtr = ptr
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, CleanupTask(ptr))
 
+    private var onClick: (() -> Unit)? = null
+
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
@@ -21,6 +23,16 @@ internal open class ViewNodeHandle(ptr: Long) {
         internalPtr = 0L
         cleanable.clean()
         return currentPtr
+    }
+
+    fun setOnClickListener(listener: () -> Unit) {
+        onClick = listener
+        JniViewNodeBridge.setClickListener(ptr, this)
+    }
+
+    @JvmName("dispatchClickEvent")
+    internal fun dispatchClickEvent() {
+        onClick?.invoke()
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {

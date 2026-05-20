@@ -8,7 +8,7 @@ abstract class ViewNode(internal var nativePtr: Long) {
 
     fun setOnClickListener(listener: () -> Unit) {
         onClick = listener
-        JniViewNodeBridge.setClickListener(nativePtr, this)
+//        JniViewNodeBridge.setClickListener(nativePtr, this)
     }
 
     @JvmName("dispatchClickEvent")
