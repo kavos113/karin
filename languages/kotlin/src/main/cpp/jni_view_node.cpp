@@ -35,3 +35,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_JniViewNode_setClickListen
         }
     );
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_destroy
+    (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+    delete node;
+}

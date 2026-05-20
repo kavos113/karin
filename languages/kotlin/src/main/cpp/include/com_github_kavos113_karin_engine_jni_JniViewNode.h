@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
   (JNIEnv *, jclass, jlong, jobject);
 
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    destroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_destroy
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif
