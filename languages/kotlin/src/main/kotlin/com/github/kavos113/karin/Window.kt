@@ -1,23 +1,17 @@
 package com.github.kavos113.karin
 
-import com.github.kavos113.karin.engine.jni.JniWindowBridge
+import com.github.kavos113.karin.engine.handle.WindowHandle
 
-class Window internal constructor(
-    internal var nativePtr: Long
-) : AutoCloseable {
+class Window(
+    title: String,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) {
+    private val handle: WindowHandle = WindowHandle(title, x, y, width, height)
 
-    // 子ノードとして追加されたviewの所有権はC++側で持つ
     fun setRootView(view: ViewNode) {
-        require(view.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
-
-        JniWindowBridge.setRootView(nativePtr, view.nativePtr)
-        view.nativePtr = 0L
-    }
-
-    override fun close() {
-        if (nativePtr != 0L) {
-            JniWindowBridge.destroy(nativePtr)
-            nativePtr = 0L
-        }
+        handle.setRootView(view.handle)
     }
 }
