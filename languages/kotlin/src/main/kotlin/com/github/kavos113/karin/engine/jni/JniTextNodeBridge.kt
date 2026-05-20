@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.engine.jni
 
-object JniTextNodeBridge {
+internal object JniTextNodeBridge {
     fun create(
         text: String,
         fontFamily: String,

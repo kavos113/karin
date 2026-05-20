@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.engine.jni
 
-object JniContainerNodeBridge {
+internal object JniContainerNodeBridge {
     fun create(): Long = JniContainerNode.create()
     fun create(width: Float, height: Float): Long = JniContainerNode.create(width, height)
     fun addChild(containerPtr: Long, childPtr: Long) = JniContainerNode.addChild(containerPtr, childPtr)
