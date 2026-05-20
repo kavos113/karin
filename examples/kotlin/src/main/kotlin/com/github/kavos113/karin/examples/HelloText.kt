@@ -1,12 +1,15 @@
 package com.github.kavos113.karin.examples.hellotext
 
-import com.github.kavos113.karin.Application
 import com.github.kavos113.karin.Color
 import com.github.kavos113.karin.ContainerNode
+import com.github.kavos113.karin.Karin
 import com.github.kavos113.karin.RectangleNode
 import com.github.kavos113.karin.Size
 import com.github.kavos113.karin.TextNode
 import com.github.kavos113.karin.TextStyle
+import com.github.kavos113.karin.Window
+import com.github.kavos113.karin.ui.LayoutDirection
+import com.github.kavos113.karin.ui.WrapMode
 
 fun randomColor(): Color {
     return Color(
@@ -18,8 +21,7 @@ fun randomColor(): Color {
 }
 
 fun main() {
-    val app = Application()
-    val win = app.createWindow("Hello Layout", 100, 100, 800, 600)
+    val win = Window("Hello Text", 100, 100, 800, 600)
 
     val root = ContainerNode(Size(800f, 600f))
 
@@ -36,10 +38,11 @@ fun main() {
     )
     root.addChild(textNode)
 
-    root.setLayoutDirection(ContainerNode.LayoutDirection.Row)
+    root.setLayoutDirection(LayoutDirection.Row)
     root.setGap(10.0f)
-    root.setWrapMode(ContainerNode.WrapMode.Wrap)
+    root.setWrapMode(WrapMode.Wrap)
 
     win.setRootView(root)
-    app.run()
+
+    Karin.run()
 }
