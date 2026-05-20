@@ -1,4 +1,4 @@
-#include "com_github_kavos113_karin_JniTextNode.h"
+#include "com_github_kavos113_karin_engine_jni_JniTextNode.h"
 
 #include <karin/gui.h>
 #include <karin/graphics.h>

@@ -1,4 +1,4 @@
-#include "com_github_kavos113_karin_JniApplication.h"
+#include "com_github_kavos113_karin_engine_jni_JniApplication.h"
 
 #include <karin/gui.h>
 #include <memory>

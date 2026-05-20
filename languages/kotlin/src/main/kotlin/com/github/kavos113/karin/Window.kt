@@ -1,5 +1,7 @@
 package com.github.kavos113.karin
 
+import com.github.kavos113.karin.engine.jni.JniWindowBridge
+
 class Window internal constructor(
     internal var nativePtr: Long
 ) : AutoCloseable {
@@ -8,13 +10,13 @@ class Window internal constructor(
     fun setRootView(view: ViewNode) {
         require(view.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
 
-        JniWindow.setRootView(nativePtr, view.nativePtr)
+        JniWindowBridge.setRootView(nativePtr, view.nativePtr)
         view.nativePtr = 0L
     }
 
     override fun close() {
         if (nativePtr != 0L) {
-            JniWindow.destroy(nativePtr)
+            JniWindowBridge.destroy(nativePtr)
             nativePtr = 0L
         }
     }

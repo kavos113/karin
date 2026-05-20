@@ -1,5 +1,7 @@
 package com.github.kavos113.karin
 
+import com.github.kavos113.karin.engine.jni.JniTextNodeBridge
+
 class TextNode internal constructor(ptr: Long) : ViewNode(ptr) {
 
     constructor(
@@ -8,7 +10,7 @@ class TextNode internal constructor(ptr: Long) : ViewNode(ptr) {
         paragraphStyle: ParagraphStyle = ParagraphStyle(),
         color: Color = Color.Black
     ) : this(
-        JniTextNode.create(
+        JniTextNodeBridge.create(
             text,
             style.fontFamily,
             style.fontStyle.toInt(),

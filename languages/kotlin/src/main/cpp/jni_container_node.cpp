@@ -1,4 +1,4 @@
-#include "com_github_kavos113_karin_JniContainerNode.h"
+#include "com_github_kavos113_karin_engine_jni_JniContainerNode.h"
 
 #include <karin/gui.h>
 #include <karin/common.h>

@@ -1,5 +1,7 @@
 package com.github.kavos113.karin
 
+import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
+
 open class ContainerNode internal constructor(ptr: Long) : ViewNode(ptr) {
 
     enum class LayoutDirection(val value: Int) {
@@ -13,25 +15,25 @@ open class ContainerNode internal constructor(ptr: Long) : ViewNode(ptr) {
         WrapReverse(2)
     }
 
-    constructor(): this(JniContainerNode.create())
-    constructor(size: Size) : this(JniContainerNode.create(size.width, size.height))
+    constructor(): this(JniContainerNodeBridge.create())
+    constructor(size: Size) : this(JniContainerNodeBridge.create(size.width, size.height))
 
     fun addChild(child: ViewNode) {
         require(child.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
 
-        JniContainerNode.addChild(nativePtr, child.nativePtr)
+        JniContainerNodeBridge.addChild(nativePtr, child.nativePtr)
         child.nativePtr = 0L
     }
 
     fun setLayoutDirection(direction: LayoutDirection) {
-        JniContainerNode.setLayoutDirection(nativePtr, direction.value)
+        JniContainerNodeBridge.setLayoutDirection(nativePtr, direction.value)
     }
 
     fun setWrapMode(wrapMode: WrapMode) {
-        JniContainerNode.setWrapMode(nativePtr, wrapMode.value)
+        JniContainerNodeBridge.setWrapMode(nativePtr, wrapMode.value)
     }
 
     fun setGap(gap: Float) {
-        JniContainerNode.setGap(nativePtr, gap)
+        JniContainerNodeBridge.setGap(nativePtr, gap)
     }
 }
