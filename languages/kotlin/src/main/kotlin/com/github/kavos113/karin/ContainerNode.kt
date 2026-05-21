@@ -25,7 +25,7 @@ open class ContainerNode internal constructor(
     }
 
     fun setWrapMode(layoutWrap: LayoutWrap) {
-        containerHandle.setWrapMode(layoutWrap)
+        containerHandle.setLayoutWrap(layoutWrap)
     }
 
     fun setGap(gap: Float) {

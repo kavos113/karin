@@ -21,7 +21,7 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
         JniContainerNodeBridge.setLayoutDirection(this.ptr, direction.value)
     }
 
-    fun setWrapMode(layoutWrap: LayoutWrap) {
+    fun setLayoutWrap(layoutWrap: LayoutWrap) {
         JniContainerNodeBridge.setWrapMode(this.ptr, layoutWrap.value)
     }
 
