@@ -19,12 +19,13 @@ internal open class ViewNodeHandle(ptr: Long) {
             return internalPtr
         }
 
-    fun transferOwnership(): Long {
-        val currentPtr = ptr
+    fun transferOwnership() {
+        check(internalPtr != 0L) {
+            "ownership of this handle already transferred to C++ side (or destroyed), cannot transfer ownership again"
+        }
 
         cleanupTask.isOwnershipTransferred = true
         internalPtr = 0L
-        return currentPtr
     }
 
     fun setOnClickListener(listener: () -> Unit) {

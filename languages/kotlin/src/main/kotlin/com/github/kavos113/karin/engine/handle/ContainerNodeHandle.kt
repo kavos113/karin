@@ -11,9 +11,10 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     constructor(size: Size): this(JniContainerNodeBridge.create(size.width, size.height))
 
     fun addChild(child: ViewNodeHandle) {
-        val childPtr = child.transferOwnership()
-
+        val childPtr = child.ptr
         JniContainerNodeBridge.addChild(this.ptr, childPtr)
+
+        child.transferOwnership()
     }
 
     fun setLayoutDirection(direction: LayoutDirection) {

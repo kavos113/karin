@@ -25,8 +25,10 @@ internal class WindowHandle(
     }
 
     fun setRootView(view: ViewNodeHandle) {
-        val viewPtr = view.transferOwnership()
+        val viewPtr = view.ptr
         JniWindowBridge.setRootView(ptr, viewPtr)
+
+        view.transferOwnership()
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
