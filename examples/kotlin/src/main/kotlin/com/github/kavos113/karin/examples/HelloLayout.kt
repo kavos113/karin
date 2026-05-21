@@ -6,8 +6,8 @@ import com.github.kavos113.karin.Karin
 import com.github.kavos113.karin.RectangleNode
 import com.github.kavos113.karin.Size
 import com.github.kavos113.karin.Window
-import com.github.kavos113.karin.ui.LayoutDirection
-import com.github.kavos113.karin.ui.WrapMode
+import com.github.kavos113.karin.ui.layout.LayoutDirection
+import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 fun randomColor(): Color {
     return Color(
@@ -35,12 +35,12 @@ fun main() {
     }
     bigRect.setLayoutDirection(LayoutDirection.Column)
     bigRect.setGap(5.0f)
-    bigRect.setWrapMode(WrapMode.Wrap)
+    bigRect.setWrapMode(LayoutWrap.Wrap)
     root.addChild(bigRect)
 
     root.setLayoutDirection(LayoutDirection.Row)
     root.setGap(10.0f)
-    root.setWrapMode(WrapMode.Wrap)
+    root.setWrapMode(LayoutWrap.Wrap)
 
     win.setRootView(root)
 

@@ -2,8 +2,8 @@ package com.github.kavos113.karin.engine.handle
 
 import com.github.kavos113.karin.Size
 import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
-import com.github.kavos113.karin.ui.LayoutDirection
-import com.github.kavos113.karin.ui.WrapMode
+import com.github.kavos113.karin.ui.layout.LayoutDirection
+import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
 
@@ -21,8 +21,8 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
         JniContainerNodeBridge.setLayoutDirection(this.ptr, direction.value)
     }
 
-    fun setWrapMode(wrapMode: WrapMode) {
-        JniContainerNodeBridge.setWrapMode(this.ptr, wrapMode.value)
+    fun setWrapMode(layoutWrap: LayoutWrap) {
+        JniContainerNodeBridge.setWrapMode(this.ptr, layoutWrap.value)
     }
 
     fun setGap(gap: Float) {
