@@ -1,16 +1,11 @@
 package com.github.kavos113.karin
 
-abstract class ViewNode(internal var nativePtr: Long) {
+import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 
-    private var onClick: (() -> Unit)? = null
-
-    fun setOnClickListener(listener: () -> Unit) {
-        onClick = listener
-        KarinJni.viewNodeSetClickListener(nativePtr, this)
-    }
-
-    @JvmName("dispatchClickEvent")
-    internal fun dispatchClickEvent() {
-        onClick?.invoke()
+abstract class ViewNode internal constructor(
+    internal val handle: ViewNodeHandle
+){
+    fun setOnClickListener(onClick: () -> Unit) {
+        handle.setOnClickListener(onClick)
     }
 }

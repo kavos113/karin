@@ -1,3 +1,5 @@
 CMakeUserPresets.json
 build/
 .idea/
+
+hs_err_*.log

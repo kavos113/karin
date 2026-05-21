@@ -1,21 +1,17 @@
 package com.github.kavos113.karin
 
-class Window internal constructor(
-    internal var nativePtr: Long
-) : AutoCloseable {
+import com.github.kavos113.karin.engine.handle.WindowHandle
 
-    // 子ノードとして追加されたviewの所有権はC++側で持つ
+class Window(
+    title: String,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) {
+    private val handle: WindowHandle = WindowHandle(title, x, y, width, height)
+
     fun setRootView(view: ViewNode) {
-        require(view.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
-
-        KarinJni.windowSetRootView(nativePtr, view.nativePtr)
-        view.nativePtr = 0L
-    }
-
-    override fun close() {
-        if (nativePtr != 0L) {
-            KarinJni.windowDestroy(nativePtr)
-            nativePtr = 0L
-        }
+        handle.setRootView(view.handle)
     }
 }

@@ -1,37 +1,33 @@
 package com.github.kavos113.karin
 
-open class ContainerNode internal constructor(ptr: Long) : ViewNode(ptr) {
+import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
+import com.github.kavos113.karin.ui.LayoutDirection
+import com.github.kavos113.karin.ui.WrapMode
 
-    enum class LayoutDirection(val value: Int) {
-        Row(0),
-        Column(1)
-    }
+open class ContainerNode internal constructor(
+    handle: ContainerNodeHandle
+): ViewNode(handle) {
 
-    enum class WrapMode(val value: Int) {
-        NoWrap(0),
-        Wrap(1),
-        WrapReverse(2)
-    }
+    internal val containerHandle: ContainerNodeHandle
+        get() = handle as ContainerNodeHandle
 
-    constructor(): this(KarinJni.containerNodeCreate())
-    constructor(size: Size) : this(KarinJni.containerNodeCreate(size.width, size.height))
+    constructor(): this(ContainerNodeHandle(JniContainerNodeBridge.create()))
+    constructor(size: Size): this(ContainerNodeHandle(JniContainerNodeBridge.create(size.width, size.height)))
 
     fun addChild(child: ViewNode) {
-        require(child.nativePtr != 0L) { "ViewNode has been destroyed or already add child of others" }
-
-        KarinJni.containerNodeAddChild(nativePtr, child.nativePtr)
-        child.nativePtr = 0L
+        containerHandle.addChild(child.handle)
     }
 
     fun setLayoutDirection(direction: LayoutDirection) {
-        KarinJni.containerNodeSetLayoutDirection(nativePtr, direction.value)
+        containerHandle.setLayoutDirection(direction)
     }
 
     fun setWrapMode(wrapMode: WrapMode) {
-        KarinJni.containerNodeSetWrapMode(nativePtr, wrapMode.value)
+        containerHandle.setWrapMode(wrapMode)
     }
 
     fun setGap(gap: Float) {
-        KarinJni.containerNodeSetGap(nativePtr, gap)
+        containerHandle.setGap(gap)
     }
 }

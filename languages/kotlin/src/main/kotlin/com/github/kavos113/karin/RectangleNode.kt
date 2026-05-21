@@ -1,7 +1,9 @@
 package com.github.kavos113.karin
 
-class RectangleNode internal constructor(ptr: Long) : ContainerNode(ptr) {
+import com.github.kavos113.karin.engine.handle.RectangleNodeHandle
 
-    constructor(size: Size, color: Color)
-        : this(KarinJni.rectangleNodeCreate(size.width, size.height, color.r, color.g, color.b, color.a))
+class RectangleNode(size: Size, color: Color) : ContainerNode(
+    RectangleNodeHandle(size, color)
+) {
+
 }

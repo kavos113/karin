@@ -1,4 +1,4 @@
-package com.github.kavos113.karin;
+package com.github.kavos113.karin.engine.jni;
 
 import java.io.File;
 import java.io.InputStream;
