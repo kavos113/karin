@@ -2,6 +2,7 @@ package com.github.kavos113.karin
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
+import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.ui.layout.LayoutDirection
 import com.github.kavos113.karin.ui.layout.LayoutWrap
 

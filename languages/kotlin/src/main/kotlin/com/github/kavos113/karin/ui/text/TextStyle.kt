@@ -1,4 +1,6 @@
-package com.github.kavos113.karin
+package com.github.kavos113.karin.ui.text
+
+import com.github.kavos113.karin.ui.common.Color
 
 data class TextStyle(
     val fontSize: Float = 16f,

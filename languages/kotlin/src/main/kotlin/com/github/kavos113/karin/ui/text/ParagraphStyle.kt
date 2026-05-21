@@ -1,4 +1,4 @@
-package com.github.kavos113.karin
+package com.github.kavos113.karin.ui.text
 
 data class ParagraphStyle(
     val horizontalAlignment: HorizontalAlignment = HorizontalAlignment.Left,

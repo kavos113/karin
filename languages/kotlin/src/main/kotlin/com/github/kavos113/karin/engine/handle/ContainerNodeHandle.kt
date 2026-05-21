@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.engine.handle
 
-import com.github.kavos113.karin.Size
+import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
 import com.github.kavos113.karin.ui.layout.LayoutDirection
 import com.github.kavos113.karin.ui.layout.LayoutWrap

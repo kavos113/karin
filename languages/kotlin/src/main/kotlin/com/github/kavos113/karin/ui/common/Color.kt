@@ -1,4 +1,4 @@
-package com.github.kavos113.karin
+package com.github.kavos113.karin.ui.common
 
 data class Color(
     val r: Float,
