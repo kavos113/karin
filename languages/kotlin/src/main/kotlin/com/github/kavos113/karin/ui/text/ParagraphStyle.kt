@@ -1,7 +1,7 @@
 package com.github.kavos113.karin.ui.text
 
 data class ParagraphStyle(
-    val textHorizontalAlignment: TextHorizontalAlignment = TextHorizontalAlignment.Left,
+    val textAlign: TextAlign = TextAlign.Left,
     val textVerticalAlignment: TextVerticalAlignment = TextVerticalAlignment.Top,
     val textTrim: TextTrim = TextTrim.None,
     val textWrap: TextWrap = TextWrap.None,

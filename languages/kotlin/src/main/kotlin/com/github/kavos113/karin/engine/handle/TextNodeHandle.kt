@@ -23,7 +23,7 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
             style.locale,
             false, // TODO
             false,
-            paragraphStyle.textHorizontalAlignment.value,
+            paragraphStyle.textAlign.value,
             paragraphStyle.textVerticalAlignment.value,
             paragraphStyle.lineSpacingValue,
             paragraphStyle.baseLineOffset,
