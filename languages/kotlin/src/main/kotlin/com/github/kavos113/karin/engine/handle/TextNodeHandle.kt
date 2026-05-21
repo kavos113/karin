@@ -16,22 +16,22 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
         JniTextNodeBridge.create(
             text,
             style.fontFamily,
-            style.fontStyle.toInt(),
-            style.fontStretch.toInt(),
-            style.fontWeight.toInt(),
+            style.fontStyle.value,
+            style.fontStretch.value,
+            style.fontWeight.value,
             style.fontSize,
             style.locale,
             false, // TODO
             false,
-            paragraphStyle.textHorizontalAlignment.toInt(),
-            paragraphStyle.textVerticalAlignment.toInt(),
+            paragraphStyle.textHorizontalAlignment.value,
+            paragraphStyle.textVerticalAlignment.value,
             paragraphStyle.lineSpacingValue,
             paragraphStyle.baseLineOffset,
-            paragraphStyle.textLineSpacing.toInt(),
-            paragraphStyle.textTrim.toInt(),
-            paragraphStyle.textWrap.toInt(),
-            paragraphStyle.flowDirection.toInt(),
-            paragraphStyle.readingDirection.toInt(),
+            paragraphStyle.textLineSpacing.value,
+            paragraphStyle.textTrim.value,
+            paragraphStyle.textWrap.value,
+            paragraphStyle.flowDirection.value,
+            paragraphStyle.readingDirection.value,
             color.r, color.g, color.b, color.a
         )
     )
