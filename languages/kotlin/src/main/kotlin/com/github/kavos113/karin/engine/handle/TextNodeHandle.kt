@@ -23,13 +23,13 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
             style.locale,
             false, // TODO
             false,
-            paragraphStyle.horizontalAlignment.toInt(),
-            paragraphStyle.verticalAlignment.toInt(),
+            paragraphStyle.textHorizontalAlignment.toInt(),
+            paragraphStyle.textVerticalAlignment.toInt(),
             paragraphStyle.lineSpacingValue,
             paragraphStyle.baseLineOffset,
-            paragraphStyle.lineSpacingMode.toInt(),
-            paragraphStyle.trimMode.toInt(),
-            paragraphStyle.wrapMode.toInt(),
+            paragraphStyle.textLineSpacing.toInt(),
+            paragraphStyle.textTrim.toInt(),
+            paragraphStyle.textWrap.toInt(),
             paragraphStyle.flowDirection.toInt(),
             paragraphStyle.readingDirection.toInt(),
             color.r, color.g, color.b, color.a
