@@ -1,15 +1,15 @@
 package com.github.kavos113.karin.examples.hellotext
 
-import com.github.kavos113.karin.Color
+import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ContainerNode
 import com.github.kavos113.karin.Karin
 import com.github.kavos113.karin.RectangleNode
-import com.github.kavos113.karin.Size
+import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.TextNode
-import com.github.kavos113.karin.TextStyle
+import com.github.kavos113.karin.ui.text.TextStyle
 import com.github.kavos113.karin.Window
-import com.github.kavos113.karin.ui.LayoutDirection
-import com.github.kavos113.karin.ui.WrapMode
+import com.github.kavos113.karin.ui.layout.LayoutDirection
+import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 fun randomColor(): Color {
     return Color(
@@ -40,7 +40,7 @@ fun main() {
 
     root.setLayoutDirection(LayoutDirection.Row)
     root.setGap(10.0f)
-    root.setWrapMode(WrapMode.Wrap)
+    root.setWrapMode(LayoutWrap.Wrap)
 
     win.setRootView(root)
 

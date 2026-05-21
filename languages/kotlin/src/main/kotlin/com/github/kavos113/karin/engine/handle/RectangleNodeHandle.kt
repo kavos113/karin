@@ -1,7 +1,7 @@
 package com.github.kavos113.karin.engine.handle
 
-import com.github.kavos113.karin.Color
-import com.github.kavos113.karin.Size
+import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.engine.jni.JniRectangleNodeBridge
 
 internal class RectangleNodeHandle(ptr: Long) : ContainerNodeHandle(ptr) {
