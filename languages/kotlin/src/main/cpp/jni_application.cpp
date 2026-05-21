@@ -16,8 +16,14 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication
     (JNIEnv *env, jclass cls, jlong appPtr, jstring title, jint x, jint y, jint width, jint height)
 {
     auto *app = reinterpret_cast<Application *>(appPtr);
+    if (app == nullptr) {
+        return 0;
+    }
 
     const char *titleChars = env->GetStringUTFChars(title, nullptr);
+    if (titleChars == nullptr) {
+        return 0;
+    }
     auto window = app->createWindow(titleChars, x, y, width, height);
     env->ReleaseStringUTFChars(title, titleChars);
 

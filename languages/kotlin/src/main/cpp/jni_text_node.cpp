@@ -3,7 +3,6 @@
 #include <karin/gui.h>
 #include <karin/graphics.h>
 #include <karin/common.h>
-#include <memory>
 
 using namespace karin::gui;
 
@@ -16,8 +15,22 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_cr
     )
 {
     const char *textChars = env->GetStringUTFChars(text, nullptr);
+    if (textChars == nullptr) {
+        return 0;
+    }
+
     const char *fontFamilyChars = env->GetStringUTFChars(fontFamily, nullptr);
+    if (fontFamilyChars == nullptr) {
+        env->ReleaseStringUTFChars(text, textChars);
+        return 0;
+    }
+
     const char *localeChars = env->GetStringUTFChars(locale, nullptr);
+    if (localeChars == nullptr) {
+        env->ReleaseStringUTFChars(text, textChars);
+        env->ReleaseStringUTFChars(fontFamily, fontFamilyChars);
+        return 0;
+    }
 
     karin::Font font;
     font.family = fontFamilyChars;
