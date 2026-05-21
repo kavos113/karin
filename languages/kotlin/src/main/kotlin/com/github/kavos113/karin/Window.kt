@@ -21,11 +21,12 @@ class Window(
         content: UiBuilder.() -> Unit
     ) {
         val root = ContainerNodeHandle()
-        handle.setRootView(root)
 
         val builder = object : UiBuilder() {
             override val parentContainer = root
         }
         builder.content()
+
+        handle.setRootView(root)
     }
 }

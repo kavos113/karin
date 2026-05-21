@@ -15,12 +15,12 @@ fun UiBuilder.Container(
     handle.setLayoutWrap(wrap)
     handle.setGap(gap)
 
-    parentContainer.addChild(handle)
-
     val builder = object : UiBuilder() {
         override val parentContainer = handle
     }
     builder.content()
+
+    parentContainer.addChild(handle)
 }
 
 fun UiBuilder.Column(
