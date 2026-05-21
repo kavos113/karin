@@ -1,6 +1,10 @@
 package com.github.kavos113.karin.engine.jni;
 
 class JniContainerNode {
+    static {
+        KarinLoader.load();
+    }
+
     static native long create();
     static native long create(float width, float height);
     static native void addChild(long containerPtr, long childPtr);
