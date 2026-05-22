@@ -2,6 +2,9 @@ package com.github.kavos113.karin.engine.handle
 
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
+import com.github.kavos113.karin.ui.component.Event
+import com.github.kavos113.karin.ui.component.Layout
+import com.github.kavos113.karin.ui.component.Style
 import java.lang.ref.Cleaner
 
 internal open class ViewNodeHandle(ptr: Long) {
@@ -47,5 +50,19 @@ internal open class ViewNodeHandle(ptr: Long) {
                 JniViewNodeBridge.destroy(ptr)
             }
         }
+    }
+}
+
+internal fun ViewNodeHandle.applyStyle(style: Style) {
+    // TODO
+}
+
+internal fun ViewNodeHandle.applyLayout(layout: Layout) {
+    // TODO
+}
+
+internal fun ViewNodeHandle.applyEvent(event: Event) {
+    event.onClick?.let {
+        setOnClickListener(it)
     }
 }
