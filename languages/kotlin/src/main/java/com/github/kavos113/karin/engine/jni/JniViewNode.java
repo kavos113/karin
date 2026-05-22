@@ -13,7 +13,11 @@ class JniViewNode {
     static native void setHeight(long nodePtr, float height);
     static native void setBackgroundColor(long nodePtr, float r, float g, float b, float a);
 
-    // flags: 1 - left, 2 - top, 4 - right, 8 - bottom
+    static final char MARGIN_LEFT = 1;
+    static final char MARGIN_TOP = 2;
+    static final char MARGIN_RIGHT = 4;
+    static final char MARGIN_BOTTOM = 8;
+
     static native void setMargin(long nodePtr, char flags, float left, float top, float right, float bottom);
     static native void setPadding(long nodePtr, char flags, float left, float top, float right, float bottom);
 

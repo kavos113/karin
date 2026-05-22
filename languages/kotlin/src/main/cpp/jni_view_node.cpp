@@ -69,10 +69,25 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & 0x01) node->setMargin(ViewNode::Side::Left, left);
-    if (flags & 0x02) node->setMargin(ViewNode::Side::Top, top);
-    if (flags & 0x04) node->setMargin(ViewNode::Side::Right, right);
-    if (flags & 0x08) node->setMargin(ViewNode::Side::Bottom, bottom);
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
+    {
+        node->setMargin(ViewNode::Side::Left, left);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP)
+    {
+        node->setMargin(ViewNode::Side::Top, top);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT)
+    {
+        node->setMargin(ViewNode::Side::Right, right);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM)
+    {
+        node->setMargin(ViewNode::Side::Bottom, bottom);
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPadding
@@ -80,10 +95,25 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & 0x01) node->setPadding(ViewNode::Side::Left, left);
-    if (flags & 0x02) node->setPadding(ViewNode::Side::Top, top);
-    if (flags & 0x04) node->setPadding(ViewNode::Side::Right, right);
-    if (flags & 0x08) node->setPadding(ViewNode::Side::Bottom, bottom);
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
+    {
+        node->setPadding(ViewNode::Side::Left, left);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP)
+    {
+        node->setPadding(ViewNode::Side::Top, top);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT)
+    {
+        node->setPadding(ViewNode::Side::Right, right);
+    }
+
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM)
+    {
+        node->setPadding(ViewNode::Side::Bottom, bottom);
+    }
 }
 
 

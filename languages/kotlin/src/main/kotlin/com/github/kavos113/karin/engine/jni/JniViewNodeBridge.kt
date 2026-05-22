@@ -9,6 +9,11 @@ internal object JniViewNodeBridge {
     fun setHeight(nodePtr: Long, height: Float) = JniViewNode.setHeight(nodePtr, height)
     fun setBackgroundColor(nodePtr: Long, r: Float, g: Float, b: Float, a: Float) = JniViewNode.setBackgroundColor(nodePtr, r, g, b, a)
 
+    const val MARGIN_FLAG_LEFT = 0b0001
+    const val MARGIN_FLAG_TOP = 0b0010
+    const val MARGIN_FLAG_RIGHT = 0b0100
+    const val MARGIN_FLAG_BOTTOM = 0b1000
+
     fun setMargin(nodePtr: Long, flags: Char, left: Float, top: Float, right: Float, bottom: Float) = JniViewNode.setMargin(nodePtr, flags, left, top, right, bottom)
     fun setPadding(nodePtr: Long, flags: Char, left: Float, top: Float, right: Float, bottom: Float) = JniViewNode.setPadding(nodePtr, flags, left, top, right, bottom)
 
