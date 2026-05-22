@@ -9,9 +9,13 @@ class State<T>(initialValue: T) {
             listeners.forEach { it(value) }
         }
 
-    fun onChange(listener: (T) -> Unit) {
+    fun onChange(listener: (T) -> Unit): () -> Unit {
         listeners.add(listener)
         listener(value)
+
+        return {
+            listeners.remove(listener)
+        }
     }
 
     fun <R> map(transform: (T) -> R): State<R> {
