@@ -3,10 +3,7 @@ package com.github.kavos113.karin.examples.hellotext
 import com.github.kavos113.karin.Karin
 import com.github.kavos113.karin.Window
 import com.github.kavos113.karin.ui.common.Color
-import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.ui.component.Rectangle
-import com.github.kavos113.karin.ui.component.Row
-import com.github.kavos113.karin.ui.component.Text
+import com.github.kavos113.karin.ui.component.*
 
 fun randomColor(): Color {
     return Color(
@@ -25,7 +22,10 @@ fun main() {
             gap = 10f,
         ) {
             for (i in 0 until 10) {
-                Rectangle(Size(100f, 100f), randomColor())
+                Box(
+                    style = Style().background(randomColor()),
+                    layout = Layout().size(width = 100f, height = 100f)
+                )
             }
             Text(
                 text = "Hello, Karin!",
