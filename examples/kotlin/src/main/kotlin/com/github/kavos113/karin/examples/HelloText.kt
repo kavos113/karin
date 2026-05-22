@@ -1,15 +1,12 @@
 package com.github.kavos113.karin.examples.hellotext
 
-import com.github.kavos113.karin.ui.common.Color
-import com.github.kavos113.karin.ContainerNode
 import com.github.kavos113.karin.Karin
-import com.github.kavos113.karin.RectangleNode
-import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.TextNode
-import com.github.kavos113.karin.ui.text.TextStyle
 import com.github.kavos113.karin.Window
-import com.github.kavos113.karin.ui.layout.LayoutDirection
-import com.github.kavos113.karin.ui.layout.LayoutWrap
+import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.ui.common.Size
+import com.github.kavos113.karin.ui.component.Rectangle
+import com.github.kavos113.karin.ui.component.Row
+import com.github.kavos113.karin.ui.component.Text
 
 fun randomColor(): Color {
     return Color(
@@ -23,26 +20,19 @@ fun randomColor(): Color {
 fun main() {
     val win = Window("Hello Text", 100, 100, 800, 600)
 
-    val root = ContainerNode(Size(800f, 600f))
-
-    for (i in 0 until 10) {
-        val child = RectangleNode(Size(100f, 100f), randomColor())
-        root.addChild(child)
+    win.setContent {
+        Row(
+            gap = 10f,
+        ) {
+            for (i in 0 until 10) {
+                Rectangle(Size(100f, 100f), randomColor())
+            }
+            Text(
+                text = "Hello, Karin!",
+                fontSize = 24f
+            )
+        }
     }
-
-    val textNode = TextNode(
-        text = "Hello, Karin!",
-        style = TextStyle(
-            fontSize = 24f
-        )
-    )
-    root.addChild(textNode)
-
-    root.setLayoutDirection(LayoutDirection.Row)
-    root.setGap(10.0f)
-    root.setWrapMode(LayoutWrap.Wrap)
-
-    win.setRootView(root)
 
     Karin.run()
 }
