@@ -33,6 +33,26 @@ YGWrap toYogaWrap(karin::gui::ContainerNode::WrapMode mode)
 
 namespace karin::gui
 {
+void ContainerNode::onAttachToWindow(Window* window)
+{
+    ViewNode::onAttachToWindow(window);
+
+    for (const auto& child : m_children)
+    {
+        child->onAttachToWindow(window);
+    }
+}
+
+void ContainerNode::onDetachFromWindow()
+{
+    ViewNode::onDetachFromWindow();
+
+    for (const auto& child : m_children)
+    {
+        child->onDetachFromWindow();
+    }
+}
+
 void ContainerNode::drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const
 {
     drawBackground(gc, parentTransform);
@@ -50,6 +70,11 @@ void ContainerNode::drawInternal(GraphicsContext& gc, const Transform2D& parentT
 
 void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
 {
+    if (m_window)
+    {
+        child->onAttachToWindow(m_window);
+    }
+
     YGNodeInsertChild(m_yogaNode, child->getYogaNode(), YGNodeGetChildCount(m_yogaNode));
 
     m_children.push_back(std::move(child));

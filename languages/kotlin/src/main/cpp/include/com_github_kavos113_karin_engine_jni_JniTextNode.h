@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_create
   (JNIEnv *, jclass, jstring, jstring, jint, jint, jint, jfloat, jstring, jboolean, jboolean, jint, jint, jfloat, jfloat, jint, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat);
 
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniTextNode
+ * Method:    setText
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setText
+  (JNIEnv *, jclass, jlong, jstring);
+
 #ifdef __cplusplus
 }
 #endif

@@ -35,4 +35,8 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
             color.r, color.g, color.b, color.a
         )
     )
+
+    fun setText(text: String) {
+        JniTextNodeBridge.setText(ptr, text)
+    }
 }

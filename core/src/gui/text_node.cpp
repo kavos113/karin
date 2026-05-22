@@ -12,6 +12,12 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
 {
 }
 
+void TextNode::setText(const std::string& text)
+{
+    m_text = text;
+    requestRelayout();
+}
+
 void TextNode::drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const
 {
     Rectangle layout = getLayout();

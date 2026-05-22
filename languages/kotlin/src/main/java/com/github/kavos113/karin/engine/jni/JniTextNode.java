@@ -29,4 +29,6 @@ class JniTextNode {
         float b,
         float a
     );
+
+    static native void setText(long ptr, String text);
 }

@@ -1,6 +1,7 @@
 #include <karin/gui/view_node.h>
 
 #include <karin/graphics/stroke_style.h>
+#include <karin/gui/window.h>
 
 namespace
 {
@@ -101,6 +102,24 @@ Rectangle ViewNode::getLayout() const
         YGNodeLayoutGetWidth(m_yogaNode),
         YGNodeLayoutGetHeight(m_yogaNode)
     };
+}
+
+void ViewNode::onAttachToWindow(Window* window)
+{
+    m_window = window;
+}
+
+void ViewNode::onDetachFromWindow()
+{
+    m_window = nullptr;
+}
+
+void ViewNode::requestRelayout()
+{
+    if (m_window)
+    {
+        m_window->requestRelayout();
+    }
 }
 
 void ViewNode::setSize(Size size)
