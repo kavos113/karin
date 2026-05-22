@@ -2,7 +2,8 @@ package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.ui.common.Color
 
-data class Style(
+@ConsistentCopyVisibility
+data class Style private constructor(
     val backgroundColor: Color? = null,
     val opacity: Float? = null,
 ) {
@@ -11,5 +12,8 @@ data class Style(
 
     companion object {
         val Default = Style()
+
+        fun background(color: Color) = Style().background(color)
+        fun alpha(value: Float) = Style().alpha(value)
     }
 }

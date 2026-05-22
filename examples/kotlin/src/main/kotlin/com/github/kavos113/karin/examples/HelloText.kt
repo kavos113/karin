@@ -23,8 +23,8 @@ fun main() {
         ) {
             for (i in 0 until 10) {
                 Box(
-                    style = Style().background(randomColor()),
-                    layout = Layout().size(width = 100f, height = 100f)
+                    style = Style.background(randomColor()),
+                    layout = Layout.size(width = 100f, height = 100f)
                 )
             }
             Text(

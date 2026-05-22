@@ -24,14 +24,14 @@ fun main() {
         ) {
             for (i in 0 until 10) {
                 Box(
-                    style = Style().background(randomColor()),
-                    layout = Layout().size(width = 100f, height = 100f)
+                    style = Style.background(randomColor()),
+                    layout = Layout.size(width = 100f, height = 100f)
                 )
             }
             Row(
-                style = Style().background(randomColor()),
-                layout = Layout().size(width = 200f, height = 200f),
-                event = Event().onClick {
+                style = Style.background(randomColor()),
+                layout = Layout.size(width = 200f, height = 200f),
+                event = Event.onClick {
                     println("Big rectangle clicked!")
                 },
                 gap = 5f,
@@ -39,8 +39,8 @@ fun main() {
             ) {
                 for (i in 0 until 5) {
                     Box(
-                        style = Style().background(randomColor()),
-                        layout = Layout().size(width = 50f, height = 50f)
+                        style = Style.background(randomColor()),
+                        layout = Layout.size(width = 50f, height = 50f)
                     )
                 }
             }

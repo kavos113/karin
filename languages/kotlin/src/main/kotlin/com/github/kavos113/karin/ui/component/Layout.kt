@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
-data class Layout(
+@ConsistentCopyVisibility
+data class Layout private constructor(
     val paddingTop: Float? = null,
     val paddingBottom: Float? = null,
     val paddingLeft: Float? = null,
@@ -82,5 +83,33 @@ data class Layout(
 
     companion object {
         val Default = Layout()
+
+        fun padding(
+            top: Float? = null,
+            bottom: Float? = null,
+            left: Float? = null,
+            right: Float? = null,
+        ) = Layout().padding(top, bottom, left, right)
+        fun padding(all: Float) = Layout().padding(all)
+        fun padding(
+            horizontal: Float? = null,
+            vertical: Float? = null,
+        ) = Layout().padding(horizontal, vertical)
+
+        fun margin(
+            top: Float? = null,
+            bottom: Float? = null,
+            left: Float? = null,
+            right: Float? = null,
+        ) = Layout().margin(top, bottom, left, right)
+        fun margin(all: Float) = Layout().margin(all)
+        fun margin(
+            horizontal: Float? = null,
+            vertical: Float? = null,
+        ) = Layout().margin(horizontal, vertical)
+
+        fun size(width: Float? = null, height: Float? = null) = Layout().size(width, height)
+        fun width(width: Float) = Layout().width(width)
+        fun height(height: Float) = Layout().height(height)
     }
 }
