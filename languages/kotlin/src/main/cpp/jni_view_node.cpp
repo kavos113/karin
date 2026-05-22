@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "jni_global_ref.h"
+#include "jni_resource.h"
 
 using namespace karin::gui;
 using namespace karin::jni;
@@ -12,6 +13,7 @@ using namespace karin::jni;
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
     (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
     auto callback = std::make_shared<JniGlobalRef>(env, listener);
@@ -39,6 +41,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setSize
     (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width, jfloat height)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     node->setSize({width, height});
 }
@@ -46,6 +49,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setWidth
     (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     node->setWidth(width);
 }
@@ -53,6 +57,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setHeight
     (JNIEnv *env, jclass cls, jlong viewPtr, jfloat height)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     node->setHeight(height);
 }
@@ -60,6 +65,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBackgroundColor
     (JNIEnv *env, jclass cls, jlong viewPtr, jfloat r, jfloat g, jfloat b, jfloat a)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     node->setBackgroundColor({r, g, b, a});
 }
@@ -67,6 +73,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMargin
     (JNIEnv *env, jclass cls, jlong viewPtr, jchar flags, jfloat left, jfloat top, jfloat right, jfloat bottom)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
     if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
@@ -93,6 +100,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPadding
     (JNIEnv *env, jclass cls, jlong viewPtr, jchar flags, jfloat left, jfloat top, jfloat right, jfloat bottom)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
     if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
@@ -120,6 +128,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_destroy
     (JNIEnv *env, jclass cls, jlong viewPtr)
 {
+    CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     delete node;
 }

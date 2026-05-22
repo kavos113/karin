@@ -3,6 +3,8 @@
 #include <karin/gui.h>
 #include <memory>
 
+#include "jni_resource.h"
+
 using namespace karin::gui;
 
 JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication_create
@@ -35,6 +37,7 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication_run
     (JNIEnv *env, jclass cls, jlong appPtr)
 {
+    CHECK_JNI_PTR(appPtr);
     auto *app = reinterpret_cast<Application *>(appPtr);
     app->run();
 }
@@ -42,6 +45,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication_
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniApplication_destroy
     (JNIEnv *env, jclass cls, jlong appPtr)
 {
+    CHECK_JNI_PTR(appPtr);
     auto *app = reinterpret_cast<Application *>(appPtr);
     delete app;
 };
