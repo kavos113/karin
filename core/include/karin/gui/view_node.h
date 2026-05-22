@@ -9,6 +9,7 @@
 #include <yoga/Yoga.h>
 #include <array>
 #include <functional>
+#include <optional>
 
 namespace karin::gui
 {
@@ -57,6 +58,7 @@ public:
     void setMargin(Side side, float margin);
     void setPadding(Side side, float padding);
     void setBorder(Side side, float width, Color color, NodeBorder::LineStyle style);
+    void setBackgroundColor(Color color);
 
     YGNodeRef getYogaNode() const;
 
@@ -70,8 +72,10 @@ protected:
 
 private:
     void drawBorder(GraphicsContext& gc, const Transform2D& transform) const;
+    void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const;
 
     std::array<NodeBorder, 4> m_borders;
+    std::optional<Color> m_backgroundColor = std::nullopt;
     std::function<void(Point point)> m_onClick;
 };
 } // karin

@@ -4,6 +4,8 @@
 #include <karin/common.h>
 #include <memory>
 
+#include "jni_resource.h"
+
 using namespace karin::gui;
 
 JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_create__
@@ -24,6 +26,9 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNo
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_addChild
     (JNIEnv *env, jclass cls, jlong containerPtr, jlong childPtr)
 {
+    CHECK_JNI_PTR(containerPtr);
+    CHECK_JNI_PTR(childPtr);
+
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
     container->addChild(std::unique_ptr<ViewNode>(child));
@@ -32,6 +37,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setLayoutDirection
     (JNIEnv *env, jclass cls, jlong containerPtr, jint direction)
 {
+    CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     container->setLayoutDirection(static_cast<ContainerNode::LayoutDirection>(direction));
 }
@@ -39,6 +45,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setGap
     (JNIEnv *env, jclass cls, jlong containerPtr, jfloat gap)
 {
+    CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     container->setGap(gap);
 }
@@ -46,6 +53,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setWrapMode
     (JNIEnv *env, jclass cls, jlong containerPtr, jint mode)
 {
+    CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     container->setWrapMode(static_cast<ContainerNode::WrapMode>(mode));
 }

@@ -7,6 +7,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT
+#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT 1L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP
+#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP 2L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT
+#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT 4L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM
+#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM 8L
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setClickListener
@@ -14,6 +22,54 @@ extern "C" {
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
   (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setSize
+ * Signature: (JFF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setSize
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setWidth
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setWidth
+  (JNIEnv *, jclass, jlong, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setHeight
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setHeight
+  (JNIEnv *, jclass, jlong, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setBackgroundColor
+ * Signature: (JFFFF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBackgroundColor
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setMargin
+ * Signature: (JCFFFF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMargin
+  (JNIEnv *, jclass, jlong, jchar, jfloat, jfloat, jfloat, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPadding
+ * Signature: (JCFFFF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPadding
+  (JNIEnv *, jclass, jlong, jchar, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode

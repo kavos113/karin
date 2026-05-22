@@ -1,10 +1,16 @@
 package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.handle.applyEvent
+import com.github.kavos113.karin.engine.handle.applyLayout
+import com.github.kavos113.karin.engine.handle.applyStyle
 import com.github.kavos113.karin.ui.layout.LayoutDirection
 import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 fun UiBuilder.Container(
+    style: Style = Style.Default,
+    layout: Layout = Layout.Default,
+    event: Event = Event.Default,
     direction: LayoutDirection,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
@@ -15,6 +21,10 @@ fun UiBuilder.Container(
     handle.setLayoutWrap(wrap)
     handle.setGap(gap)
 
+    handle.applyStyle(style)
+    handle.applyLayout(layout)
+    handle.applyEvent(event)
+
     val builder = object : UiBuilder() {
         override val parentContainer = handle
     }
@@ -24,13 +34,35 @@ fun UiBuilder.Container(
 }
 
 fun UiBuilder.Column(
+    style: Style = Style.Default,
+    layout: Layout = Layout.Default,
+    event: Event = Event.Default,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
     content: UiBuilder.() -> Unit
-) = Container(LayoutDirection.Column, wrap, gap, content)
+) = Container(
+    style = style,
+    layout = layout,
+    event = event,
+    direction = LayoutDirection.Column,
+    wrap = wrap,
+    gap = gap,
+    content = content
+)
 
 fun UiBuilder.Row(
+    style: Style = Style.Default,
+    layout: Layout = Layout.Default,
+    event: Event = Event.Default,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
     content: UiBuilder.() -> Unit
-) = Container(LayoutDirection.Row, wrap, gap, content)
+) = Container(
+    style = style,
+    layout = layout,
+    event = event,
+    direction = LayoutDirection.Row,
+    wrap = wrap,
+    gap = gap,
+    content = content
+)
