@@ -22,6 +22,8 @@ public:
     );
     ~TextNode() override = default;
 
+    void setText(const std::string& text);
+
     void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const override;
     YGSize measure(Size availableSize) const override;
 

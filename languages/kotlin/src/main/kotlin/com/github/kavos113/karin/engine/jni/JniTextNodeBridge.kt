@@ -48,4 +48,6 @@ internal object JniTextNodeBridge {
         b,
         a
     )
+
+    fun setText(nodeId: Long, text: String) = JniTextNode.setText(nodeId, text)
 }

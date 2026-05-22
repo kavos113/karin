@@ -4,6 +4,8 @@
 #include <karin/graphics.h>
 #include <karin/common.h>
 
+#include "jni_resource.h"
+
 using namespace karin::gui;
 
 JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_create
@@ -65,4 +67,20 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_cr
     env->ReleaseStringUTFChars(locale, localeChars);
 
     return reinterpret_cast<jlong>(textNode);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setText
+    (JNIEnv *env, jclass cls, jlong nodePtr, jstring text)
+{
+    CHECK_JNI_PTR(nodePtr);
+    TextNode *textNode = reinterpret_cast<TextNode *>(nodePtr);
+
+    const char *textChars = env->GetStringUTFChars(text, nullptr);
+    if (textChars == nullptr) {
+        return;
+    }
+
+    textNode->setText(textChars);
+
+    env->ReleaseStringUTFChars(text, textChars);
 }
