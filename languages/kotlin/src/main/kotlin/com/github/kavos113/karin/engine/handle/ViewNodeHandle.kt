@@ -30,7 +30,6 @@ internal open class ViewNodeHandle(ptr: Long) {
         }
 
         cleanupTask.isOwnershipTransferred = true
-        internalPtr = 0L
     }
 
     fun setOnClickListener(listener: () -> Unit) {

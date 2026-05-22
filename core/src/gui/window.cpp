@@ -72,6 +72,8 @@ void Window::setRootView(std::unique_ptr<ViewNode> rootView)
 {
     m_rootView = std::move(rootView);
     m_eventDispatcher = std::make_unique<EventDispatcher>(m_rootView.get());
+
+    m_rootView->onAttachToWindow(this);
 }
 
 void Window::requestRelayout()
