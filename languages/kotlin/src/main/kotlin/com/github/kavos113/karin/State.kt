@@ -1,20 +1,29 @@
 package com.github.kavos113.karin
 
 class State<T>(initialValue: T) {
+    private val lock = Any()
     private val listeners = mutableListOf<(T) -> Unit>()
 
     var value: T = initialValue
-        set(value) = synchronized(this) {
-            field = value
-            listeners.forEach { it(value) }
+        set(value) {
+            val snapshot = synchronized(lock) {
+                field = value
+                listeners.toList()
+            }
+            snapshot.forEach { it(value) }
         }
 
     fun onChange(listener: (T) -> Unit): () -> Unit {
-        listeners.add(listener)
-        listener(value)
+        val current = synchronized(lock) {
+            listeners.add(listener)
+            value
+        }
+        listener(current)
 
         return {
-            listeners.remove(listener)
+            synchronized(lock) {
+                listeners.remove(listener)
+            }
         }
     }
 
