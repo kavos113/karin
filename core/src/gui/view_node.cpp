@@ -83,6 +83,7 @@ ViewNode::~ViewNode()
 
 void ViewNode::draw(GraphicsContext& gc, const Transform2D& parentTransform) const
 {
+    drawBackground(gc, parentTransform);
     drawInternal(gc, parentTransform);
     drawBorder(gc, parentTransform);
 }
@@ -163,6 +164,11 @@ void ViewNode::setBorder(Side side, float width, Color color, NodeBorder::LineSt
     }
 }
 
+void ViewNode::setBackgroundColor(Color color)
+{
+    m_backgroundColor = color;
+}
+
 YGNodeRef ViewNode::getYogaNode() const
 {
     return m_yogaNode;
@@ -236,6 +242,17 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
             toStrokeStyle(m_borders[3].style, m_borders[3].width),
             transform
         );
+    }
+}
+
+void ViewNode::drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const
+{
+    if (m_backgroundColor.has_value())
+    {
+        Rectangle layout = getLayout();
+        Pattern pattern = SolidColorPattern(m_backgroundColor.value());
+
+        gc.fillRect(layout, pattern, parentTransform);
     }
 }
 
