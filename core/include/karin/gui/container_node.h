@@ -25,6 +25,9 @@ public:
     explicit ContainerNode(Size size) : ViewNode(size) {}
     ~ContainerNode() override = default;
 
+    void onAttachToWindow(Window* window) override;
+    void onDetachFromWindow() override;
+
     void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const final;
 
     virtual void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
