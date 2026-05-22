@@ -28,6 +28,8 @@ struct NodeBorder
     LineStyle style;
 };
 
+class Window;
+
 class ViewNode
 {
 public:
@@ -52,6 +54,10 @@ public:
     void calculateLayout() const;
     Rectangle getLayout() const;
 
+    virtual void onAttachToWindow(Window* window);
+    virtual void onDetachFromWindow();
+    void requestRelayout();
+
     void setSize(Size size);
     void setWidth(float width);
     void setHeight(float height);
@@ -69,6 +75,7 @@ protected:
     virtual void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const = 0;
 
     YGNodeRef m_yogaNode;
+    Window *m_window = nullptr;
 
 private:
     void drawBorder(GraphicsContext& gc, const Transform2D& transform) const;

@@ -33,11 +33,11 @@ public:
     ~Window();
 
     void setRootView(std::unique_ptr<ViewNode> rootView);
+    void requestRelayout();
 
     void dispatchEvent(const Event& event) const;
 
 private:
-    void requestRelayout();
 
     std::unique_ptr<ViewNode> m_rootView;
 
