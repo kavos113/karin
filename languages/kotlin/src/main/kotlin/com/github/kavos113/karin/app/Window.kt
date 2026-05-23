@@ -2,7 +2,7 @@ package com.github.kavos113.karin.app
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.engine.handle.WindowHandle
-import com.github.kavos113.karin.ui.component.UiBuilder
+import com.github.kavos113.karin.ui.UiBuilder
 
 class Window(
     title: String,

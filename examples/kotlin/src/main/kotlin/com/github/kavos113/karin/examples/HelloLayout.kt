@@ -4,9 +4,9 @@ import com.github.kavos113.karin.app.Karin
 import com.github.kavos113.karin.app.Window
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.component.Box
-import com.github.kavos113.karin.ui.component.Layout
+import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.component.Row
-import com.github.kavos113.karin.ui.component.Style
+import com.github.kavos113.karin.ui.props.Style
 import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 fun randomColor(): Color {
