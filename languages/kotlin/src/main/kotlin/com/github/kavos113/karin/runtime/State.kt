@@ -1,4 +1,4 @@
-package com.github.kavos113.karin
+package com.github.kavos113.karin.runtime
 
 class State<T>(initialValue: T) {
     private val lock = Any()

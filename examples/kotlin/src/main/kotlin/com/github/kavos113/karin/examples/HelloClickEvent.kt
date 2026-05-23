@@ -1,7 +1,7 @@
 package com.github.kavos113.karin.examples.helloclickevent
 
-import com.github.kavos113.karin.ui.app.Karin
-import com.github.kavos113.karin.ui.app.Window
+import com.github.kavos113.karin.app.Karin
+import com.github.kavos113.karin.app.Window
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.component.*
 import com.github.kavos113.karin.ui.layout.LayoutWrap
