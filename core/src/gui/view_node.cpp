@@ -84,7 +84,7 @@ ViewNode::~ViewNode()
 
 void ViewNode::draw(GraphicsContext& gc, const Transform2D& parentTransform) const
 {
-    drawBackground(gc, parentTransform);
+    drawBackgroundColor(gc, parentTransform);
     drawInternal(gc, parentTransform);
     drawBorder(gc, parentTransform);
 }
@@ -264,7 +264,7 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
     }
 }
 
-void ViewNode::drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const
+void ViewNode::drawBackgroundColor(GraphicsContext& gc, const Transform2D& parentTransform) const
 {
     if (m_backgroundColor.has_value())
     {

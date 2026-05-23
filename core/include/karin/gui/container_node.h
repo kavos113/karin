@@ -28,11 +28,6 @@ public:
     void onAttachToWindow(Window* window) override;
     void onDetachFromWindow() override;
 
-    void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const final;
-
-    virtual void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
-    virtual void drawForeground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
-
     void addChild(std::unique_ptr<ViewNode> child);
     void setLayoutDirection(LayoutDirection direction);
     void setGap(float gap);
@@ -41,6 +36,11 @@ public:
     ViewNode* hitTest(const Point& point) override;
 
 protected:
+    void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const final;
+
+    virtual void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
+    virtual void drawForeground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
+
     std::vector<std::unique_ptr<ViewNode>> m_children;
 };
 } // karin::gui

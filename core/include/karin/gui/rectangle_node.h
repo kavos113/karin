@@ -12,6 +12,7 @@ public:
     RectangleNode(Size size, Color color) : ContainerNode(size), m_color(color) {}
     ~RectangleNode() override = default;
 
+protected:
     void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const override;
 
 private:
