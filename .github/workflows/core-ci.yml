@@ -25,14 +25,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        target: [ubuntu, windows-d2d, windows-vulkan]
         include:
-          - os: ubuntu-latest
+          - target: ubuntu
+            os: ubuntu-latest
             cmake_preset: "ubuntu-debug"
             name: "ubuntu"
-          - os: windows-latest
+          - target: windows-d2d
+            os: windows-latest
             cmake_preset: "windows-debug"
             name: "windows d2d"
-          - os: windows-latest
+          - target: windows-vulkan
+            os: windows-latest
             cmake_preset: "windows-vulkan-debug"
             name: "windows vulkan"
             vulkan_version: "1.4.321.1"
@@ -119,14 +123,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        target: [ubuntu, windows-d2d, windows-vulkan]
         include:
-          - os: ubuntu-latest
+          - target: ubuntu
+            os: ubuntu-latest
             cmake_preset: "ubuntu-debug"
             name: "ubuntu"
-          - os: windows-latest
+          - target: windows-d2d
+            os: windows-latest
             cmake_preset: "windows-debug"
             name: "windows d2d"
-          - os: windows-latest
+          - target: windows-vulkan
+            os: windows-latest
             cmake_preset: "windows-vulkan-debug"
             name: "windows vulkan"
             vulkan_version: "1.4.321.1"
@@ -137,6 +145,11 @@ jobs:
         with:
           name: core-${{ matrix.cmake_preset }}-build
           path: ${{ env.BUILD_DIR }}
+
+      - name: add permissions
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          chmod +x ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test/karin_test
 
       - name: Run tests
         run: |
@@ -153,14 +166,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        target: [ubuntu, windows-d2d, windows-vulkan]
         include:
-          - os: ubuntu-latest
+          - target: ubuntu
+            os: ubuntu-latest
             cmake_preset: "ubuntu-debug"
             name: "ubuntu"
-          - os: windows-latest
+          - target: windows-d2d
+            os: windows-latest
             cmake_preset: "windows-debug"
             name: "windows d2d"
-          - os: windows-latest
+          - target: windows-vulkan
+            os: windows-latest
             cmake_preset: "windows-vulkan-debug"
             name: "windows vulkan"
             vulkan_version: "1.4.321.1"
