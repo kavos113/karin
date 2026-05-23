@@ -6,7 +6,6 @@ add_library(karin_languages_java SHARED
         src/main/cpp/jni_global_ref.cpp
         src/main/cpp/jni_application.cpp
         src/main/cpp/jni_container_node.cpp
-        src/main/cpp/jni_rectangle_node.cpp
         src/main/cpp/jni_text_node.cpp
         src/main/cpp/jni_view_node.cpp
         src/main/cpp/jni_window.cpp
