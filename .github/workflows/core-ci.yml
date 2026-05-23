@@ -198,11 +198,6 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
-      - name: Build Native Library
-        run: |
-          cd ${{ env.BUILD_DIR }}
-          cmake --build ${{ matrix.cmake_preset }} --target karin_languages_java
-
       - name: Build Kotlin Bindings
         working-directory: ./languages/kotlin
         run: |
