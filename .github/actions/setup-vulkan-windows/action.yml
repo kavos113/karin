@@ -1,0 +1,46 @@
+name: setup-vulkan-windows
+description: Setup Vulkan SDK in windows
+
+inputs:
+  vulkan-version:
+    description: version of Vulkan SDK
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Vulkan SDK Cache
+      id: cache-vulkan-sdk
+      uses: actions/cache@v4
+      with:
+        path: C:/VulkanSDK/${{ inputs.vulkan-version }}
+        key: vulkan-sdk-${{ inputs.vulkan-version }}
+        restore-keys:
+          vulkan-sdk-${{ inputs.vulkan-version }}
+
+    - name: Download and Install Vulkan SDK
+      if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
+      run: |
+          INSTALLER_URL="https://sdk.lunarg.com/sdk/download/${{ inputs.vulkan-version }}/windows/vulkansdk-windows-X64-${{ inputs.vulkan-version }}.exe"
+          INSTALLER_PATH="$TEMP/VulkanSDK-Installer.exe"
+          INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
+          
+          echo "Downloading Vulkan SDK version ${{ inputs.vulkan-version }}..."
+          curl -L -o "$INSTALLER_PATH" "$INSTALLER_URL"
+          
+          echo "Installing Vulkan SDK to $INSTALL_DIR..."
+          "$INSTALLER_PATH" --root "$INSTALL_DIR" --accept-licenses --default-answer --confirm-command install
+          
+          rm "$INSTALLER_PATH"
+          
+          echo "Vulkan SDK setup complete."
+      shell: bash
+
+    - name: Setup Vulkan Environment
+      run: |
+        echo "Setting up Vulkan environment variables..."
+        echo "VULKAN_SDK=C:/VulkanSDK/${{ inputs.vulkan-version }}" >> $GITHUB_ENV
+        echo "$VULKAN_SDK/Bin" >> $GITHUB_PATH
+        echo "$VULKAN_SDK/Lib" >> $GITHUB_PATH  
+        echo "$VULKAN_SDK/Include" >> $GITHUB_PATH
+      shell: bash
