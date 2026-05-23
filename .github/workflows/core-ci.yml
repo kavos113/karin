@@ -183,6 +183,9 @@ jobs:
             vulkan_version: "1.4.321.1"
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Download build artifacts
         uses: actions/download-artifact@v8.0.1
         with:
