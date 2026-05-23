@@ -1,4 +1,4 @@
-package com.github.kavos113.karin
+package com.github.kavos113.karin.app
 
 import com.github.kavos113.karin.engine.handle.ApplicationHandle
 

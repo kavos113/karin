@@ -1,4 +1,4 @@
-package com.github.kavos113.karin.ui.component
+package com.github.kavos113.karin.ui.props
 
 import com.github.kavos113.karin.ui.common.Color
 

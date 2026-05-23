@@ -79,7 +79,7 @@ protected:
 
 private:
     void drawBorder(GraphicsContext& gc, const Transform2D& transform) const;
-    void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const;
+    void drawBackgroundColor(GraphicsContext& gc, const Transform2D& parentTransform) const;
 
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;

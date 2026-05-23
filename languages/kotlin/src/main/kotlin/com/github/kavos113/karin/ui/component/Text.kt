@@ -1,7 +1,8 @@
 package com.github.kavos113.karin.ui.component
 
-import com.github.kavos113.karin.State
+import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.engine.handle.TextNodeHandle
+import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.text.FontWeight
 import com.github.kavos113.karin.ui.text.ParagraphStyle

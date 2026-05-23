@@ -1,4 +1,4 @@
-package com.github.kavos113.karin.ui.component
+package com.github.kavos113.karin.ui
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 

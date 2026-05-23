@@ -1,9 +1,11 @@
 package com.github.kavos113.karin.examples.hellotext
 
-import com.github.kavos113.karin.Karin
-import com.github.kavos113.karin.Window
+import com.github.kavos113.karin.app.Karin
+import com.github.kavos113.karin.app.Window
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.component.*
+import com.github.kavos113.karin.ui.props.Layout
+import com.github.kavos113.karin.ui.props.Style
 
 fun randomColor(): Color {
     return Color(

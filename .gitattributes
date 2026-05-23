@@ -1,0 +1,7 @@
+core/third_party/** linguist-vendored
+core/src/graphics/vulkan/shaders/shader.h linguist-generated
+core/src/graphics/vulkan/shaders/shader.h text eol=lf
+
+gradlew text eol=lf
+*.bat text eol=crlf
+*.sh text eol=lf

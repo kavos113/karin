@@ -4,9 +4,9 @@ import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.ui.component.Event
-import com.github.kavos113.karin.ui.component.Layout
-import com.github.kavos113.karin.ui.component.Style
+import com.github.kavos113.karin.ui.props.Event
+import com.github.kavos113.karin.ui.props.Layout
+import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
 internal open class ViewNodeHandle(ptr: Long) {
