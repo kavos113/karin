@@ -1,6 +1,5 @@
 package com.github.kavos113.karin.ui.app
 
-import com.github.kavos113.karin.ViewNode
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.engine.handle.WindowHandle
 import com.github.kavos113.karin.ui.component.UiBuilder
@@ -13,10 +12,6 @@ class Window(
     height: Int
 ) {
     private val handle: WindowHandle = WindowHandle(title, x, y, width, height)
-
-    fun setRootView(view: ViewNode) {
-        handle.setRootView(view.handle)
-    }
 
     fun setContent(
         content: UiBuilder.() -> Unit
