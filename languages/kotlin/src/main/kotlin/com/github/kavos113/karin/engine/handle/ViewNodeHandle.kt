@@ -252,9 +252,7 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
 
     event.onClickState?.let { state ->
         state.onChange { handler ->
-            if (handler != null) {
-                setOnClickListener(handler)
-            }
+            setOnClickListener(handler ?: {})
         }
     }
 }
