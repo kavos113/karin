@@ -7,4 +7,7 @@ internal object JniContainerNodeBridge {
     fun setLayoutDirection(containerPtr: Long, direction: Int) = JniContainerNode.setLayoutDirection(containerPtr, direction)
     fun setGap(containerPtr: Long, gap: Float) = JniContainerNode.setGap(containerPtr, gap)
     fun setWrapMode(containerPtr: Long, wrapMode: Int) = JniContainerNode.setWrapMode(containerPtr, wrapMode)
+
+    fun removeChild(containerPtr: Long, childPtr: Long) = JniContainerNode.removeChild(containerPtr, childPtr)
+    fun clearChildren(containerPtr: Long) = JniContainerNode.clearChildren(containerPtr)
 }

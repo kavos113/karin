@@ -89,6 +89,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    requestRelayout
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    destroy
  * Signature: (J)V
  */
