@@ -16,6 +16,10 @@ internal object JniViewNodeBridge {
 
     fun setMargin(nodePtr: Long, flags: Char, left: Float, top: Float, right: Float, bottom: Float) = JniViewNode.setMargin(nodePtr, flags, left, top, right, bottom)
     fun setPadding(nodePtr: Long, flags: Char, left: Float, top: Float, right: Float, bottom: Float) = JniViewNode.setPadding(nodePtr, flags, left, top, right, bottom)
+    fun setMarginSide(nodePtr: Long, side: Int, value: Float) = JniViewNode.setMarginSide(nodePtr, side, value)
+    fun setPaddingSide(nodePtr: Long, side: Int, value: Float) = JniViewNode.setPaddingSide(nodePtr, side, value)
+
+    fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }

@@ -16,6 +16,17 @@ internal open class ViewNodeHandle(ptr: Long) {
 
     private var onClick: (() -> Unit)? = null
 
+    enum class Side(val value: Int) {
+        Left(0),
+        Top(1),
+        Right(2),
+        Bottom(3),
+        Horizontal(4),
+        Vertical(5),
+        All(6);
+
+    }
+
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
@@ -61,6 +72,18 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setPadding(ptr, flags, left, top, right, bottom)
     }
 
+    fun setMarginSide(side: Side, value: Float) {
+        JniViewNodeBridge.setMarginSide(ptr, side.value, value)
+    }
+
+    fun setPaddingSide(side: Side, value: Float) {
+        JniViewNodeBridge.setPaddingSide(ptr, side.value, value)
+    }
+
+    fun requestRelayout() {
+        JniViewNodeBridge.requestRelayout(ptr)
+    }
+
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
         onClick?.invoke()
@@ -81,6 +104,12 @@ internal open class ViewNodeHandle(ptr: Long) {
 internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.backgroundColor?.let {
         setBackgroundColor(it)
+    }
+
+    style.backgroundColorState?.let { state ->
+        state.onChange { color ->
+            setBackgroundColor(color)
+        }
     }
 
     // TODO
@@ -154,10 +183,76 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     layout.height?.let {
         setHeight(it)
     }
+
+    layout.paddingTopState?.let { state ->
+        state.onChange { value ->
+            setPaddingSide(ViewNodeHandle.Side.Top, value)
+        }
+    }
+
+    layout.paddingBottomState?.let { state ->
+        state.onChange { value ->
+            setPaddingSide(ViewNodeHandle.Side.Bottom, value)
+        }
+    }
+
+    layout.paddingLeftState?.let { state ->
+        state.onChange { value ->
+            setPaddingSide(ViewNodeHandle.Side.Left, value)
+        }
+    }
+
+    layout.paddingRightState?.let { state ->
+        state.onChange { value ->
+            setPaddingSide(ViewNodeHandle.Side.Right, value)
+        }
+    }
+
+    layout.marginTopState?.let { state ->
+        state.onChange { value ->
+            setMarginSide(ViewNodeHandle.Side.Top, value)
+        }
+    }
+
+    layout.marginBottomState?.let { state ->
+        state.onChange { value ->
+            setMarginSide(ViewNodeHandle.Side.Bottom, value)
+        }
+    }
+
+    layout.marginLeftState?.let { state ->
+        state.onChange { value ->
+            setMarginSide(ViewNodeHandle.Side.Left, value)
+        }
+    }
+
+    layout.marginRightState?.let { state ->
+        state.onChange { value ->
+            setMarginSide(ViewNodeHandle.Side.Right, value)
+        }
+    }
+
+    layout.widthState?.let { state ->
+        state.onChange { value ->
+            setWidth(value)
+        }
+    }
+
+    layout.heightState?.let { state ->
+        state.onChange { value ->
+            setHeight(value)
+        }
+    }
 }
 
 internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onClick?.let {
         setOnClickListener(it)
+    }
+
+    event.onClickState?.let { state ->
+        state.onChange { handler ->
+            setOnClickListener(handler ?: {})
+        }
     }
 }

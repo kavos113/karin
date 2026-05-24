@@ -55,6 +55,22 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setWrapMode
   (JNIEnv *, jclass, jlong, jint);
 
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    removeChild
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_removeChild
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    clearChildren
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_clearChildren
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

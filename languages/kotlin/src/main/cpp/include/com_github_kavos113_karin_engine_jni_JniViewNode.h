@@ -73,6 +73,30 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setMarginSide
+ * Signature: (JIF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMarginSide
+  (JNIEnv *, jclass, jlong, jint, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPaddingSide
+ * Signature: (JIF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPaddingSide
+  (JNIEnv *, jclass, jlong, jint, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    requestRelayout
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    destroy
  * Signature: (J)V
  */

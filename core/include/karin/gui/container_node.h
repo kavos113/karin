@@ -29,6 +29,8 @@ public:
     void onDetachFromWindow() override;
 
     void addChild(std::unique_ptr<ViewNode> child);
+    void removeChild(ViewNode* child);
+    void clearChildren();
     void setLayoutDirection(LayoutDirection direction);
     void setGap(float gap);
     void setWrapMode(WrapMode mode);

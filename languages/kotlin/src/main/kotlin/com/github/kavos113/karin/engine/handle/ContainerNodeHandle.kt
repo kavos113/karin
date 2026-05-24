@@ -28,4 +28,13 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     fun setGap(gap: Float) {
         JniContainerNodeBridge.setGap(this.ptr, gap)
     }
+
+    fun removeChild(child: ViewNodeHandle) {
+        val childPtr = child.ptr
+        JniContainerNodeBridge.removeChild(this.ptr, childPtr)
+    }
+
+    fun clearChildren() {
+        JniContainerNodeBridge.clearChildren(this.ptr)
+    }
 }

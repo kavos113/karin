@@ -1,9 +1,8 @@
 package com.github.kavos113.karin.engine.handle
 
-import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.engine.jni.JniTextNodeBridge
 import com.github.kavos113.karin.ui.text.ParagraphStyle
 import com.github.kavos113.karin.ui.text.TextStyle
-import com.github.kavos113.karin.engine.jni.JniTextNodeBridge
 
 internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
 
@@ -11,7 +10,6 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
         text: String = "",
         style: TextStyle = TextStyle(),
         paragraphStyle: ParagraphStyle = ParagraphStyle(),
-        color: Color = Color.Black
     ) : this(
         JniTextNodeBridge.create(
             text,
@@ -32,7 +30,10 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
             paragraphStyle.textWrap.value,
             paragraphStyle.flowDirection.value,
             paragraphStyle.readingDirection.value,
-            color.r, color.g, color.b, color.a
+            style.color.r,
+            style.color.g,
+            style.color.b,
+            style.color.a
         )
     )
 
