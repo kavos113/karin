@@ -80,6 +80,36 @@ void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
     m_children.push_back(std::move(child));
 }
 
+void ContainerNode::removeChild(ViewNode* child)
+{
+    auto it = std::find_if(m_children.begin(), m_children.end(),
+        [child](const std::unique_ptr<ViewNode>& ptr) { return ptr.get() == child; });
+
+    if (it != m_children.end())
+    {
+        if (m_window)
+        {
+            (*it)->onDetachFromWindow();
+        }
+
+        YGNodeRemoveChild(m_yogaNode, (*it)->getYogaNode());
+        m_children.erase(it);
+    }
+}
+
+void ContainerNode::clearChildren()
+{
+    for (const auto& child : m_children)
+    {
+        if (m_window)
+        {
+            child->onDetachFromWindow();
+        }
+        YGNodeRemoveChild(m_yogaNode, child->getYogaNode());
+    }
+    m_children.clear();
+}
+
 void ContainerNode::setLayoutDirection(LayoutDirection direction)
 {
     YGNodeStyleSetFlexDirection(m_yogaNode,  toYogaFlexDirection(direction));
