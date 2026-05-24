@@ -1,5 +1,8 @@
 #include <karin/gui/container_node.h>
 
+#include <algorithm>
+#include <ranges>
+
 namespace
 {
 YGFlexDirection toYogaFlexDirection(karin::gui::ContainerNode::LayoutDirection direction)
@@ -82,7 +85,7 @@ void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
 
 void ContainerNode::removeChild(ViewNode* child)
 {
-    auto it = std::find_if(m_children.begin(), m_children.end(),
+    auto it = std::ranges::find_if(m_children,
         [child](const std::unique_ptr<ViewNode>& ptr) { return ptr.get() == child; });
 
     if (it != m_children.end())
