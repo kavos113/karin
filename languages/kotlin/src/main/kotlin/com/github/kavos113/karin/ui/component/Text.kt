@@ -50,7 +50,8 @@ fun UiBuilder.Text(
     val handle = TextNodeHandle(text.value, finalStyle, finalParagraphStyle)
     parentContainer.addChild(handle)
 
-    text.onChange { newText ->
+    val disposable = text.onChange { newText ->
         handle.setText(newText)
     }
+    registerDisposable(disposable)
 }
