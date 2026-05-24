@@ -13,6 +13,7 @@ fun <T> UiBuilder.Watch(
 
     val disposable = state.onChange { newValue ->
         childBuilder?.dispose()
+        containerNodeHandle.clearChildren()
 
         val builder = object : UiBuilder() {
             override val parentContainer = containerNodeHandle
@@ -20,6 +21,7 @@ fun <T> UiBuilder.Watch(
         childBuilder = builder
 
         builder.block(newValue)
+        containerNodeHandle.requestRelayout()
     }
 
     parentContainer.addChild(containerNodeHandle)

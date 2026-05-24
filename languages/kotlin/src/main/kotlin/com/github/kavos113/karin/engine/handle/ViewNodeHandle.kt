@@ -80,6 +80,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setPaddingSide(ptr, side.value, value)
     }
 
+    fun requestRelayout() {
+        JniViewNodeBridge.requestRelayout(ptr)
+    }
+
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
         onClick?.invoke()
