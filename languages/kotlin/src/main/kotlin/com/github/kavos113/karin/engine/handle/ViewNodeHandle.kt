@@ -16,6 +16,17 @@ internal open class ViewNodeHandle(ptr: Long) {
 
     private var onClick: (() -> Unit)? = null
 
+    private enum class Side(val value: Int) {
+        Left(0),
+        Top(1),
+        Right(2),
+        Bottom(3),
+        Horizontal(4),
+        Vertical(5),
+        All(6);
+
+    }
+
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
@@ -81,6 +92,12 @@ internal open class ViewNodeHandle(ptr: Long) {
 internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.backgroundColor?.let {
         setBackgroundColor(it)
+    }
+
+    style.backgroundColorState?.let { state ->
+        state.onChange { color ->
+            setBackgroundColor(color)
+        }
     }
 
     // TODO

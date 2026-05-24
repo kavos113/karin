@@ -33,15 +33,15 @@ class Window;
 class ViewNode
 {
 public:
-    enum class Side
+    enum class Side : uint8_t
     {
-        Left,
-        Top,
-        Right,
-        Bottom,
-        Horizontal,
-        Vertical,
-        All
+        Left = 0,
+        Top = 1,
+        Right = 2,
+        Bottom = 3,
+        Horizontal = 4,
+        Vertical = 5,
+        All = 6
     };
 
     ViewNode();

@@ -124,6 +124,22 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     }
 }
 
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMarginSide
+    (JNIEnv *env, jclass cls, jlong viewPtr, jchar side, jfloat margin)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+    node->setMargin(static_cast<ViewNode::Side>(side), margin);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPaddingSide
+    (JNIEnv *env, jclass cls, jlong viewPtr, jchar side, jfloat padding)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+    node->setPadding(static_cast<ViewNode::Side>(side), padding);
+}
+
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_destroy
     (JNIEnv *env, jclass cls, jlong viewPtr)
