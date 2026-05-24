@@ -25,5 +25,9 @@ fun <T> UiBuilder.Watch(
     }
 
     parentContainer.addChild(containerNodeHandle)
-    registerDisposable(disposable)
+    registerDisposable {
+        disposable()
+        childBuilder?.dispose()
+        containerNodeHandle.clearChildren()
+    }
 }
