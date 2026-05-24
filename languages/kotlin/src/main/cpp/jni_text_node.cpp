@@ -60,8 +60,6 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_cr
 
     karin::SolidColorPattern pattern(karin::Color(r, g, b, a));
 
-    std::cout << "Color: " << karin::Color(r, g, b, a) << std::endl;
-
     auto *textNode = new TextNode(textChars, textStyle, paragraphStyle, pattern);
 
     env->ReleaseStringUTFChars(text, textChars);
