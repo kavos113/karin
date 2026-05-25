@@ -1,5 +1,8 @@
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
+
 plugins {
-    kotlin("jvm") version "2.3.0"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kover)
 }
 
 group = "com.github.kavos113"
@@ -10,7 +13,9 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.mockk)
 }
 
 kotlin {
