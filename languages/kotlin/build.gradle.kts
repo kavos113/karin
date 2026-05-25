@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     testImplementation(libs.junit)
-    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlin.test)
 }
 
