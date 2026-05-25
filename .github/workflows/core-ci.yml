@@ -198,14 +198,27 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
+      - name: Setup gradlew
+        run: |
+          chmod +x ./languages/kotlin/gradlew
+          chmod +x ./examples/kotlin/gradlew
+
       - name: Build Kotlin Bindings
         working-directory: ./languages/kotlin
         run: |
-          chmod +x ./gradlew
           ./gradlew build
 
       - name: Build Kotlin Examples
         working-directory: ./examples/kotlin
         run: |
-          chmod +x ./gradlew
           ./gradlew build
+
+      - name: Run Kotlin Tests
+        working-directory: ./languages/kotlin
+        run: |
+          ./gradlew test
+
+      - name: Rate coverage
+        working-directory: ./languages/kotlin
+        run: |
+          ./gradlew koverPrintCoverage
