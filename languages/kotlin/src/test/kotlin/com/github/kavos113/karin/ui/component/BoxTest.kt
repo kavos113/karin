@@ -29,9 +29,18 @@ class BoxTest {
         every {
             JniContainerNodeBridge.create()
         } returns 123L
-
         every {
             JniContainerNodeBridge.addChild(any(), any())
+        } just runs
+
+        every {
+            JniViewNodeBridge.setBackgroundColor(any(), any(), any(), any(), any())
+        } just runs
+        every {
+            JniViewNodeBridge.setWidth(any(), any())
+        } just runs
+        every {
+            JniViewNodeBridge.setHeight(any(), any())
         } just runs
     }
 
