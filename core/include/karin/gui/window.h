@@ -3,7 +3,7 @@
 
 #include <karin/system/window.h>
 #include <karin/system/event.h>
-#include <karin/graphics/WindowRenderer.h>
+#include <karin/graphics/window_renderer.h>
 
 #include "view_node.h"
 

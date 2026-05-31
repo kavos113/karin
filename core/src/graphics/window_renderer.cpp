@@ -1,4 +1,4 @@
-#include <karin/graphics/WindowRenderer.h>
+#include <karin/graphics/window_renderer.h>
 
 #include "platform.h"
 #include "renderer_impl.h"
