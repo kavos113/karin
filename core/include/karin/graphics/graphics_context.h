@@ -29,7 +29,7 @@ private:
     explicit GraphicsContext(IRendererImpl* impl);
     ~GraphicsContext();
 
-    friend class Renderer;
+    friend class WindowRenderer;
 
 public:
     void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;

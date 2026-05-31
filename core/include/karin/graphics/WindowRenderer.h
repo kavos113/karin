@@ -19,11 +19,11 @@ class IRendererImpl;
  *
  * It also has a list of draw commands that can be executed in the rendering loop.
  */
-class Renderer
+class WindowRenderer
 {
 public:
-    Renderer(Window* window);
-    ~Renderer();
+    WindowRenderer(Window* window);
+    ~WindowRenderer();
 
     /**
      * Add a rendering command to the renderer.

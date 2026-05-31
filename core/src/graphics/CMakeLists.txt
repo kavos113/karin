@@ -1,5 +1,5 @@
 set(GRAPHICS_SOURCE
-        renderer.cpp
+        WindowRenderer.cpp
         graphics_context.cpp
         path.cpp
         path_impl.cpp

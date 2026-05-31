@@ -7,7 +7,7 @@ int main()
     karin::Application& app = karin::Application::instance();
     std::unique_ptr<karin::Window> window = app.createWindow("Hello Graphics", 100, 100, 800, 600);
 
-    karin::Renderer renderer(window.get());
+    karin::WindowRenderer renderer(window.get());
     renderer.setClearColor(karin::Color(karin::Color::Green));
 
     karin::TextEngine textEngine;
