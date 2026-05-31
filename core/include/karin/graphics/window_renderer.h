@@ -15,7 +15,7 @@ class WindowRenderer : public RendererBase
 {
 public:
     WindowRenderer(Window* window);
-    ~WindowRenderer();
+    ~WindowRenderer() override;
 
     /**
      * Apply renderer settings to native window.
