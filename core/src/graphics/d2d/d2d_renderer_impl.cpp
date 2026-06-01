@@ -8,7 +8,8 @@
 
 namespace karin
 {
-D2DRendererImpl::D2DRendererImpl(HWND hwnd)
+D2DRendererImpl::D2DRendererImpl(std::unique_ptr<ID2DSurface> surface)
+    : m_surface(std::move(surface))
 {
     HRESULT hr = D2DContext::instance().device()->CreateDeviceContext(
         D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &m_deviceContext
@@ -17,8 +18,6 @@ D2DRendererImpl::D2DRendererImpl(HWND hwnd)
     {
         throw std::runtime_error("Failed to create D2D device context");
     }
-
-    m_surface = std::make_unique<D2DWindowSurface>(hwnd, m_deviceContext);
 
     setTargetBitmap();
 

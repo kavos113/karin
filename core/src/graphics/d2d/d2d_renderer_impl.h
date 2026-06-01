@@ -11,13 +11,14 @@
 #include "d2d_device_resources.h"
 #include "d2d_window_surface.h"
 #include "d2d_font_renderer.h"
+#include "d2d_surface.h"
 
 namespace karin
 {
 class D2DRendererImpl : public IRendererImpl
 {
 public:
-    D2DRendererImpl(HWND hwnd);
+    D2DRendererImpl(std::unique_ptr<ID2DSurface> surface);
     ~D2DRendererImpl() override = default;
 
     void cleanUp() override;
@@ -57,8 +58,8 @@ public:
 private:
     void setTargetBitmap() const;
 
+    std::unique_ptr<ID2DSurface> m_surface;
     std::unique_ptr<D2DDeviceResources> m_deviceResources;
-    std::unique_ptr<D2DWindowSurface> m_surface;
     std::unique_ptr<D2DFontRenderer> m_fontRenderer;
 
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
