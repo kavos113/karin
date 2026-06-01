@@ -10,11 +10,11 @@
 
 namespace karin
 {
-class VulkanSurface
+class VulkanWindowSurface
 {
 public:
-    VulkanSurface(Window::NativeHandle nativeHandle);
-    ~VulkanSurface() = default;
+    VulkanWindowSurface(Window::NativeHandle nativeHandle);
+    ~VulkanWindowSurface() = default;
 
     void cleanUp();
     void resize();

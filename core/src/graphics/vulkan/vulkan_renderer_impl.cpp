@@ -16,7 +16,7 @@ VulkanRendererImpl::VulkanRendererImpl(
     Window::NativeHandle nativeHandle
 )
 {
-    m_surface = std::make_unique<VulkanSurface>(nativeHandle);
+    m_surface = std::make_unique<VulkanWindowSurface>(nativeHandle);
     m_extent = m_surface->extent();
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);

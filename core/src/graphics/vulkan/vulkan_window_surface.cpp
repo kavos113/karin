@@ -1,4 +1,4 @@
-#include "vulkan_surface.h"
+#include "vulkan_window_surface.h"
 
 #include <array>
 #include <iostream>
@@ -103,7 +103,7 @@ VkExtent2D getSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width
 
 namespace karin
 {
-VulkanSurface::VulkanSurface(Window::NativeHandle nativeHandle)
+VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     : m_window(nativeHandle)
 {
     createSurface();
@@ -116,7 +116,7 @@ VulkanSurface::VulkanSurface(Window::NativeHandle nativeHandle)
     createViewport();
 }
 
-void VulkanSurface::cleanUp()
+void VulkanWindowSurface::cleanUp()
 {
     for (auto& imageView : m_swapChainImageViews)
     {
@@ -137,7 +137,7 @@ void VulkanSurface::cleanUp()
     }
 }
 
-void VulkanSurface::resize()
+void VulkanWindowSurface::resize()
 {
     for (auto& imageView : m_swapChainImageViews)
     {
@@ -149,7 +149,7 @@ void VulkanSurface::resize()
     createViewport();
 }
 
-uint32_t VulkanSurface::acquireNextImage(VkSemaphore semaphore)
+uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
 {
     uint32_t imageIndex = 0;
     VkResult result = vkAcquireNextImageKHR(
@@ -173,13 +173,13 @@ uint32_t VulkanSurface::acquireNextImage(VkSemaphore semaphore)
     return imageIndex;
 }
 
-void VulkanSurface::setViewPorts(const VkCommandBuffer commandBuffer) const
+void VulkanWindowSurface::setViewPorts(const VkCommandBuffer commandBuffer) const
 {
     vkCmdSetViewport(commandBuffer, 0, 1, &m_viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
 }
 
-bool VulkanSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) const
+bool VulkanWindowSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) const
 {
     std::array semaphores = {waitSemaphore};
 
@@ -207,7 +207,7 @@ bool VulkanSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) cons
     return true;
 }
 
-void VulkanSurface::createSurface()
+void VulkanWindowSurface::createSurface()
 {
 #ifdef KARIN_PLATFORM_WINDOWS
     VkWin32SurfaceCreateInfoKHR createInfo = {
@@ -238,7 +238,7 @@ void VulkanSurface::createSurface()
 #endif
 }
 
-void VulkanSurface::createSwapChain(bool isRecreating)
+void VulkanWindowSurface::createSwapChain(bool isRecreating)
 {
     VkSurfaceFormatKHR surfaceFormat = getBestSwapSurfaceFormat(VulkanContext::instance().physicalDevice(), m_surface);
     VkPresentModeKHR presentMode = getBestSwapPresentMode(VulkanContext::instance().physicalDevice(), m_surface, !m_isResizing);
@@ -331,7 +331,7 @@ void VulkanSurface::createSwapChain(bool isRecreating)
     m_swapChainExtent = extent;
 }
 
-void VulkanSurface::createImageView()
+void VulkanWindowSurface::createImageView()
 {
     m_swapChainImageViews.resize(m_swapChainImages.size());
 
@@ -364,7 +364,7 @@ void VulkanSurface::createImageView()
     }
 }
 
-void VulkanSurface::createViewport()
+void VulkanWindowSurface::createViewport()
 {
     m_viewport = {
         .x = 0.0f,

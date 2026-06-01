@@ -3,7 +3,7 @@
 
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
-#include "vulkan_surface.h"
+#include "vulkan_window_surface.h"
 #include "vulkan_font_renderer.h"
 #include "shaders/push_constants.h"
 
@@ -118,7 +118,7 @@ private:
 
     void doResize();
 
-    std::unique_ptr<VulkanSurface> m_surface;
+    std::unique_ptr<VulkanWindowSurface> m_surface;
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
