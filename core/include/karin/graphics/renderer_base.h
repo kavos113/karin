@@ -14,7 +14,7 @@ class IRendererImpl;
 class RendererBase
 {
 public:
-    virtual ~RendererBase() = default;
+    virtual ~RendererBase();
 
     /**
      * Add a rendering command to the renderer.
