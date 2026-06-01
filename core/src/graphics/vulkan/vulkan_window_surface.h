@@ -1,55 +1,58 @@
 #ifndef SRC_GRAPHICS_RESOURCES_VULKAN_VK_SURFACE_IMPL_H
 #define SRC_GRAPHICS_RESOURCES_VULKAN_VK_SURFACE_IMPL_H
 
-#include "vulkan_context.h"
+#include <cstdint>
 
-#include <karin/system/window.h>
+#include <vector>
 
 #include <vulkan/vulkan.h>
-#include <vector>
+
+#include <karin/system/window.h>
+#include "vulkan_context.h"
+#include "vulkan_surface.h"
 
 namespace karin
 {
-class VulkanWindowSurface
+class VulkanWindowSurface : public IVulkanSurface
 {
 public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
-    ~VulkanWindowSurface() = default;
+    ~VulkanWindowSurface() override = default;
 
-    void cleanUp();
-    void resize();
+    void cleanUp() override;
+    void resize() override;
 
-    uint32_t acquireNextImage(VkSemaphore semaphore);
-    void setViewPorts(VkCommandBuffer commandBuffer) const;
+    uint32_t acquireNextImage(VkSemaphore semaphore) override;
+    void setViewPorts(VkCommandBuffer commandBuffer) const override;
 
-    bool present(VkSemaphore waitSemaphore, uint32_t imageIndex) const;
+    bool present(VkSemaphore waitSemaphore, uint32_t imageIndex) const override;
 
-    VkExtent2D extent() const
+    VkExtent2D extent() const override
     {
         return m_swapChainExtent;
     }
 
-    VkFormat format() const
+    VkFormat format() const override
     {
         return m_swapChainImageFormat;
     }
 
-    uint32_t imageCount() const
+    uint32_t imageCount() const override
     {
         return static_cast<uint32_t>(m_swapChainImages.size());
     }
 
-    std::vector<VkImageView> swapChainImageViews() const
+    std::vector<VkImageView> swapChainImageViews() const override
     {
         return m_swapChainImageViews;
     }
 
-    void startResizing()
+    void startResizing() override
     {
         m_isResizing = true;
     }
 
-    void finishResizing()
+    void finishResizing() override
     {
         m_isResizing = false;
     }
