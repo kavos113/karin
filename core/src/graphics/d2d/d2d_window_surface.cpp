@@ -9,7 +9,7 @@ namespace karin
 {
 D2DWindowSurface::D2DWindowSurface(HWND hwnd, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext)
     : m_hwnd(hwnd)
-    , m_deviceContext(std::move(deviceContext))
+    , m_deviceContext(deviceContext)
 {
     createSwapChain();
     acquireBackBuffer();
