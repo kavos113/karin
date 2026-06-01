@@ -9,7 +9,7 @@
 #include <renderer_impl.h>
 
 #include "d2d_device_resources.h"
-#include "d2d_surface_manager.h"
+#include "d2d_window_surface.h"
 #include "d2d_font_renderer.h"
 
 namespace karin
@@ -58,18 +58,12 @@ private:
     void setTargetBitmap() const;
 
     std::unique_ptr<D2DDeviceResources> m_deviceResources;
-    std::unique_ptr<D2DSurfaceManager> m_surface;
+    std::unique_ptr<D2DWindowSurface> m_surface;
     std::unique_ptr<D2DFontRenderer> m_fontRenderer;
 
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
 
     D2D1_COLOR_F m_clearColor = D2D1::ColorF(D2D1::ColorF::White);
-
-    const D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
-        D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-        DEFAULT_DPI, DEFAULT_DPI
-    );
 };
 } // karin
 

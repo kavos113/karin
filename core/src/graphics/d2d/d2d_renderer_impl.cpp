@@ -10,7 +10,7 @@ namespace karin
 {
 D2DRendererImpl::D2DRendererImpl(HWND hwnd)
 {
-    m_surface = std::make_unique<D2DSurfaceManager>(hwnd);
+    m_surface = std::make_unique<D2DWindowSurface>(hwnd);
 
     HRESULT hr = D2DContext::instance().device()->CreateDeviceContext(
         D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &m_deviceContext
@@ -29,18 +29,7 @@ D2DRendererImpl::D2DRendererImpl(HWND hwnd)
 
 void D2DRendererImpl::setTargetBitmap() const
 {
-    Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap;
-    HRESULT hr = m_deviceContext->CreateBitmapFromDxgiSurface(
-        m_surface->backBuffer().Get(),
-        bitmapProperties,
-        &bitmap
-    );
-    if (FAILED(hr))
-    {
-        throw std::runtime_error("Failed to create D2D bitmap from DXGI surface");
-    }
-
-    m_deviceContext->SetTarget(bitmap.Get());
+    m_deviceContext->SetTarget(m_surface->getTargetBitmap(m_deviceContext).Get());
 }
 
 void D2DRendererImpl::cleanUp()

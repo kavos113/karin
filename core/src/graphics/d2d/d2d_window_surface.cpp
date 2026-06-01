@@ -1,4 +1,4 @@
-#include "d2d_surface_manager.h"
+#include "d2d_window_surface.h"
 
 #include "d2d_context.h"
 
@@ -7,20 +7,20 @@
 
 namespace karin
 {
-D2DSurfaceManager::D2DSurfaceManager(HWND hwnd)
+D2DWindowSurface::D2DWindowSurface(HWND hwnd)
     : m_hwnd(hwnd)
 {
     createSwapChain();
     acquireBackBuffer();
 }
 
-void D2DSurfaceManager::cleanUp()
+void D2DWindowSurface::cleanUp()
 {
     m_backBuffer.Reset();
     m_swapChain.Reset();
 }
 
-void D2DSurfaceManager::present()
+void D2DWindowSurface::present()
 {
     if (FAILED(m_swapChain->Present(1, 0)))
     {
@@ -28,7 +28,7 @@ void D2DSurfaceManager::present()
     }
 }
 
-void D2DSurfaceManager::resize(Size size)
+void D2DWindowSurface::resize(Size size)
 {
     m_backBuffer.Reset();
 
@@ -48,7 +48,23 @@ void D2DSurfaceManager::resize(Size size)
     acquireBackBuffer();
 }
 
-void D2DSurfaceManager::createSwapChain()
+Microsoft::WRL::ComPtr<ID2D1Bitmap> D2DWindowSurface::getTargetBitmap(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext) const
+{
+    Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap;
+    HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(
+        m_backBuffer.Get(),
+        bitmapProperties,
+        &bitmap
+    );
+    if (FAILED(hr))
+    {
+        throw std::runtime_error("Failed to create D2D bitmap from DXGI surface");
+    }
+
+    return bitmap;
+}
+
+void D2DWindowSurface::createSwapChain()
 {
     RECT rect;
     if (!GetClientRect(m_hwnd, &rect))
@@ -96,7 +112,7 @@ void D2DSurfaceManager::createSwapChain()
     }
 }
 
-void D2DSurfaceManager::acquireBackBuffer()
+void D2DWindowSurface::acquireBackBuffer()
 {
     m_backBuffer.Reset();
     if (FAILED(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_backBuffer))))

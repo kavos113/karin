@@ -17,7 +17,7 @@ set(GRAPHICS_SOURCE
 
 if (DIRECTX)
     set(GRAPHICS_SOURCE ${GRAPHICS_SOURCE}
-            d2d/d2d_surface_manager.cpp
+            d2d/d2d_window_surface.cpp
             d2d/d2d_renderer_impl.cpp
             d2d/d2d_graphics_context_impl.cpp
             d2d/d2d_device_resources.cpp
