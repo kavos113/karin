@@ -7,9 +7,8 @@
 
 namespace karin
 {
-D2DWindowSurface::D2DWindowSurface(HWND hwnd, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext)
+D2DWindowSurface::D2DWindowSurface(HWND hwnd)
     : m_hwnd(hwnd)
-    , m_deviceContext(deviceContext)
 {
     createSwapChain();
     acquireBackBuffer();
@@ -63,6 +62,11 @@ Microsoft::WRL::ComPtr<ID2D1Bitmap> D2DWindowSurface::getTargetBitmap() const
     }
 
     return bitmap;
+}
+
+void D2DWindowSurface::setDeviceContext(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext)
+{
+    m_deviceContext = deviceContext;
 }
 
 void D2DWindowSurface::createSwapChain()

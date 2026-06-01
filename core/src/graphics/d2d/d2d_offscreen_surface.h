@@ -15,7 +15,7 @@ namespace karin
 class D2DOffscreenSurface : public ID2DSurface
 {
 public:
-    D2DOffscreenSurface(Size size, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext);
+    D2DOffscreenSurface(Size size);
     ~D2DOffscreenSurface() override = default;
 
     void cleanUp() override;
@@ -23,6 +23,7 @@ public:
     void resize(Size size) override;
 
     Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap() const override;
+    void setDeviceContext(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext) override;
 
     std::vector<std::byte> getImageData() const;
 

@@ -14,7 +14,7 @@ namespace karin
 class D2DWindowSurface : public ID2DSurface
 {
 public:
-    D2DWindowSurface(HWND hwnd, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext);
+    D2DWindowSurface(HWND hwnd);
     ~D2DWindowSurface() override = default;
 
     void cleanUp() override;
@@ -22,6 +22,7 @@ public:
     void resize(Size size) override;
 
     Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap() const override;
+    void setDeviceContext(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext) override;
 
 private:
     void createSwapChain();

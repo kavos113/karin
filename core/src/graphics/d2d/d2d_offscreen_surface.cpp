@@ -4,11 +4,9 @@
 
 namespace karin
 {
-D2DOffscreenSurface::D2DOffscreenSurface(Size size, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext)
-    : m_deviceContext(deviceContext)
-    , m_size(size)
+D2DOffscreenSurface::D2DOffscreenSurface(Size size)
+    : m_size(size)
 {
-    createBitmap();
 }
 
 void D2DOffscreenSurface::cleanUp()
@@ -30,6 +28,13 @@ void D2DOffscreenSurface::resize(Size size)
 Microsoft::WRL::ComPtr<ID2D1Bitmap> D2DOffscreenSurface::getTargetBitmap() const
 {
     return m_bitmap;
+}
+
+void D2DOffscreenSurface::setDeviceContext(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext)
+{
+    m_deviceContext = deviceContext;
+
+    createBitmap();
 }
 
 std::vector<std::byte> D2DOffscreenSurface::getImageData() const

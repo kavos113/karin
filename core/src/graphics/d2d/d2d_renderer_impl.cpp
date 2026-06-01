@@ -19,6 +19,8 @@ D2DRendererImpl::D2DRendererImpl(std::unique_ptr<ID2DSurface> surface)
         throw std::runtime_error("Failed to create D2D device context");
     }
 
+    m_surface->setDeviceContext(m_deviceContext);
+
     setTargetBitmap();
 
     m_deviceResources = std::make_unique<D2DDeviceResources>(m_deviceContext);
