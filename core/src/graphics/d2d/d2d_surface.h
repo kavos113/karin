@@ -17,7 +17,7 @@ public:
     virtual void present() = 0;
     virtual void resize(Size size) = 0;
 
-    virtual Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext) const = 0;
+    virtual Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap() const = 0;
 };
 } // karin
 

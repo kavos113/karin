@@ -14,14 +14,14 @@ namespace karin
 class D2DWindowSurface : public ID2DSurface
 {
 public:
-    D2DWindowSurface(HWND hwnd);
+    D2DWindowSurface(HWND hwnd, Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext);
     ~D2DWindowSurface() override = default;
 
     void cleanUp() override;
     void present() override;
     void resize(Size size) override;
 
-    Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap(Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext) const override;
+    Microsoft::WRL::ComPtr<ID2D1Bitmap> getTargetBitmap() const override;
 
 private:
     void createSwapChain();
@@ -31,6 +31,7 @@ private:
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> m_swapChain;
     Microsoft::WRL::ComPtr<IDXGISurface> m_backBuffer;
+    Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
 
     const D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
         D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,

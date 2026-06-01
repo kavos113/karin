@@ -10,8 +10,6 @@ namespace karin
 {
 D2DRendererImpl::D2DRendererImpl(HWND hwnd)
 {
-    m_surface = std::make_unique<D2DWindowSurface>(hwnd);
-
     HRESULT hr = D2DContext::instance().device()->CreateDeviceContext(
         D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &m_deviceContext
     );
@@ -20,16 +18,17 @@ D2DRendererImpl::D2DRendererImpl(HWND hwnd)
         throw std::runtime_error("Failed to create D2D device context");
     }
 
+    m_surface = std::make_unique<D2DWindowSurface>(hwnd, m_deviceContext);
+
     setTargetBitmap();
 
     m_deviceResources = std::make_unique<D2DDeviceResources>(m_deviceContext);
-
     m_fontRenderer = std::make_unique<D2DFontRenderer>(m_deviceContext, m_deviceResources.get());
 }
 
 void D2DRendererImpl::setTargetBitmap() const
 {
-    m_deviceContext->SetTarget(m_surface->getTargetBitmap(m_deviceContext).Get());
+    m_deviceContext->SetTarget(m_surface->getTargetBitmap().Get());
 }
 
 void D2DRendererImpl::cleanUp()
