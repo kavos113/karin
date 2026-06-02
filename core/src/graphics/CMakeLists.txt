@@ -20,6 +20,7 @@ if (DIRECTX)
             d2d/d2d_window_surface.cpp
             d2d/d2d_offscreen_surface.cpp
             d2d/d2d_renderer_impl.cpp
+            d2d/d2d_offscreen_renderer_impl.cpp
             d2d/d2d_graphics_context_impl.cpp
             d2d/d2d_device_resources.cpp
             d2d/d2d_context.cpp
