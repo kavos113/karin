@@ -114,6 +114,7 @@ private:
     void createMatrixBuffer();
     void createRenderPass();
     void createPipeline();
+    void createViewport();
 
     void doResize();
 
@@ -134,6 +135,8 @@ private:
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
 
     VkExtent2D m_extent = {};
+    VkViewport m_viewport = {};
+    VkRect2D m_scissor = {};
 
     VulkanBuffer<VulkanPipeline::Vertex> m_vertexBuffer;
     VulkanPipeline::Vertex* m_vertexStartPoint = nullptr;

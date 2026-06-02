@@ -19,6 +19,7 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
 
+    createViewport();
     createCommandBuffers();
     createSyncObjects();
     createRenderPass();
@@ -124,7 +125,8 @@ bool VulkanRendererImpl::beginDraw()
     };
     vkCmdBeginRenderPass(m_commandBuffers[m_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    m_surface->setViewPorts(m_commandBuffers[m_currentFrame]);
+    vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &m_viewport);
+    vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &m_scissor);
 
     return true;
 }
@@ -627,6 +629,23 @@ void VulkanRendererImpl::createPipeline()
         text_frag_spv, text_frag_spv_len,
         textDescriptorSetLayouts, pushConstantRanges
     );
+}
+
+void VulkanRendererImpl::createViewport()
+{
+    m_viewport = {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<float>(m_extent.width),
+        .height = static_cast<float>(m_extent.height),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    m_scissor = {
+        .offset = {0, 0},
+        .extent = m_extent
+    };
 }
 
 void VulkanRendererImpl::doResize()

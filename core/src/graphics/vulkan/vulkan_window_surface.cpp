@@ -184,7 +184,6 @@ void VulkanWindowSurface::resize(VkRenderPass renderPass)
 
     createSwapChain(true);
     createImageView();
-    createViewport();
 
     createFrameBuffers(renderPass);
 }
@@ -213,12 +212,6 @@ bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
     m_imageIndex = imageIndex;
 
     return true;
-}
-
-void VulkanWindowSurface::setViewPorts(const VkCommandBuffer commandBuffer) const
-{
-    vkCmdSetViewport(commandBuffer, 0, 1, &m_viewport);
-    vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
 }
 
 bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
@@ -404,22 +397,5 @@ void VulkanWindowSurface::createImageView()
             throw std::runtime_error("failed to create image views");
         }
     }
-}
-
-void VulkanWindowSurface::createViewport()
-{
-    m_viewport = {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(m_swapChainExtent.width),
-        .height = static_cast<float>(m_swapChainExtent.height),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    m_scissor = {
-        .offset = {0, 0},
-        .extent = m_swapChainExtent
-    };
 }
 } // karin

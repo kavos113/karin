@@ -25,7 +25,6 @@ public:
     void resize(VkRenderPass renderPass) override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
-    void setViewPorts(VkCommandBuffer commandBuffer) const override;
 
     bool present(VkSemaphore waitSemaphore) const override;
 
@@ -37,11 +36,6 @@ public:
     VkFormat format() const override
     {
         return m_swapChainImageFormat;
-    }
-
-    uint32_t imageCount() const override
-    {
-        return static_cast<uint32_t>(m_swapChainImages.size());
     }
 
     VkFramebuffer currentFrameBuffer() const override
@@ -63,7 +57,6 @@ private:
     void createSurface();
     void createSwapChain(bool isRecreating);
     void createImageView();
-    void createViewport();
 
     Window::NativeHandle m_window;
 
@@ -74,9 +67,6 @@ private:
     VkFormat m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
     VkExtent2D m_swapChainExtent = {};
     std::vector<VkFramebuffer> m_swapChainFramebuffers;
-
-    VkViewport m_viewport = {};
-    VkRect2D m_scissor = {};
 
     std::vector<VkSwapchainKHR> m_oldSwapChains;
     bool m_isResizing = false;
