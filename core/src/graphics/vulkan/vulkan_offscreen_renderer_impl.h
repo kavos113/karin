@@ -1,0 +1,24 @@
+#ifndef CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_RENDERER_IMPL_H
+#define CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_RENDERER_IMPL_H
+
+#include <offscreen_renderer_impl.h>
+#include "vulkan_surface.h"
+#include "vulkan_offscreen_surface.h"
+#include "vulkan_renderer_impl.h"
+
+namespace karin
+{
+class VulkanOffscreenRendererImpl : public VulkanRendererImpl, public IOffscreenRendererImpl
+{
+public:
+    VulkanOffscreenRendererImpl(std::unique_ptr<IVulkanSurface> surface, VulkanOffscreenSurface *offscreenSurface);
+    ~VulkanOffscreenRendererImpl() override = default;
+
+    std::vector<std::byte> getImageData() const override;
+
+private:
+    VulkanOffscreenSurface *m_offscreenSurface;
+};
+} // karin
+
+#endif //CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_RENDERER_IMPL_H

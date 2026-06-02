@@ -18,6 +18,8 @@
 #include "vulkan/vulkan_renderer_impl.h"
 #include "vulkan/vulkan_graphics_context_impl.h"
 #include "vulkan/vulkan_window_surface.h"
+#include "vulkan/vulkan_offscreen_surface.h"
+#include "vulkan/vulkan_offscreen_renderer_impl.h"
 #include "text/font_loader.h"
 #endif
 
@@ -50,6 +52,16 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
     auto surface = std::make_unique<D2DOffscreenSurface>(size);
     auto offscreenSurfacePtr = surface.get();
     auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface), offscreenSurfacePtr);
+
+    IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
+    return {
+        .rendererImpl = std::move(renderer),
+        .offscreenRendererImpl = offscreenRendererImpl
+    };
+#elifdef KARIN_PLATFORM_VULKAN
+    auto surface = std::make_unique<VulkanOffscreenSurface>(size);
+    auto offscreenSurfacePtr = surface.get();
+    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(surface), offscreenSurfacePtr);
 
     IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
     return {
