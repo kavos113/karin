@@ -113,7 +113,6 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     createSwapChain(false);
 
     createImageView();
-    createViewport();
 }
 
 void VulkanWindowSurface::createFrameBuffers(VkRenderPass renderPass)

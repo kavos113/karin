@@ -43,6 +43,55 @@ struct VulkanBuffer
         }
     }
 };
+
+struct VulkanImage
+{
+    VkImage image = VK_NULL_HANDLE;
+    VmaAllocation allocation = VK_NULL_HANDLE;
+    VkImageView imageView = VK_NULL_HANDLE;
+
+    // VkImageViewCreateInfo.image will be set in this function, so the caller doesn't need to worry about it
+    VkResult create(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocInfo, VkImageViewCreateInfo& viewInfo)
+    {
+        VmaAllocationInfo memoryInfo;
+        VkResult result = vmaCreateImage(
+            VulkanContext::instance().allocator(), &imageInfo, &allocInfo, &image, &allocation, &memoryInfo
+        );
+        if (result != VK_SUCCESS)
+        {
+            return result;
+        }
+
+        viewInfo.image = image;
+
+        if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+        {
+            vmaDestroyImage(VulkanContext::instance().allocator(), image, allocation);
+            image = VK_NULL_HANDLE;
+            allocation = VK_NULL_HANDLE;
+
+            return VK_ERROR_INITIALIZATION_FAILED;
+        }
+
+        return VK_SUCCESS;
+    }
+
+    void cleanup()
+    {
+        if (imageView != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
+            imageView = VK_NULL_HANDLE;
+        }
+
+        if (image != VK_NULL_HANDLE)
+        {
+            vmaDestroyImage(VulkanContext::instance().allocator(), image, allocation);
+            image = VK_NULL_HANDLE;
+            allocation = VK_NULL_HANDLE;
+        }
+    }
+};
 } // karin
 
 #endif //CORE_SRC_GRAPHICS_VULKAN_VULKAN_BUFER_H

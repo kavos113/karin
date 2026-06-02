@@ -34,6 +34,7 @@ elseif (VULKAN)
             vulkan/vulkan_context.cpp
             vulkan/vulkan_debug_manager.cpp
             vulkan/vulkan_window_surface.cpp
+            vulkan/vulkan_offscreen_surface.cpp
             vulkan/vulkan_renderer_impl.cpp
             vulkan/vulkan_graphics_context_impl.cpp
             vulkan/vulkan_pipeline.cpp
