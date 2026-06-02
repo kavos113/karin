@@ -56,6 +56,19 @@ void VulkanOffscreenSurface::resize(VkRenderPass renderPass)
 
 bool VulkanOffscreenSurface::prepareNextImage(VkSemaphore semaphore)
 {
+    // just for send signal
+    VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount = 0,
+        .pCommandBuffers = nullptr,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &semaphore,
+    };
+    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to submit offscreen surface image preparation command buffer");
+    }
+
     return true;
 }
 
@@ -77,6 +90,11 @@ VkFormat VulkanOffscreenSurface::format() const
 VkFramebuffer VulkanOffscreenSurface::currentFrameBuffer() const
 {
     return m_framebuffer;
+}
+
+VkImageLayout VulkanOffscreenSurface::getRenderPassFinalLayout() const
+{
+    return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 }
 
 std::vector<std::byte> VulkanOffscreenSurface::getImageData() const

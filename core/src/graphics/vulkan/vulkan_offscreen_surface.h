@@ -29,6 +29,7 @@ public:
     VkExtent2D extent() const override;
     VkFormat format() const override;
     VkFramebuffer currentFrameBuffer() const override;
+    VkImageLayout getRenderPassFinalLayout() const override;
 
     std::vector<std::byte> getImageData() const;
 

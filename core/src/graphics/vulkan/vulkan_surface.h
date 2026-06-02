@@ -21,6 +21,7 @@ public:
     virtual VkExtent2D extent() const = 0;
     virtual VkFormat format() const = 0;
     virtual VkFramebuffer currentFrameBuffer() const = 0;
+    virtual VkImageLayout getRenderPassFinalLayout() const = 0;
 
     virtual void startResizing() {}
     virtual void finishResizing() {}

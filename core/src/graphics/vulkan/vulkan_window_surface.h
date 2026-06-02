@@ -53,6 +53,11 @@ public:
         m_isResizing = false;
     }
 
+    VkImageLayout getRenderPassFinalLayout() const override
+    {
+        return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    }
+
 private:
     void createSurface();
     void createSwapChain(bool isRecreating);
