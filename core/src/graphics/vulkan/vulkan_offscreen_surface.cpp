@@ -43,6 +43,8 @@ void VulkanOffscreenSurface::destroyFrameBuffers()
 
 void VulkanOffscreenSurface::cleanUp()
 {
+    destroyFrameBuffers();
+
     m_image.cleanup();
     m_stagingBuffer.cleanup();
 }
