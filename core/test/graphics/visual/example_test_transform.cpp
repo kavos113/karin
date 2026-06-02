@@ -106,6 +106,4 @@ TEST(ExamplesVisualTest, Transform)
     ASSERT_TRUE(result);
 
     renderer.cleanUp();
-
-    return 0;
 }
