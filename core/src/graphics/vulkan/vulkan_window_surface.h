@@ -25,7 +25,7 @@ public:
     uint32_t acquireNextImage(VkSemaphore semaphore) override;
     void setViewPorts(VkCommandBuffer commandBuffer) const override;
 
-    bool present(VkSemaphore waitSemaphore, uint32_t imageIndex) const override;
+    bool present(VkSemaphore waitSemaphore) const override;
 
     VkExtent2D extent() const override
     {
@@ -77,6 +77,7 @@ private:
 
     std::vector<VkSwapchainKHR> m_oldSwapChains;
     bool m_isResizing = false;
+    uint32_t m_imageIndex = 0;
 };
 } // karin
 

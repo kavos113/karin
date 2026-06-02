@@ -20,7 +20,7 @@ public:
     virtual uint32_t acquireNextImage(VkSemaphore semaphore) = 0;
     virtual void setViewPorts(VkCommandBuffer commandBuffer) const = 0;
 
-    virtual bool present(VkSemaphore waitSemaphore, uint32_t imageIndex) const = 0;
+    virtual bool present(VkSemaphore waitSemaphore) const = 0;
 
     virtual VkExtent2D extent() const = 0;
     virtual VkFormat format() const = 0;

@@ -126,7 +126,6 @@ private:
     std::vector<DrawCommand> m_drawCommands;
 
     uint8_t m_currentFrame = 0;
-    uint32_t m_imageIndex = 0;
 
     std::vector<VkFramebuffer> m_swapChainFramebuffers;
     std::vector<VkCommandBuffer> m_commandBuffers;

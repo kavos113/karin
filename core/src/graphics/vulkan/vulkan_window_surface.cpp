@@ -170,6 +170,8 @@ uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
         throw std::runtime_error("failed to acquire next image from swap chain");
     }
 
+    m_imageIndex = imageIndex;
+
     return imageIndex;
 }
 
@@ -179,7 +181,7 @@ void VulkanWindowSurface::setViewPorts(const VkCommandBuffer commandBuffer) cons
     vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
 }
 
-bool VulkanWindowSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) const
+bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
 {
     std::array semaphores = {waitSemaphore};
 
@@ -190,7 +192,7 @@ bool VulkanWindowSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex
         .pWaitSemaphores = semaphores.data(),
         .swapchainCount = static_cast<uint32_t>(swapChains.size()),
         .pSwapchains = swapChains.data(),
-        .pImageIndices = &imageIndex,
+        .pImageIndices = &m_imageIndex,
         .pResults = nullptr
     };
 
