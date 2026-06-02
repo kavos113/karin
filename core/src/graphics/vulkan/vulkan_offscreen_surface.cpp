@@ -84,7 +84,7 @@ VkExtent2D VulkanOffscreenSurface::extent() const
 
 VkFormat VulkanOffscreenSurface::format() const
 {
-    return VK_FORMAT_R8G8B8A8_UNORM;
+    return VK_FORMAT_B8G8R8A8_UNORM;
 }
 
 VkFramebuffer VulkanOffscreenSurface::currentFrameBuffer() const
@@ -145,7 +145,7 @@ void VulkanOffscreenSurface::createBuffers(uint32_t width, uint32_t height)
     VkImageCreateInfo imageInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
         .imageType = VK_IMAGE_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .format = VK_FORMAT_B8G8R8A8_UNORM,
         .extent = {
             .width = width,
             .height = height,

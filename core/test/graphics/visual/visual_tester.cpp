@@ -8,6 +8,22 @@
 #include <stb_image/stb_image_write.h>
 #include <stb_image/stb_image.h>
 
+namespace
+{
+void convertBGRAtoRGBA(std::vector<std::byte>& imageData)
+{
+    for (size_t i = 0; i < imageData.size(); i += 4)
+    {
+        std::byte tempR = imageData[i + 2];
+        std::byte tempB = imageData[i + 0];
+        imageData[i + 0] = tempR; // R
+        imageData[i + 1] = imageData[i + 1]; // G
+        imageData[i + 2] = tempB; // B
+        // Alpha remains unchanged
+    }
+}
+}
+
 std::string VisualTester::expectedImageDirectory = "fixtures/test_expect_images";
 std::once_flag VisualTester::directoryInitFlag;
 
@@ -18,6 +34,9 @@ bool VisualTester::checkOrUpdate(
     int height
 )
 {
+    std::vector<std::byte> convertedImageData = actualImageData;
+    convertBGRAtoRGBA(convertedImageData);
+
     ensureExpectedImageDirectoryExists();
     std::string expectedImagePath = std::format("{}/{}.png", expectedImageDirectory, testName);
 
@@ -29,7 +48,7 @@ bool VisualTester::checkOrUpdate(
             width,
             height,
             4,
-            actualImageData.data(),
+            convertedImageData.data(),
             width * 4
         );
         if (result == 0)
@@ -60,7 +79,7 @@ bool VisualTester::checkOrUpdate(
     }
 
     bool result = compareImages(
-        reinterpret_cast<const unsigned char*>(actualImageData.data()),
+        reinterpret_cast<const unsigned char*>(convertedImageData.data()),
         expectedImageData,
         width,
         height
