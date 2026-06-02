@@ -12,6 +12,17 @@ set(TEST_SRCS
         common/utils/string_test.cpp
 
         graphics/visual/clear_color_test.cpp
+        graphics/visual/example_test_hello_graphics.cpp
+        graphics/visual/example_test_draw_image.cpp
+        graphics/visual/example_test_draw_path.cpp
+        graphics/visual/example_test_draw_primitive_geometry.cpp
+        graphics/visual/example_test_draw_text.cpp
+        graphics/visual/example_test_draw_text_japanese.cpp
+        graphics/visual/example_test_fill_path.cpp
+        graphics/visual/example_test_fill_primitive_geometry.cpp
+        graphics/visual/example_test_linear_gradient_pattern.cpp
+        graphics/visual/example_test_radical_gradient_pattern.cpp
+        graphics/visual/example_test_transform.cpp
 )
 
 set(TEST_DEPEND_SRCS
