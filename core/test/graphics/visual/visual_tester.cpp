@@ -18,6 +18,7 @@ bool VisualTester::checkOrUpdate(
     int height
 )
 {
+    ensureExpectedImageDirectoryExists();
     std::string expectedImagePath = std::format("{}/{}.png", expectedImageDirectory, testName);
 
     std::string envUpdate = getEnv("UPDATE_TEST_IMAGES");
