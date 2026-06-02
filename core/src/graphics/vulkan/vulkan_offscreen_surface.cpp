@@ -1,5 +1,7 @@
 #include "vulkan_offscreen_surface.h"
 
+#include <cstring>
+
 #include <stdexcept>
 
 #include "vulkan_context.h"
