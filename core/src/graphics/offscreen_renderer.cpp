@@ -2,11 +2,16 @@
 
 #include "offscreen_renderer_impl.h"
 #include "renderer_impl.h"
+#include "platform.h"
 
 namespace karin
 {
 OffscreenRenderer::OffscreenRenderer(uint32_t width, uint32_t height)
 {
+    // TODO: 整数のsizeでよくないか
+    auto impl = createOffscreenRendererImpl(Size(width, height));
+    m_offscreenImpl = impl.offscreenRendererImpl;
+    m_impl = std::move(impl.rendererImpl);
 }
 
 OffscreenRenderer::~OffscreenRenderer() = default;
