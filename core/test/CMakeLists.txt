@@ -16,6 +16,8 @@ set(TEST_SRCS
 
 set(TEST_DEPEND_SRCS
         ${SOURCE_DIR}/common/geometry/transform2d.cpp
+        ${THIRD_PARTY_DIR}/stb_image/stb_image_impl.cpp
+        ${THIRD_PARTY_DIR}/stb_image/stb_image_write_impl.cpp
 )
 
 if (WIN32 AND VULKAN AND DIRECTX)
@@ -52,6 +54,7 @@ target_link_libraries(karin_test
 target_include_directories(karin_test
     PRIVATE
         ${INCLUDE_DIR}
+        ${THIRD_PARTY_DIR}
         ${SOURCE_DIR}/common
         ${SOURCE_DIR}/graphics
         ${SOURCE_DIR}/graphics/text
