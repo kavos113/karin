@@ -30,6 +30,7 @@ private:
     ~GraphicsContext();
 
     friend class WindowRenderer;
+    friend class OffscreenRenderer;
 
 public:
     void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;

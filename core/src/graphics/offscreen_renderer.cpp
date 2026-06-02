@@ -21,4 +21,21 @@ std::vector<std::byte> OffscreenRenderer::getImageData() const
     return m_offscreenImpl->getImageData();
 }
 
+void OffscreenRenderer::draw() const
+{
+    bool res = m_impl->beginDraw();
+    if (!res)
+    {
+        return;
+    }
+
+    GraphicsContext context(m_impl.get());
+
+    for (const auto& command : m_drawCommands)
+    {
+        command(context);
+    }
+
+    m_impl->endDraw();
+}
 }

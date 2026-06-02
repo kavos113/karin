@@ -20,6 +20,8 @@ public:
       */
     std::vector<std::byte> getImageData() const;
 
+    void draw() const;
+
 private:
     IOffscreenRendererImpl *m_offscreenImpl;
 };
