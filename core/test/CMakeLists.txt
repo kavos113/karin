@@ -10,6 +10,8 @@ set(TEST_SRCS
         common/geometry/transform2d_test.cpp
         common/color/color_test.cpp
         common/utils/string_test.cpp
+
+        graphics/visual/clear_color_test.cpp
 )
 
 set(TEST_DEPEND_SRCS
@@ -45,6 +47,7 @@ add_executable(karin_test ${TEST_SRCS} ${TEST_DEPEND_SRCS})
 target_link_libraries(karin_test
     PRIVATE
         GTest::gtest_main
+        karin_graphics
 )
 target_include_directories(karin_test
     PRIVATE
