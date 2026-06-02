@@ -15,7 +15,7 @@ public:
     virtual void cleanUp() = 0;
     virtual void resize(VkRenderPass renderPass) = 0;
 
-    virtual uint32_t acquireNextImage(VkSemaphore semaphore) = 0;
+    virtual bool prepareNextImage(VkSemaphore semaphore) = 0;
     virtual void setViewPorts(VkCommandBuffer commandBuffer) const = 0;
 
     virtual bool present(VkSemaphore waitSemaphore) const = 0;

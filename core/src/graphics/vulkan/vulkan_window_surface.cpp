@@ -189,7 +189,7 @@ void VulkanWindowSurface::resize(VkRenderPass renderPass)
     createFrameBuffers(renderPass);
 }
 
-uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
+bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
 {
     uint32_t imageIndex = 0;
     VkResult result = vkAcquireNextImageKHR(
@@ -203,7 +203,7 @@ uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         std::cout << "[VkSurfaceManager] Swap chain out of date, resizing..." << std::endl;
-        return -1;
+        return false;
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
@@ -212,7 +212,7 @@ uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
 
     m_imageIndex = imageIndex;
 
-    return imageIndex;
+    return true;
 }
 
 void VulkanWindowSurface::setViewPorts(const VkCommandBuffer commandBuffer) const

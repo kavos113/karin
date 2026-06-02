@@ -24,7 +24,7 @@ public:
     void cleanUp() override;
     void resize(VkRenderPass renderPass) override;
 
-    uint32_t acquireNextImage(VkSemaphore semaphore) override;
+    bool prepareNextImage(VkSemaphore semaphore) override;
     void setViewPorts(VkCommandBuffer commandBuffer) const override;
 
     bool present(VkSemaphore waitSemaphore) const override;

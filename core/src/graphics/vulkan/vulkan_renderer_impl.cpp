@@ -94,8 +94,7 @@ bool VulkanRendererImpl::beginDraw()
     m_drawCommands.clear();
 
     vkWaitForFences(VulkanContext::instance().device(), 1, &m_swapChainFences[m_currentFrame], VK_TRUE, UINT64_MAX);
-    uint32_t imageIndex = m_surface->acquireNextImage(m_swapChainSemaphores[m_currentFrame]);
-    if (imageIndex == -1)
+    if (!m_surface->prepareNextImage(m_swapChainSemaphores[m_currentFrame]))
     {
         doResize();
         return false;
