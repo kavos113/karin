@@ -148,9 +148,7 @@ private:
     MatrixBufferObject m_projMatrixData = {};
     VkDescriptorSetLayout m_projMatrixDescriptorSetLayout = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> m_projMatrixDescriptorSets;
-    std::vector<VkBuffer> m_projMatrixBuffers;
-    std::vector<VmaAllocation> m_projMatrixBufferAllocations;
-    std::vector<VmaAllocationInfo> m_projMatrixBufferMemoryInfos;
+    std::vector<VulkanBuffer<MatrixBufferObject>> m_projMatrixBuffers;
 
     static constexpr VkDeviceSize vertexBufferSize = 1024 * 128; // 2MB
     static constexpr VkDeviceSize indexBufferSize = 1024 * 512; // 2MB

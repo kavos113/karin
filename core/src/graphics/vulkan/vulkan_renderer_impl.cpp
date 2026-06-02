@@ -497,8 +497,6 @@ void VulkanRendererImpl::createMatrixBuffer()
 
     m_projMatrixDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
     m_projMatrixBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    m_projMatrixBufferAllocations.resize(MAX_FRAMES_IN_FLIGHT);
-    m_projMatrixBufferMemoryInfos.resize(MAX_FRAMES_IN_FLIGHT);
 
     std::vector layouts(MAX_FRAMES_IN_FLIGHT, m_projMatrixDescriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfoDesc = {
@@ -529,22 +527,19 @@ void VulkanRendererImpl::createMatrixBuffer()
             .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         };
 
-        if (vmaCreateBuffer(
-            VulkanContext::instance().allocator(), &bufferInfo, &allocInfo,
-            &m_projMatrixBuffers[i], &m_projMatrixBufferAllocations[i], &m_projMatrixBufferMemoryInfos[i]
-        ) != VK_SUCCESS)
+        if (m_projMatrixBuffers[i].create(bufferInfo, allocInfo) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create projection matrix buffer");
         }
 
         memcpy(
-            m_projMatrixBufferMemoryInfos[i].pMappedData,
+            m_projMatrixBuffers[i].mappedData,
             &m_projMatrixData,
             sizeof(MatrixBufferObject)
         );
 
         VkDescriptorBufferInfo bufferInfoDesc = {
-            .buffer = m_projMatrixBuffers[i],
+            .buffer = m_projMatrixBuffers[i].buffer,
             .offset = 0,
             .range = sizeof(MatrixBufferObject),
         };
@@ -700,7 +695,7 @@ void VulkanRendererImpl::doResize()
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
         memcpy(
-            m_projMatrixBufferMemoryInfos[i].pMappedData,
+            m_projMatrixBuffers[i].mappedData,
             &m_projMatrixData,
             sizeof(MatrixBufferObject)
         );
