@@ -54,6 +54,7 @@ struct VulkanImage
     VkResult create(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocInfo, VkImageViewCreateInfo& viewInfo)
     {
         VmaAllocationInfo memoryInfo;
+        auto t = VulkanContext::instance().allocator();
         VkResult result = vmaCreateImage(
             VulkanContext::instance().allocator(), &imageInfo, &allocInfo, &image, &allocation, &memoryInfo
         );

@@ -10,6 +10,8 @@ VulkanOffscreenSurface::VulkanOffscreenSurface(Size size)
     : m_width(static_cast<uint32_t>(size.width)),
       m_height(static_cast<uint32_t>(size.height))
 {
+    VulkanContext::instance().initOffscreenDevices();
+
     createBuffers(static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height));
 }
 

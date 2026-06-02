@@ -270,7 +270,8 @@ void VulkanContext::initDevices(VkSurfaceKHR surface)
         return;
     }
 
-    getQueueFamily(surface);
+    getGraphicsQueueFamily();
+    getPresentQueueFamily(surface);
 
     createLogicalDevice();
 
@@ -283,7 +284,26 @@ void VulkanContext::initDevices(VkSurfaceKHR surface)
     createDescriptorPool();
 }
 
-void VulkanContext::getQueueFamily(VkSurfaceKHR surface)
+void VulkanContext::initOffscreenDevices()
+{
+    if (m_device != VK_NULL_HANDLE)
+    {
+        return;
+    }
+
+    getGraphicsQueueFamily();
+
+    createLogicalDevice();
+
+    vkGetDeviceQueue(m_device, m_queueFamilyIndices[QueueFamily::Graphics], 0, &m_graphicsQueue);
+
+    createVmaAllocator();
+
+    createCommandPool();
+    createDescriptorPool();
+}
+
+void VulkanContext::getGraphicsQueueFamily()
 {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, nullptr);
@@ -297,13 +317,30 @@ void VulkanContext::getQueueFamily(VkSurfaceKHR surface)
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {
             m_queueFamilyIndices[QueueFamily::Graphics] = i;
+            break;
         }
 
+        i++;
+    }
+}
+
+void VulkanContext::getPresentQueueFamily(VkSurfaceKHR surface)
+{
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(m_physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const auto& queueFamily : queueFamilies)
+    {
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(m_physicalDevice, i, surface, &presentSupport);
         if (presentSupport)
         {
             m_queueFamilyIndices[QueueFamily::Present] = i;
+            break;
         }
 
         i++;

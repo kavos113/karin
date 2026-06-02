@@ -24,6 +24,7 @@ public:
     static VulkanContext& instance();
 
     void initDevices(VkSurfaceKHR surface);
+    void initOffscreenDevices();
 
     VkCommandBuffer beginSingleTimeCommands() const;
     void endSingleTimeCommands(VkCommandBuffer commandBuffer) const;
@@ -82,7 +83,8 @@ private:
     void createVmaAllocator();
 
     void createLogicalDevice();
-    void getQueueFamily(VkSurfaceKHR surface);
+    void getGraphicsQueueFamily();
+    void getPresentQueueFamily(VkSurfaceKHR surface);
     void createCommandPool();
     void createDescriptorPool();
 
