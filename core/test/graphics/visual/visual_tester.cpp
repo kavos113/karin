@@ -40,7 +40,7 @@ bool VisualTester::checkOrUpdate(
     ensureExpectedImageDirectoryExists();
     std::string expectedImagePath = std::format("{}/{}.png", expectedImageDirectory, testName);
 
-    std::string envUpdate = getEnv("UPDATE_TEST_IMAGES");
+    std::string envUpdate = getEnv("UPDATE_TEST_IMAGES", "0");
     if (envUpdate == "1")
     {
         int result = stbi_write_png(
@@ -101,7 +101,7 @@ bool VisualTester::compareImages(
 )
 {
     size_t pixelCount = width * height;
-    size_t maxDiffPixels = THRESHOLD * pixelCount;
+    float maxDiffPixels = static_cast<float>(pixelCount) * THRESHOLD;
     size_t diffPixelCount = 0;
 
     for (size_t i = 0; i < pixelCount * 4; i += 4)
@@ -114,7 +114,7 @@ bool VisualTester::compareImages(
         if ((diffR + diffG + diffB + diffA) > 10)
         {
             diffPixelCount++;
-            if (diffPixelCount > maxDiffPixels)
+            if (diffPixelCount > static_cast<size_t>(maxDiffPixels))
             {
                 std::cerr << "[ERROR] Image mismatch: " << diffPixelCount << " pixels differ (threshold: " << maxDiffPixels << ")" << std::endl;
                 return false;

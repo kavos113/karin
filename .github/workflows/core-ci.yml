@@ -34,11 +34,11 @@ jobs:
           - target: windows-d2d
             os: windows-latest
             cmake_preset: "windows-debug"
-            name: "windows d2d"
+            name: "windows"
           - target: windows-vulkan
             os: windows-latest
             cmake_preset: "windows-vulkan-debug"
-            name: "windows vulkan"
+            name: "windows-vulkan"
             vulkan_version: "1.4.321.1"
 
     steps:
@@ -152,6 +152,9 @@ jobs:
           chmod +x ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test/karin_test
 
       - name: Run tests
+        env:
+          UPDATE_TEST_IMAGES: 0
+          TEST_PROFILE: ${{ matrix.name }}
         run: |
           cd ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test
           ctest --output-on-failure
