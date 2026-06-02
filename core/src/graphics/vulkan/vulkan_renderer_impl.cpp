@@ -12,11 +12,9 @@
 
 namespace karin
 {
-VulkanRendererImpl::VulkanRendererImpl(
-    Window::NativeHandle nativeHandle
-)
+VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
+    : m_surface(std::move(surface))
 {
-    m_surface = std::make_unique<VulkanWindowSurface>(nativeHandle);
     m_extent = m_surface->extent();
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
@@ -41,23 +39,23 @@ void VulkanRendererImpl::cleanUp()
 
     m_surface->destroyFrameBuffers();
 
-    for (const auto& semaphore : m_swapChainSemaphores)
+    for (const auto& semaphore : m_imageAvailableSemaphores)
     {
         vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
     }
-    m_swapChainSemaphores.clear();
+    m_imageAvailableSemaphores.clear();
 
-    for (const auto& semaphore : m_finishQueueSemaphores)
+    for (const auto& semaphore : m_renderFinishedSemaphores)
     {
         vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
     }
-    m_finishQueueSemaphores.clear();
+    m_renderFinishedSemaphores.clear();
 
-    for (const auto& fence : m_swapChainFences)
+    for (const auto& fence : m_inflightFences)
     {
         vkDestroyFence(VulkanContext::instance().device(), fence, nullptr);
     }
-    m_swapChainFences.clear();
+    m_inflightFences.clear();
 
     for (auto& commandBuffer : m_commandBuffers)
     {
@@ -93,13 +91,13 @@ bool VulkanRendererImpl::beginDraw()
     m_indexCount = 0;
     m_drawCommands.clear();
 
-    vkWaitForFences(VulkanContext::instance().device(), 1, &m_swapChainFences[m_currentFrame], VK_TRUE, UINT64_MAX);
-    if (!m_surface->prepareNextImage(m_swapChainSemaphores[m_currentFrame]))
+    vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
+    if (!m_surface->prepareNextImage(m_imageAvailableSemaphores[m_currentFrame]))
     {
         doResize();
         return false;
     }
-    vkResetFences(VulkanContext::instance().device(), 1, &m_swapChainFences[m_currentFrame]);
+    vkResetFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame]);
 
     vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
 
@@ -275,8 +273,8 @@ void VulkanRendererImpl::endDraw()
         throw std::runtime_error("failed to record command buffer");
     }
 
-    std::array semaphores = {m_swapChainSemaphores[m_currentFrame]};
-    std::array signalSemaphores = {m_finishQueueSemaphores[m_currentFrame]};
+    std::array semaphores = {m_imageAvailableSemaphores[m_currentFrame]};
+    std::array signalSemaphores = {m_renderFinishedSemaphores[m_currentFrame]};
     std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     VkSubmitInfo submitInfo = {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -288,12 +286,12 @@ void VulkanRendererImpl::endDraw()
         .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()),
         .pSignalSemaphores = signalSemaphores.data(),
     };
-    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, m_swapChainFences[m_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, m_inflightFences[m_currentFrame]) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to submit draw command buffer");
     }
 
-    bool ret = m_surface->present(m_finishQueueSemaphores[m_currentFrame]);
+    bool ret = m_surface->present(m_renderFinishedSemaphores[m_currentFrame]);
     if (!ret)
     {
         doResize();
@@ -391,9 +389,9 @@ void VulkanRendererImpl::createCommandBuffers()
 
 void VulkanRendererImpl::createSyncObjects()
 {
-    m_swapChainSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_finishQueueSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_swapChainFences.resize(MAX_FRAMES_IN_FLIGHT);
+    m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    m_inflightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo = {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
@@ -405,9 +403,9 @@ void VulkanRendererImpl::createSyncObjects()
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_swapChainSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_finishQueueSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_swapChainFences[i]) != VK_SUCCESS)
+        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_inflightFences[i]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create swap chain sync objects");
         }

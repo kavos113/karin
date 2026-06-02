@@ -1,19 +1,21 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 
-#include <vector>
 #include <cstdint>
+
+#include <vector>
 #include <memory>
 #include <unordered_map>
 
 #include <renderer_impl.h>
 #include <font_renderer_impl.h>
-#include <karin/common/geometry/rectangle.h>
+#include <karin/common/geometry/size.h>
+#include <karin/common/color/color.h>
 #include <karin/graphics/pattern.h>
 #include <karin/system/window.h>
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
-#include "vulkan_window_surface.h"
+#include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
 #include "vulkan_buffer.h"
 #include "shaders/push_constants.h"
@@ -37,9 +39,7 @@ public:
         Text,
     };
 
-    VulkanRendererImpl(
-        Window::NativeHandle nativeHandle
-    );
+    VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface);
     ~VulkanRendererImpl() override = default;
 
     void cleanUp() override;
@@ -117,7 +117,7 @@ private:
 
     void doResize();
 
-    std::unique_ptr<VulkanWindowSurface> m_surface;
+    std::unique_ptr<IVulkanSurface> m_surface;
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
@@ -127,9 +127,9 @@ private:
     uint8_t m_currentFrame = 0;
 
     std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkSemaphore> m_finishQueueSemaphores;
-    std::vector<VkSemaphore> m_swapChainSemaphores;
-    std::vector<VkFence> m_swapChainFences;
+    std::vector<VkSemaphore> m_renderFinishedSemaphores;
+    std::vector<VkSemaphore> m_imageAvailableSemaphores;
+    std::vector<VkFence> m_inflightFences;
 
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
 

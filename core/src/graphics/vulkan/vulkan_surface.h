@@ -12,6 +12,8 @@ class IVulkanSurface
 public:
     virtual ~IVulkanSurface() = default;
 
+    virtual void createFrameBuffers(VkRenderPass renderPass) = 0;
+    virtual void destroyFrameBuffers() = 0;
     virtual void cleanUp() = 0;
     virtual void resize(VkRenderPass renderPass) = 0;
 

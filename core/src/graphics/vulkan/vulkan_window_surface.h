@@ -19,8 +19,8 @@ public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
     ~VulkanWindowSurface() override = default;
 
-    void createFrameBuffers(VkRenderPass renderPass);
-    void destroyFrameBuffers();
+    void createFrameBuffers(VkRenderPass renderPass) override;
+    void destroyFrameBuffers() override;
     void cleanUp() override;
     void resize(VkRenderPass renderPass) override;
 
