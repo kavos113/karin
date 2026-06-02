@@ -24,7 +24,7 @@ VulkanRendererImpl::VulkanRendererImpl(
     createCommandBuffers();
     createSyncObjects();
     createRenderPass();
-    createFrameBuffers();
+    m_surface->createFrameBuffers(m_renderPass);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -39,11 +39,7 @@ void VulkanRendererImpl::cleanUp()
 
     m_fontRenderer->cleanup();
 
-    for (const auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-    m_swapChainFramebuffers.clear();
+    m_surface->destroyFrameBuffers();
 
     for (const auto& semaphore : m_swapChainSemaphores)
     {
@@ -121,7 +117,7 @@ bool VulkanRendererImpl::beginDraw()
     VkRenderPassBeginInfo renderPassInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = m_renderPass,
-        .framebuffer = m_swapChainFramebuffers[imageIndex],
+        .framebuffer = m_surface->currentFrameBuffer(),
         .renderArea = {
             .offset = {0, 0},
             .extent = m_surface->extent(),
@@ -598,36 +594,6 @@ void VulkanRendererImpl::createRenderPass()
     }
 }
 
-void VulkanRendererImpl::createFrameBuffers()
-{
-    auto swapChainImageViews = m_surface->swapChainImageViews();
-    m_swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); i++)
-    {
-        std::array attachments = {
-            swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = m_renderPass,
-            .attachmentCount = 1,
-            .pAttachments = attachments.data(),
-            .width = m_extent.width,
-            .height = m_extent.height,
-            .layers = 1
-        };
-
-        if (vkCreateFramebuffer(
-            VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]
-        ) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer");
-        }
-    }
-}
-
 void VulkanRendererImpl::createPipeline()
 {
     std::vector descriptorSetLayouts = {
@@ -670,15 +636,8 @@ void VulkanRendererImpl::doResize()
 {
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
-    for (const auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-
-    m_surface->resize();
+    m_surface->resize(m_renderPass);
     m_extent = m_surface->extent();
-
-    createFrameBuffers();
 
     m_projMatrixData.proj[0][0] = 2.0f / static_cast<float>(m_extent.width);
     m_projMatrixData.proj[1][1] = 2.0f / static_cast<float>(m_extent.height);

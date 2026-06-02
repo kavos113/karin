@@ -113,7 +113,6 @@ private:
     void createIndexBuffer();
     void createMatrixBuffer();
     void createRenderPass();
-    void createFrameBuffers();
     void createPipeline();
 
     void doResize();
@@ -127,7 +126,6 @@ private:
 
     uint8_t m_currentFrame = 0;
 
-    std::vector<VkFramebuffer> m_swapChainFramebuffers;
     std::vector<VkCommandBuffer> m_commandBuffers;
     std::vector<VkSemaphore> m_finishQueueSemaphores;
     std::vector<VkSemaphore> m_swapChainSemaphores;

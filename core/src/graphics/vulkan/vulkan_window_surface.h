@@ -19,8 +19,10 @@ public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
     ~VulkanWindowSurface() override = default;
 
+    void createFrameBuffers(VkRenderPass renderPass);
+    void destroyFrameBuffers();
     void cleanUp() override;
-    void resize() override;
+    void resize(VkRenderPass renderPass) override;
 
     uint32_t acquireNextImage(VkSemaphore semaphore) override;
     void setViewPorts(VkCommandBuffer commandBuffer) const override;
@@ -42,9 +44,9 @@ public:
         return static_cast<uint32_t>(m_swapChainImages.size());
     }
 
-    std::vector<VkImageView> swapChainImageViews() const override
+    VkFramebuffer currentFrameBuffer() const override
     {
-        return m_swapChainImageViews;
+        return m_swapChainFramebuffers[m_imageIndex];
     }
 
     void startResizing() override
@@ -71,6 +73,7 @@ private:
     std::vector<VkImageView> m_swapChainImageViews;
     VkFormat m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
     VkExtent2D m_swapChainExtent = {};
+    std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
     VkViewport m_viewport = {};
     VkRect2D m_scissor = {};

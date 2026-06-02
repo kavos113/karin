@@ -116,6 +116,42 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     createViewport();
 }
 
+void VulkanWindowSurface::createFrameBuffers(VkRenderPass renderPass)
+{
+    m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
+
+    for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
+    {
+        VkImageView attachments[] = {
+            m_swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo = {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = renderPass,
+            .attachmentCount = 1,
+            .pAttachments = attachments,
+            .width = m_swapChainExtent.width,
+            .height = m_swapChainExtent.height,
+            .layers = 1
+        };
+
+        if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create framebuffer");
+        }
+    }
+}
+
+void VulkanWindowSurface::destroyFrameBuffers()
+{
+    for (auto& framebuffer : m_swapChainFramebuffers)
+    {
+        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
+    }
+    m_swapChainFramebuffers.clear();
+}
+
 void VulkanWindowSurface::cleanUp()
 {
     for (auto& imageView : m_swapChainImageViews)
@@ -137,8 +173,10 @@ void VulkanWindowSurface::cleanUp()
     }
 }
 
-void VulkanWindowSurface::resize()
+void VulkanWindowSurface::resize(VkRenderPass renderPass)
 {
+    destroyFrameBuffers();
+
     for (auto& imageView : m_swapChainImageViews)
     {
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
@@ -147,6 +185,8 @@ void VulkanWindowSurface::resize()
     createSwapChain(true);
     createImageView();
     createViewport();
+
+    createFrameBuffers(renderPass);
 }
 
 uint32_t VulkanWindowSurface::acquireNextImage(VkSemaphore semaphore)
@@ -382,5 +422,4 @@ void VulkanWindowSurface::createViewport()
         .extent = m_swapChainExtent
     };
 }
-
 } // karin

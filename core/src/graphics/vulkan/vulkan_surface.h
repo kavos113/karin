@@ -3,8 +3,6 @@
 
 #include <cstdint>
 
-#include <vector>
-
 #include <vulkan/vulkan.h>
 
 namespace karin
@@ -15,7 +13,7 @@ public:
     virtual ~IVulkanSurface() = default;
 
     virtual void cleanUp() = 0;
-    virtual void resize() = 0;
+    virtual void resize(VkRenderPass renderPass) = 0;
 
     virtual uint32_t acquireNextImage(VkSemaphore semaphore) = 0;
     virtual void setViewPorts(VkCommandBuffer commandBuffer) const = 0;
@@ -25,7 +23,7 @@ public:
     virtual VkExtent2D extent() const = 0;
     virtual VkFormat format() const = 0;
     virtual uint32_t imageCount() const = 0;
-    virtual std::vector<VkImageView> swapChainImageViews() const = 0;
+    virtual VkFramebuffer currentFrameBuffer() const = 0;
 
     virtual void startResizing() = 0;
     virtual void finishResizing() = 0;
