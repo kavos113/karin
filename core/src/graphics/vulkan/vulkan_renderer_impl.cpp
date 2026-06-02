@@ -69,8 +69,8 @@ void VulkanRendererImpl::cleanUp()
     }
     m_commandBuffers.clear();
 
-    vmaDestroyBuffer(VulkanContext::instance().allocator(), m_vertexBuffer, m_vertexAllocation);
-    vmaDestroyBuffer(VulkanContext::instance().allocator(), m_indexBuffer, m_indexAllocation);
+    m_vertexBuffer.cleanup();
+    m_indexBuffer.cleanup();
     for (size_t i = 0; i < m_projMatrixBuffers.size(); ++i)
     {
         vmaDestroyBuffer(VulkanContext::instance().allocator(), m_projMatrixBuffers[i], m_projMatrixBufferAllocations[i]);
@@ -91,8 +91,8 @@ void VulkanRendererImpl::cleanUp()
 
 bool VulkanRendererImpl::beginDraw()
 {
-    m_vertexMapPoint = m_vertexStartPoint;
-    m_indexMapPoint = m_indexStartPoint;
+    m_vertexBuffer.mappedData = m_vertexStartPoint;
+    m_indexBuffer.mappedData = m_indexStartPoint;
     m_vertexOffset = 0;
     m_indexCount = 0;
     m_drawCommands.clear();
@@ -140,12 +140,12 @@ void VulkanRendererImpl::endDraw()
 {
     m_fontRenderer->flushGlyphUploads();
 
-    std::array vertexBuffers = {m_vertexBuffer};
+    std::array vertexBuffers = {m_vertexBuffer.buffer};
     std::array<VkDeviceSize, 1> offsets = {};
     vkCmdBindVertexBuffers(
         m_commandBuffers[m_currentFrame], 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data()
     );
-    vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
     std::ranges::sort(
         m_drawCommands,
@@ -321,16 +321,16 @@ void VulkanRendererImpl::addCommand(
     PipelineType pipelineType
 )
 {
-    memcpy(m_vertexMapPoint, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
-    m_vertexMapPoint += vertices.size();
+    memcpy(m_vertexBuffer.mappedData, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
+    m_vertexBuffer.mappedData += vertices.size();
 
     for (uint16_t& index : indices)
     {
         index += m_vertexOffset;
     }
 
-    memcpy(m_indexMapPoint, indices.data(), indices.size() * sizeof(uint16_t));
-    m_indexMapPoint += indices.size();
+    memcpy(m_indexBuffer.mappedData, indices.data(), indices.size() * sizeof(uint16_t));
+    m_indexBuffer.mappedData += indices.size();
     m_indexCount += indices.size();
 
     m_vertexOffset += static_cast<uint16_t>(vertices.size());
@@ -440,16 +440,11 @@ void VulkanRendererImpl::createVertexBuffer()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
 
-    VmaAllocationInfo memoryInfo;
-    if (vmaCreateBuffer(
-        VulkanContext::instance().allocator(), &bufferInfo, &allocInfo, &m_vertexBuffer, &m_vertexAllocation, &memoryInfo
-    ) != VK_SUCCESS)
+    if (m_vertexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create vertex buffer");
     }
-
-    m_vertexMapPoint = static_cast<VulkanPipeline::Vertex*>(memoryInfo.pMappedData);
-    m_vertexStartPoint = m_vertexMapPoint;
+    m_vertexStartPoint = m_vertexBuffer.mappedData;
 }
 
 void VulkanRendererImpl::createIndexBuffer()
@@ -466,16 +461,11 @@ void VulkanRendererImpl::createIndexBuffer()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
 
-    VmaAllocationInfo memoryInfo;
-    if (vmaCreateBuffer(
-        VulkanContext::instance().allocator(), &bufferInfo, &allocInfo, &m_indexBuffer, &m_indexAllocation, &memoryInfo
-    ) != VK_SUCCESS)
+    if (m_indexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create index buffer");
     }
-
-    m_indexMapPoint = static_cast<uint16_t*>(memoryInfo.pMappedData);
-    m_indexStartPoint = m_indexMapPoint;
+    m_indexStartPoint = m_indexBuffer.mappedData;
 }
 
 void VulkanRendererImpl::createMatrixBuffer()

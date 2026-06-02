@@ -1,22 +1,22 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 
-#include "vulkan_device_resources.h"
-#include "vulkan_pipeline.h"
-#include "vulkan_window_surface.h"
-#include "vulkan_font_renderer.h"
-#include "shaders/push_constants.h"
+#include <vector>
+#include <cstdint>
+#include <memory>
+#include <unordered_map>
 
 #include <renderer_impl.h>
 #include <font_renderer_impl.h>
 #include <karin/common/geometry/rectangle.h>
 #include <karin/graphics/pattern.h>
 #include <karin/system/window.h>
-
-#include <vector>
-#include <cstdint>
-#include <memory>
-#include <unordered_map>
+#include "vulkan_device_resources.h"
+#include "vulkan_pipeline.h"
+#include "vulkan_window_surface.h"
+#include "vulkan_font_renderer.h"
+#include "vulkan_buffer.h"
+#include "shaders/push_constants.h"
 
 namespace karin
 {
@@ -138,13 +138,9 @@ private:
 
     VkExtent2D m_extent = {};
 
-    VkBuffer m_vertexBuffer = VK_NULL_HANDLE;
-    VmaAllocation m_vertexAllocation = VK_NULL_HANDLE;
-    VulkanPipeline::Vertex* m_vertexMapPoint = nullptr;
+    VulkanBuffer<VulkanPipeline::Vertex> m_vertexBuffer;
     VulkanPipeline::Vertex* m_vertexStartPoint = nullptr;
-    VkBuffer m_indexBuffer = VK_NULL_HANDLE;
-    VmaAllocation m_indexAllocation = VK_NULL_HANDLE;
-    uint16_t* m_indexMapPoint = nullptr;
+    VulkanBuffer<uint16_t> m_indexBuffer;
     uint16_t* m_indexStartPoint = nullptr;
     uint16_t m_vertexOffset = 0;
     size_t m_indexCount = 0;
