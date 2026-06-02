@@ -2,14 +2,14 @@
 
 namespace karin
 {
-D2DOffscreenRendererImpl::D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenSurface> surface)
+D2DOffscreenRendererImpl::D2DOffscreenRendererImpl(std::unique_ptr<ID2DSurface> surface, D2DOffscreenSurface* offscreenSurface)
+    : D2DRendererImpl(std::move(surface))
+    , m_offscreenSurface(offscreenSurface)
 {
-    m_surface = surface.get();
-    D2DRendererImpl(std::move(surface));
 }
 
 std::vector<std::byte> D2DOffscreenRendererImpl::getImageData() const
 {
-    return m_surface->getImageData();
+    return m_offscreenSurface->getImageData();
 }
 } // karin

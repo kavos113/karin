@@ -46,7 +46,8 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto surface = std::make_unique<D2DOffscreenSurface>(size);
-    auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface));
+    auto offscreenSurfacePtr = surface.get();
+    auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface), offscreenSurfacePtr);
 
     IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
     return {

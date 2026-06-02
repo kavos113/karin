@@ -55,10 +55,12 @@ public:
         return m_fontRenderer.get();
     }
 
+protected:
+    std::unique_ptr<ID2DSurface> m_surface;
+
 private:
     void setTargetBitmap() const;
 
-    std::unique_ptr<ID2DSurface> m_surface;
     std::unique_ptr<D2DDeviceResources> m_deviceResources;
     std::unique_ptr<D2DFontRenderer> m_fontRenderer;
 
