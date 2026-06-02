@@ -34,8 +34,10 @@ public:
 
 private:
     void createBuffers(uint32_t width, uint32_t height);
+    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout) const;
 
-    Size m_size;
+    uint32_t m_width;
+    uint32_t m_height;
 
     VkFramebuffer m_framebuffer = VK_NULL_HANDLE;
     VulkanImage m_image;

@@ -7,7 +7,8 @@
 namespace karin
 {
 VulkanOffscreenSurface::VulkanOffscreenSurface(Size size)
-    : m_size(size)
+    : m_width(static_cast<uint32_t>(size.width)),
+      m_height(static_cast<uint32_t>(size.height))
 {
     createBuffers(static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height));
 }
@@ -19,8 +20,8 @@ void VulkanOffscreenSurface::createFrameBuffers(VkRenderPass renderPass)
         .renderPass = renderPass,
         .attachmentCount = 1,
         .pAttachments = &m_image.imageView,
-        .width = static_cast<uint32_t>(m_size.width),
-        .height = static_cast<uint32_t>(m_size.height),
+        .width = m_width,
+        .height = m_height,
         .layers = 1
     };
     if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_framebuffer) != VK_SUCCESS)
@@ -47,7 +48,7 @@ void VulkanOffscreenSurface::cleanUp()
 void VulkanOffscreenSurface::resize(VkRenderPass renderPass)
 {
     destroyFrameBuffers();
-    createBuffers(static_cast<uint32_t>(m_size.width), static_cast<uint32_t>(m_size.height));
+    createBuffers(m_width, m_height);
     createFrameBuffers(renderPass);
 }
 
@@ -63,10 +64,7 @@ bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
 
 VkExtent2D VulkanOffscreenSurface::extent() const
 {
-    return {
-        static_cast<uint32_t>(m_size.width),
-        static_cast<uint32_t>(m_size.height),
-    };
+    return {m_width, m_height};
 }
 
 VkFormat VulkanOffscreenSurface::format() const
@@ -81,6 +79,41 @@ VkFramebuffer VulkanOffscreenSurface::currentFrameBuffer() const
 
 std::vector<std::byte> VulkanOffscreenSurface::getImageData() const
 {
+    VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
+    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+    VkBufferImageCopy region = {
+        .bufferOffset = 0,
+        .bufferRowLength = 0,
+        .bufferImageHeight = 0,
+        .imageSubresource = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .mipLevel = 0,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+        .imageOffset = {0, 0, 0},
+        .imageExtent = {m_width, m_height, 1},
+    };
+
+    vkCmdCopyImageToBuffer(
+        commandBuffer, m_image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, m_stagingBuffer.buffer, 1, &region
+    );
+
+    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    VulkanContext::instance().endSingleTimeCommands(commandBuffer);
+
+    std::vector<std::byte> imageData(m_width * m_height * 4);
+    void* mappedData;
+    if (vmaMapMemory(VulkanContext::instance().allocator(), m_stagingBuffer.allocation, &mappedData) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to map staging buffer memory for reading offscreen surface image data");
+    }
+
+    std::memcpy(imageData.data(), mappedData, imageData.size());
+    vmaUnmapMemory(VulkanContext::instance().allocator(), m_stagingBuffer.allocation);
+
+    return imageData;
 }
 
 void VulkanOffscreenSurface::createBuffers(uint32_t width, uint32_t height)
@@ -145,5 +178,59 @@ void VulkanOffscreenSurface::createBuffers(uint32_t width, uint32_t height)
     {
         throw std::runtime_error("failed to create staging buffer for offscreen surface");
     }
+}
+
+void VulkanOffscreenSurface::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout) const
+{
+    if (oldLayout == newLayout)
+    {
+        return;
+    }
+
+    VkImageMemoryBarrier barrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+        .srcAccessMask = 0,
+        .dstAccessMask = 0,
+        .oldLayout = oldLayout,
+        .newLayout = newLayout,
+        .image = m_image.image,
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+
+    VkPipelineStageFlags sourceStage;
+    VkPipelineStageFlags destinationStage;
+    if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+    {
+        barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    }
+    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+    {
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    }
+    else
+    {
+        throw std::invalid_argument("unsupported layout transition");
+    }
+
+    vkCmdPipelineBarrier(
+        commandBuffer,
+        sourceStage, destinationStage,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &barrier
+    );
 }
 } // karin
