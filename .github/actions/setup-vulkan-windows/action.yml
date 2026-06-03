@@ -16,7 +16,7 @@ runs:
         path: VulkanSDK-Installer.exe
         key: vulkan-sdk-${{ inputs.vulkan-version }}-installer
         restore-keys:
-          - vulkan-sdk-${{ inputs.vulkan-version }}-installer
+          vulkan-sdk-${{ inputs.vulkan-version }}-installer
 
     - name: Download Vulkan SDK from Cache
       if: steps.cache-vulkan-sdk.outputs.cache-hit == 'true'
