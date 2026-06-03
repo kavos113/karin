@@ -29,7 +29,7 @@ jobs:
         include:
           - target: ubuntu
             os: ubuntu-latest
-            cmake_preset: "ubuntu-debug"
+            cmake_preset: "ubuntu-debug-headless"
             name: "ubuntu"
           - target: windows-d2d
             os: windows-latest
@@ -37,7 +37,7 @@ jobs:
             name: "windows"
           - target: windows-vulkan
             os: windows-latest
-            cmake_preset: "windows-vulkan-debug"
+            cmake_preset: "windows-vulkan-debug-headless"
             name: "windows-vulkan"
             vulkan_version: "1.4.321.1"
 
@@ -127,7 +127,7 @@ jobs:
         include:
           - target: ubuntu
             os: ubuntu-latest
-            cmake_preset: "ubuntu-debug"
+            cmake_preset: "ubuntu-debug-headless"
             name: "ubuntu"
             swiftshader_build_os: "Linux"
           - target: windows-d2d
@@ -136,7 +136,7 @@ jobs:
             name: "windows"
           - target: windows-vulkan
             os: windows-latest
-            cmake_preset: "windows-vulkan-debug"
+            cmake_preset: "windows-vulkan-debug-headless"
             name: "window-vulkan"
             vulkan_version: "1.4.321.1"
             swiftshader_build_os: "Windows"
@@ -203,7 +203,7 @@ jobs:
         include:
           - target: ubuntu
             os: ubuntu-latest
-            cmake_preset: "ubuntu-debug"
+            cmake_preset: "ubuntu-debug-headless"
             name: "ubuntu"
           - target: windows-d2d
             os: windows-latest
@@ -211,7 +211,7 @@ jobs:
             name: "windows"
           - target: windows-vulkan
             os: windows-latest
-            cmake_preset: "windows-vulkan-debug"
+            cmake_preset: "windows-vulkan-debug-headless"
             name: "windows-vulkan"
             vulkan_version: "1.4.321.1"
 

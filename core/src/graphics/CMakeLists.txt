@@ -144,3 +144,7 @@ elseif (APPLE)
 elseif (UNIX)
     target_compile_definitions(karin_graphics PUBLIC KARIN_PLATFORM_UNIX)
 endif ()
+
+if (HEADLESS)
+    target_compile_definitions(karin_graphics PUBLIC KARIN_OPTION_HEADLESS)
+endif ()

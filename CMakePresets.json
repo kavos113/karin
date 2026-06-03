@@ -35,12 +35,28 @@
       }
     },
     {
+      "name": "windows-vulkan-debug-headless",
+      "inherits": ["windows-vulkan-debug"],
+      "description": "windows debug build with Vulkan support and headless rendering",
+      "cacheVariables": {
+        "HEADLESS": "ON"
+      }
+    },
+    {
       "name": "ubuntu-debug",
       "inherits": ["common"],
       "description": "ubuntu debug build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "VCPKG_MANIFEST_FEATURES": "font-freetype"
+      }
+    },
+    {
+      "name": "ubuntu-debug-headless",
+      "inherits": ["ubuntu-debug"],
+      "description": "ubuntu debug build with headless rendering",
+      "cacheVariables": {
+        "HEADLESS": "ON"
       }
     }
   ],
