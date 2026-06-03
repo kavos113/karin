@@ -18,6 +18,8 @@ public:
     VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenSurface> surface);
     ~VulkanOffscreenRendererImpl() override = default;
 
+    void cleanUp() override;
+
     std::vector<std::byte> getImageData() const override;
 
 private:

@@ -8,6 +8,13 @@ VulkanOffscreenRendererImpl::VulkanOffscreenRendererImpl(std::unique_ptr<VulkanO
 {
 }
 
+void VulkanOffscreenRendererImpl::cleanUp()
+{
+    VulkanRendererImpl::cleanUp();
+
+    m_offscreenSurface = nullptr;
+}
+
 std::vector<std::byte> VulkanOffscreenRendererImpl::getImageData() const
 {
     return m_offscreenSurface->getImageData();

@@ -8,6 +8,13 @@ D2DOffscreenRendererImpl::D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenS
 {
 }
 
+void D2DOffscreenRendererImpl::cleanUp()
+{
+    D2DRendererImpl::cleanUp();
+
+    m_offscreenSurface = nullptr;
+}
+
 std::vector<std::byte> D2DOffscreenRendererImpl::getImageData() const
 {
     return m_offscreenSurface->getImageData();

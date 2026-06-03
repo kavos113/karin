@@ -18,6 +18,8 @@ public:
     D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenSurface> surface);
     ~D2DOffscreenRendererImpl() override = default;
 
+    void cleanUp() override;
+
     std::vector<std::byte> getImageData() const override;
 
 private:
