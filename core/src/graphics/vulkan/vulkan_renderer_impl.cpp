@@ -328,6 +328,7 @@ void VulkanRendererImpl::addCommand(
     m_indexBuffer.mappedData += indices.size();
     m_indexCount += indices.size();
 
+    // TODO: オフセットのオーバーフロー
     m_vertexOffset += static_cast<uint16_t>(vertices.size());
 
     DrawCommand drawCommand = {
@@ -668,5 +669,7 @@ void VulkanRendererImpl::doResize()
             sizeof(MatrixBufferObject)
         );
     }
+
+    createViewport();
 }
 } // karin
