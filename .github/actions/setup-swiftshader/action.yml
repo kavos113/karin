@@ -37,9 +37,8 @@ runs:
       run: |
         cmake -S swiftshader -B swiftshader/build \
          -DCMAKE_BUILD_TYPE=Release \
-         -DCMAKE_C_COMPILER=cl \
-         -DCMAKE_CXX_COMPILER=cl \
-         -G Ninja
+         -G "Visual Studio 17 2022" \
+         -A x64
         cmake --build swiftshader/build --config Release --parallel
       shell: bash
 

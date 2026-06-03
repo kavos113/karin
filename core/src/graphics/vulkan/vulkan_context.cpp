@@ -18,8 +18,10 @@
 
 namespace
 {
-const std::vector DEVICE_EXTENSIONS = {
+const std::vector<const char *> DEVICE_EXTENSIONS = {
+#ifndef KARIN_OPTION_HEADLESS
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#endif
 };
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device)
