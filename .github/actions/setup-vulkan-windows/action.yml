@@ -40,6 +40,7 @@ runs:
       run: |
         echo "Setting up Vulkan environment variables..."
         echo "VULKAN_SDK=C:/VulkanSDK/${{ inputs.vulkan-version }}" >> $GITHUB_ENV
+        echo "VK_LAYER_PATH=C:/VulkanSDK/${{ inputs.vulkan-version }}/Bin" >> $GITHUB_ENV
         echo "$VULKAN_SDK/Bin" >> $GITHUB_PATH
         echo "$VULKAN_SDK/Lib" >> $GITHUB_PATH  
         echo "$VULKAN_SDK/Include" >> $GITHUB_PATH
