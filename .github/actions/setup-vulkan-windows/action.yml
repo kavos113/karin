@@ -35,6 +35,7 @@ runs:
         INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
         
         echo "Installing Vulkan SDK to $INSTALL_DIR..."
+        
         "$INSTALLER_PATH" --root "$INSTALL_DIR" --accept-licenses --default-answer --confirm-command install
         
         echo "Vulkan SDK setup complete."
