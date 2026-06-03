@@ -272,6 +272,7 @@ void VulkanWindowSurface::createSurface()
 #endif
 }
 
+// TODO: width == 0 && height == 0のときに早期リターンするが，呼び出し元でそれを考慮できていない
 void VulkanWindowSurface::createSwapChain(bool isRecreating)
 {
     VkSurfaceFormatKHR surfaceFormat = getBestSwapSurfaceFormat(VulkanContext::instance().physicalDevice(), m_surface);

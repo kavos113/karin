@@ -15,8 +15,13 @@ WindowRenderer::WindowRenderer(Window* window)
 
 WindowRenderer::~WindowRenderer() = default;
 
-void WindowRenderer::update() const
+void WindowRenderer::update()
 {
+    if (m_updated)
+    {
+        return;
+    }
+
     m_window->addPaintCallback(
         [this]
         {
@@ -65,5 +70,7 @@ void WindowRenderer::update() const
             m_impl->finishResizing();
         }
     );
+
+    m_updated = true;
 }
 } // karin

@@ -20,10 +20,12 @@ public:
     /**
      * Apply renderer settings to native window.
      */
-    void update() const;
+    void update();
 
 private:
     Window* m_window;
+
+    bool m_updated = false;
 };
 } // karin
 
