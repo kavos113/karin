@@ -141,7 +141,8 @@ std::vector<std::byte> VulkanOffscreenSurface::getImageData() const
     transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
-    std::vector<std::byte> imageData(m_width * m_height * 4);
+    VkDeviceSize imageSize = m_width * m_height * 4;
+    std::vector<std::byte> imageData(imageSize);
     void* mappedData;
     if (vmaMapMemory(VulkanContext::instance().allocator(), m_stagingBuffer.allocation, &mappedData) != VK_SUCCESS)
     {

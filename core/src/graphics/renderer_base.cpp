@@ -32,10 +32,14 @@ Image RendererBase::createImage(const std::string& filePath)
         throw std::runtime_error("Failed to load image: " + filePath);
     }
 
-    std::vector<std::byte> imageData(width * height * 4);
+    size_t dataSize = static_cast<size_t>(width) * static_cast<size_t>(height) * 4;
+    std::vector<std::byte> imageData(dataSize);
     memcpy(imageData.data(), data, imageData.size());
 
-    return m_impl->createImage(imageData, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    Image image = m_impl->createImage(imageData, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    stbi_image_free(data);
+
+    return image;
 }
 
 Image RendererBase::createImage(const std::vector<std::byte>& data, uint32_t width, uint32_t height)
