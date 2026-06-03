@@ -18,12 +18,14 @@ runs:
         restore-keys: swiftshader-cache-${{ inputs.build-os }}
 
     - name: Download swiftshader
+      if: steps.cache-swiftshader.outputs.cache-hit != 'true'
       uses: actions/checkout@v5
       with:
         repository: "google/swiftshader"
         path: "swiftshader"
 
     - name: Build swiftshader
+      if: steps.cache-swiftshader.outputs.cache-hit != 'true'
       run: |
         cmake -S swiftshader -B swiftshader/build -DCMAKE_BUILD_TYPE=Release -G Ninja
         cmake --build swiftshader/build --config Release --parallel
