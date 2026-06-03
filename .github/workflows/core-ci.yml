@@ -148,6 +148,12 @@ jobs:
           name: core-${{ matrix.cmake_preset }}-build
           path: ${{ env.BUILD_DIR }}
 
+      - name: Download workflows
+        uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            .github
+
       - name: Setup SwiftShader
         if: matrix.os == 'ubuntu-latest' || contains(matrix.name, 'vulkan')
         uses: ./.github/actions/setup-swiftshader
