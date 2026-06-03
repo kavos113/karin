@@ -3,10 +3,14 @@
 
 #include <stb_image/stb_image_write.h>
 #include <vector>
+#include <iostream>
 
 int main()
 {
-    karin::OffscreenRenderer renderer(800, 600);
+    const int width = 800;
+    const int height = 600;
+
+    karin::OffscreenRenderer renderer(width, height);
 
     renderer.setClearColor(karin::Color(karin::Color::Green));
 
@@ -24,22 +28,28 @@ int main()
     renderer.draw();
 
     std::vector<std::byte> imageData = renderer.getImageData();
+    if (imageData.empty() || imageData.size() != width * height * 4)
+    {
+        std::cerr << "Failed to retrieve image data or data size is incorrect" << std::endl;
+        return -1;
+    }
 
     int result = stbi_write_png(
         "offscreen_render.png",
-        800,
-            600,
+        width,
+        height,
         4,
         imageData.data(),
-        800 * 4
+        width * 4
     );
     if (result == 0)
     {
-        printf("Failed to write image\n");
+        std::cerr << "Failed to write image to file" << std::endl;
+        return -1;
     }
     else
     {
-        printf("Image written successfully\n");
+        std::cout << "Image successfully saved to offscreen_render.png" << std::endl;
     }
 
     renderer.cleanUp();
