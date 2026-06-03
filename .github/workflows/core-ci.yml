@@ -197,7 +197,7 @@ jobs:
           UPDATE_TEST_IMAGES: 0
           TEST_PROFILE: ${{ matrix.name }}
         run: |
-          cd ${{ env.BUILD_DIR }}\${{ matrix.cmake_preset }}\core\test
+          cd ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test
           ctest --output-on-failure
 
   kotlin-test:
