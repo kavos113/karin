@@ -80,10 +80,12 @@ bool VulkanOffscreenSurface::prepareNextImage(VkSemaphore semaphore)
 bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
 {
     // just for send signal
+    VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
     VkSubmitInfo submitInfo = {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = &waitSemaphore,
+        .pWaitDstStageMask = &waitStage,
         .commandBufferCount = 0,
         .pCommandBuffers = nullptr,
     };
