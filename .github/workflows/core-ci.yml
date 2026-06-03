@@ -191,7 +191,7 @@ jobs:
           ctest --output-on-failure
 
       - name: add swiftshader to registry
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest' && contains(matrix.name, 'vulkan')
         run: |
           $JsonPath = '${{ github.workspace }}\swiftshader\build\${{ matrix.swiftshader_build_os }}\vk_swiftshader_icd.json'
           Write-Host "Adding SwiftShader ICD to registry with JSON path: $JsonPath"
