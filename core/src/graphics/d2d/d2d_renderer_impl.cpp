@@ -34,7 +34,9 @@ void D2DRendererImpl::setTargetBitmap() const
 
 void D2DRendererImpl::cleanUp()
 {
+    m_deviceContext->SetTarget(nullptr);
     m_deviceContext.Reset();
+    m_surface->cleanUp();
     m_surface = nullptr;
 }
 
