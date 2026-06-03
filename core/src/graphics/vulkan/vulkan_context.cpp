@@ -206,7 +206,7 @@ void VulkanContext::createInstance()
 
     std::vector extensions = {
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-#ifndef KARIN_PLATFORM_HEADLESS
+#ifndef KARIN_OPTION_HEADLESS
         VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef KARIN_PLATFORM_WINDOWS
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
