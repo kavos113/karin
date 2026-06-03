@@ -18,8 +18,8 @@ runs:
         restore-keys:
           vulkan-sdk-${{ inputs.vulkan-version }}-installer
 
-    - name: Download Vulkan SDK from Cache
-      if: steps.cache-vulkan-sdk.outputs.cache-hit == 'true'
+    - name: Download Vulkan SDK
+      if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
       run: |
         INSTALLER_URL="https://sdk.lunarg.com/sdk/download/${{ inputs.vulkan-version }}/windows/vulkansdk-windows-X64-${{ inputs.vulkan-version }}.exe"
         INSTALLER_PATH="./VulkanSDK-Installer.exe"
