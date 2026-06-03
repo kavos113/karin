@@ -11,6 +11,34 @@ namespace karin
 template <typename T>
 struct VulkanBuffer
 {
+    VulkanBuffer() = default;
+    VulkanBuffer(const VulkanBuffer&) = delete;
+    VulkanBuffer& operator=(const VulkanBuffer&) = delete;
+
+    VulkanBuffer(VulkanBuffer&& other) noexcept
+        : buffer(other.buffer), allocation(other.allocation), mappedData(other.mappedData)
+    {
+        other.buffer = VK_NULL_HANDLE;
+        other.allocation = VK_NULL_HANDLE;
+        other.mappedData = nullptr;
+    }
+    VulkanBuffer& operator=(VulkanBuffer&& other) noexcept
+    {
+        if (this != &other)
+        {
+            cleanup();
+
+            buffer = other.buffer;
+            allocation = other.allocation;
+            mappedData = other.mappedData;
+
+            other.buffer = VK_NULL_HANDLE;
+            other.allocation = VK_NULL_HANDLE;
+            other.mappedData = nullptr;
+        }
+        return *this;
+    }
+
     VkBuffer buffer = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
     T *mappedData = nullptr;
