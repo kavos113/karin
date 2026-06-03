@@ -1,6 +1,11 @@
 #ifndef CORE_KARIN_GRAPHICS_OFFSCREEN_RENDERER_H
 #define CORE_KARIN_GRAPHICS_OFFSCREEN_RENDERER_H
 
+#include <cstddef>
+#include <cstdint>
+
+#include <vector>
+
 #include "renderer_base.h"
 
 namespace karin

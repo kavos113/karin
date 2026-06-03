@@ -1,7 +1,13 @@
 #ifndef CORE_KARIN_GRAPHICS_RENDERER_BASE_H
 #define CORE_KARIN_GRAPHICS_RENDERER_BASE_H
 
+#include <cstddef>
+#include <cstdint>
+
 #include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <karin/common/color/color.h>
 #include "graphics_context.h"
