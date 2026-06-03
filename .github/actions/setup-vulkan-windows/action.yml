@@ -13,7 +13,7 @@ runs:
       id: cache-vulkan-sdk
       uses: actions/cache@v4
       with:
-        path: VulkanSDK-Installer.exe
+        path: C:/VulkanSDK-Installer.exe
         key: vulkan-sdk-${{ inputs.vulkan-version }}-installer
         restore-keys:
           vulkan-sdk-${{ inputs.vulkan-version }}-installer
@@ -22,7 +22,7 @@ runs:
       if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
       run: |
         INSTALLER_URL="https://sdk.lunarg.com/sdk/download/${{ inputs.vulkan-version }}/windows/vulkansdk-windows-X64-${{ inputs.vulkan-version }}.exe"
-        INSTALLER_PATH="./VulkanSDK-Installer.exe"
+        INSTALLER_PATH="C:/VulkanSDK-Installer.exe"
         INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
         
         echo "Downloading Vulkan SDK version ${{ inputs.vulkan-version }}..."
@@ -31,7 +31,7 @@ runs:
 
     - name: Install Vulkan SDK
       run:
-        INSTALLER_PATH="./VulkanSDK-Installer.exe"
+        INSTALLER_PATH="C:/VulkanSDK-Installer.exe"
         INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
         
         echo "Installing Vulkan SDK to $INSTALL_DIR..."
