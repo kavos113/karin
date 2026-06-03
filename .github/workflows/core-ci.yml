@@ -190,11 +190,24 @@ jobs:
           cd ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test
           ctest --output-on-failure
 
+      - name: add swiftshader to registry
+        if: matrix.os == 'windows-latest'
+        run: |
+          $JsonPath = '${{ github.workspace }}\swiftshader\build\${{ matrix.swiftshader_build_os }}\vk_swiftshader_icd.json'
+          Write-Host "Adding SwiftShader ICD to registry with JSON path: $JsonPath"
+          
+          if (-not (Test-Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers")) {
+              New-Item -Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers" -Force
+          }
+          
+          New-ItemProperty -Path "HKLM:\SOFTWARE\Khronos\Vulkan\Drivers" -Name $JsonPath -Value 0 -PropertyType DWord -Force
+          Write-Host "SwiftShader ICD added to registry successfully."
+        shell: powershell
+
       - name: Run tests (Windows)
         if : matrix.os == 'windows-latest'
         env:
           VK_ICD_FILENAMES: '${{ github.workspace }}\swiftshader\build\${{ matrix.swiftshader_build_os }}\vk_swiftshader_icd.json'
-          VK_LOADER_DEBUG: all
           UPDATE_TEST_IMAGES: 0
           TEST_PROFILE: ${{ matrix.name }}
         run: |
