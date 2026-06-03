@@ -154,6 +154,21 @@ jobs:
           name: core-${{ matrix.cmake_preset }}-build
           path: ${{ env.BUILD_DIR }}
 
+      - name: setup ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/setup-vulkan-ubuntu
+
+      - name: Install ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt install -y cmake g++ make libx11-dev vulkan-sdk ninja-build
+
+      - name: setup Vulkan SDK
+        if: contains(matrix.name, 'vulkan') && matrix.os == 'windows-latest'
+        uses: ./.github/actions/setup-vulkan-windows
+        with:
+          vulkan-version: ${{ matrix.vulkan_version }}
+
       - name: Setup SwiftShader
         if: matrix.os == 'ubuntu-latest' || contains(matrix.name, 'vulkan')
         uses: ./.github/actions/setup-swiftshader
