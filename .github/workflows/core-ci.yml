@@ -180,18 +180,24 @@ jobs:
         run: |
           chmod +x ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test/karin_test
 
-      - name: Run tests
+      - name: Run tests (Ubuntu)
+        if : matrix.os == 'ubuntu-latest'
         env:
+          VK_ICD_FILENAMES: ${{ github.workspace }}/swiftshader/build/${{ matrix.swiftshader_build_os }}/vk_swiftshader_icd.json
           UPDATE_TEST_IMAGES: 0
           TEST_PROFILE: ${{ matrix.name }}
         run: |
-          WORKSPACE=$(echo "${{ github.workspace }}" | sed 's/\\/\//g')
-          export VK_ICD_FILENAMES="${WORKSPACE}/swiftshader/build/${{ matrix.swiftshader_build_os }}/vk_swiftshader_icd.json"
-          
-          echo "VK_ICD_FILENAMES: $VK_ICD_FILENAMES" 
-          ls -la "${WORKSPACE}/swiftshader/build/${{ matrix.swiftshader_build_os }}"
-          
           cd ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test
+          ctest --output-on-failure
+
+      - name: Run tests (Windows)
+        if : matrix.os == 'windows-latest'
+        env:
+          VK_ICD_FILENAMES: "${{ github.workspace }}\swiftshader\build\${{ matrix.swiftshader_build_os }}\vk_swiftshader_icd.json"
+          UPDATE_TEST_IMAGES: 0
+          TEST_PROFILE: ${{ matrix.name }}
+        run: |
+          cd ${{ env.BUILD_DIR }}\${{ matrix.cmake_preset }}\core\test
           ctest --output-on-failure
 
   kotlin-test:
