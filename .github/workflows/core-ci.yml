@@ -129,15 +129,17 @@ jobs:
             os: ubuntu-latest
             cmake_preset: "ubuntu-debug"
             name: "ubuntu"
+            swiftshader_build_os: "Linux"
           - target: windows-d2d
             os: windows-latest
             cmake_preset: "windows-debug"
-            name: "windows d2d"
+            name: "windows"
           - target: windows-vulkan
             os: windows-latest
             cmake_preset: "windows-vulkan-debug"
-            name: "windows vulkan"
+            name: "window-vulkan"
             vulkan_version: "1.4.321.1"
+            swiftshader_build_os: "Windows"
     
     steps:
       - name: Download build artifacts
@@ -146,6 +148,12 @@ jobs:
           name: core-${{ matrix.cmake_preset }}-build
           path: ${{ env.BUILD_DIR }}
 
+      - name: Setup SwiftShader
+        if: matrix.os == 'ubuntu-latest' || contains(matrix.name, 'vulkan')
+        uses: ./.github/actions/setup-swiftshader
+        with:
+          build-os: ${{ matrix.os }}
+
       - name: add permissions
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -153,6 +161,7 @@ jobs:
 
       - name: Run tests
         env:
+          VK_ICD_FILENAMES: swiftshader/build/${{ matrix.swiftshader_build_os }}/vk_swiftshader_icd.json
           UPDATE_TEST_IMAGES: 0
           TEST_PROFILE: ${{ matrix.name }}
         run: |
@@ -178,11 +187,11 @@ jobs:
           - target: windows-d2d
             os: windows-latest
             cmake_preset: "windows-debug"
-            name: "windows d2d"
+            name: "windows"
           - target: windows-vulkan
             os: windows-latest
             cmake_preset: "windows-vulkan-debug"
-            name: "windows vulkan"
+            name: "windows-vulkan"
             vulkan_version: "1.4.321.1"
 
     steps:

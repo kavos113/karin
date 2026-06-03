@@ -1,0 +1,30 @@
+author: kohei
+description: setup-swiftshader
+
+inputs:
+  build-os:
+    description: build os
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache swiftshader
+      id: cache-swiftshader
+      uses: actions/cache@v4
+      with:
+        path: swiftshader
+        key: swiftshader-cache-${{ inputs.build-os }}
+        restore-keys: swiftshader-cache-${{ inputs.build-os }}
+
+    - name: Download swiftshader
+      uses: actions/checkout@v5
+      with:
+        repository: "google/swiftshader"
+        path: "swiftshader"
+
+    - name: Build swiftshader
+      run: |
+        cmake -S swiftshader -B swiftshader/build -DCMAKE_BUILD_TYPE=Release -G Ninja
+        cmake --build swiftshader/build --config Release --parallel
+      shell: bash
