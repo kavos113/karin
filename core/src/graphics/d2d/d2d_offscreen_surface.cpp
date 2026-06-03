@@ -63,7 +63,11 @@ std::vector<std::byte> D2DOffscreenSurface::getImageData() const
 
     D2D1_POINT_2U destPoint = {0, 0};
     D2D1_RECT_U srcRect = {0, 0, bitmapSize.width, bitmapSize.height};
-    stagingBitmap->CopyFromBitmap(&destPoint, m_bitmap.Get(), &srcRect);
+    hr = stagingBitmap->CopyFromBitmap(&destPoint, m_bitmap.Get(), &srcRect);
+    if (FAILED(hr))
+    {
+        throw std::runtime_error("Failed to copy bitmap to staging bitmap for reading");
+    }
 
     D2D1_MAPPED_RECT mappedRect;
     hr = stagingBitmap->Map(D2D1_MAP_OPTIONS_READ, &mappedRect);
