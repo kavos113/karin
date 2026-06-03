@@ -53,7 +53,8 @@ void VulkanOffscreenSurface::cleanUp()
 
 void VulkanOffscreenSurface::resize(VkRenderPass renderPass)
 {
-    destroyFrameBuffers();
+    cleanUp();
+
     createBuffers(m_width, m_height);
     createFrameBuffers(renderPass);
 }
@@ -78,6 +79,19 @@ bool VulkanOffscreenSurface::prepareNextImage(VkSemaphore semaphore)
 
 bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
 {
+    // just for send signal
+    VkSubmitInfo submitInfo = {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &waitSemaphore,
+        .commandBufferCount = 0,
+        .pCommandBuffers = nullptr,
+    };
+    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to submit offscreen surface presentation command buffer");
+    }
+
     return true;
 }
 
