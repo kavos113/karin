@@ -2,9 +2,9 @@
 
 namespace karin
 {
-D2DOffscreenRendererImpl::D2DOffscreenRendererImpl(std::unique_ptr<ID2DSurface> surface, D2DOffscreenSurface* offscreenSurface)
+D2DOffscreenRendererImpl::D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenSurface> surface)
     : D2DRendererImpl(std::move(surface))
-    , m_offscreenSurface(offscreenSurface)
+    , m_offscreenSurface(static_cast<D2DOffscreenSurface*>(m_surface.get())) // Safe to static_cast
 {
 }
 

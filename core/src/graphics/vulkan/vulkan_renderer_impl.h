@@ -92,6 +92,9 @@ public:
         return m_fontRenderer.get();
     }
 
+protected:
+    std::unique_ptr<IVulkanSurface> m_surface;
+
 private:
     struct DrawCommand
     {
@@ -119,7 +122,6 @@ private:
 
     void doResize();
 
-    std::unique_ptr<IVulkanSurface> m_surface;
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;

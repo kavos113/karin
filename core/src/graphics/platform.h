@@ -50,8 +50,7 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto surface = std::make_unique<D2DOffscreenSurface>(size);
-    auto offscreenSurfacePtr = surface.get();
-    auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface), offscreenSurfacePtr);
+    auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface));
 
     IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
     return {
@@ -60,8 +59,7 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
     };
 #elifdef KARIN_PLATFORM_VULKAN
     auto surface = std::make_unique<VulkanOffscreenSurface>(size);
-    auto offscreenSurfacePtr = surface.get();
-    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(surface), offscreenSurfacePtr);
+    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(surface));
 
     IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
     return {

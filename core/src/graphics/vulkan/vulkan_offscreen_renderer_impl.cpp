@@ -2,9 +2,9 @@
 
 namespace karin
 {
-VulkanOffscreenRendererImpl::VulkanOffscreenRendererImpl(std::unique_ptr<IVulkanSurface> surface, VulkanOffscreenSurface* offscreenSurface)
+VulkanOffscreenRendererImpl::VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenSurface> surface)
     : VulkanRendererImpl(std::move(surface))
-    , m_offscreenSurface(offscreenSurface)
+    , m_offscreenSurface(static_cast<VulkanOffscreenSurface*>(m_surface.get())) // Safe to static_cast
 {
 }
 

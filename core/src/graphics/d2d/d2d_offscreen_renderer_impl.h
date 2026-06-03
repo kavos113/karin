@@ -8,7 +8,6 @@
 
 #include <offscreen_renderer_impl.h>
 #include "d2d_offscreen_surface.h"
-#include "d2d_surface.h"
 #include "d2d_renderer_impl.h"
 
 namespace karin
@@ -16,7 +15,7 @@ namespace karin
 class D2DOffscreenRendererImpl : public D2DRendererImpl, public IOffscreenRendererImpl
 {
 public:
-    D2DOffscreenRendererImpl(std::unique_ptr<ID2DSurface> surface, D2DOffscreenSurface *offscreenSurface);
+    D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenSurface> surface);
     ~D2DOffscreenRendererImpl() override = default;
 
     std::vector<std::byte> getImageData() const override;
