@@ -5,7 +5,7 @@
 
 #include "visual_tester.h"
 
-TEST(ExamplesVisualTest, RadicalGradientPattern)
+TEST(ExamplesVisualTest, RadialGradientPattern)
 {
     karin::OffscreenRenderer renderer(800, 600);
 
@@ -34,7 +34,7 @@ TEST(ExamplesVisualTest, RadicalGradientPattern)
     renderer.draw();
 
     bool result = VisualTester::checkOrUpdate(
-        "radical_gradient_pattern",
+        "radial_gradient_pattern",
         renderer.getImageData(),
         800,
         600

@@ -21,7 +21,7 @@ set(TEST_SRCS
         graphics/visual/example_test_fill_path.cpp
         graphics/visual/example_test_fill_primitive_geometry.cpp
         graphics/visual/example_test_linear_gradient_pattern.cpp
-        graphics/visual/example_test_radical_gradient_pattern.cpp
+        graphics/visual/example_test_radial_gradient_pattern.cpp
         graphics/visual/example_test_transform.cpp
 
         graphics/visual/visual_tester.cpp
