@@ -188,6 +188,9 @@ jobs:
           WORKSPACE=$(echo "${{ github.workspace }}" | sed 's/\\/\//g')
           export VK_ICD_FILENAMES="${WORKSPACE}/swiftshader/build/${{ matrix.swiftshader_build_os }}/vk_swiftshader_icd.json"
           
+          echo "VK_ICD_FILENAMES: $VK_ICD_FILENAMES" 
+          ls -la "${WORKSPACE}/swiftshader/build/${{ matrix.swiftshader_build_os }}"
+          
           cd ${{ env.BUILD_DIR }}/${{ matrix.cmake_preset }}/core/test
           ctest --output-on-failure
 
