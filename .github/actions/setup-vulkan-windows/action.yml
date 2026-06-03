@@ -9,31 +9,35 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Vulkan SDK Cache
+    - name: Vulkan SDK Installer Cache
       id: cache-vulkan-sdk
       uses: actions/cache@v4
       with:
-        path: C:/VulkanSDK/${{ inputs.vulkan-version }}
-        key: vulkan-sdk-${{ inputs.vulkan-version }}
+        path: VulkanSDK-Installer.exe
+        key: vulkan-sdk-${{ inputs.vulkan-version }}-${{ runner.os }}-installer
         restore-keys:
-          vulkan-sdk-${{ inputs.vulkan-version }}
+          - vulkan-sdk-${{ inputs.vulkan-version }}-${{ runner.os }}-installer
 
-    - name: Download and Install Vulkan SDK
-      if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
+    - name: Download Vulkan SDK from Cache
+      if: steps.cache-vulkan-sdk.outputs.cache-hit == 'true'
       run: |
-          INSTALLER_URL="https://sdk.lunarg.com/sdk/download/${{ inputs.vulkan-version }}/windows/vulkansdk-windows-X64-${{ inputs.vulkan-version }}.exe"
-          INSTALLER_PATH="$TEMP/VulkanSDK-Installer.exe"
-          INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
-          
-          echo "Downloading Vulkan SDK version ${{ inputs.vulkan-version }}..."
-          curl -L -o "$INSTALLER_PATH" "$INSTALLER_URL"
-          
-          echo "Installing Vulkan SDK to $INSTALL_DIR..."
-          "$INSTALLER_PATH" --root "$INSTALL_DIR" --accept-licenses --default-answer --confirm-command install
-          
-          rm "$INSTALLER_PATH"
-          
-          echo "Vulkan SDK setup complete."
+        INSTALLER_URL="https://sdk.lunarg.com/sdk/download/${{ inputs.vulkan-version }}/windows/vulkansdk-windows-X64-${{ inputs.vulkan-version }}.exe"
+        INSTALLER_PATH="./VulkanSDK-Installer.exe"
+        INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
+        
+        echo "Downloading Vulkan SDK version ${{ inputs.vulkan-version }}..."
+        curl -L -o "$INSTALLER_PATH" "$INSTALLER_URL"
+      shell: bash
+
+    - name: Install Vulkan SDK
+      run:
+        INSTALLER_PATH="./VulkanSDK-Installer.exe"
+        INSTALL_DIR="C:/VulkanSDK/${{ inputs.vulkan-version }}"
+        
+        echo "Installing Vulkan SDK to $INSTALL_DIR..."
+        "$INSTALLER_PATH" --root "$INSTALL_DIR" --accept-licenses --default-answer --confirm-command install
+        
+        echo "Vulkan SDK setup complete."
       shell: bash
 
     - name: Setup Vulkan Environment
