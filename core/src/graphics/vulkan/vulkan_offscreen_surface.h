@@ -1,10 +1,12 @@
 #ifndef CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_SURFACE_H
 #define CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_SURFACE_H
 
+#include <cstddef>
+#include <cstdint>
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
-#include "vma.h"
 
 #include <karin/common/geometry/size.h>
 #include "vulkan_surface.h"

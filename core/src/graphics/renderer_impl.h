@@ -1,12 +1,14 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_RENDERER_IMPL_H
 
-#include <karin/common/geometry/size.h>
-#include <karin/common/color/color.h>
-#include <karin/graphics/image.h>
+#include <cstddef>
+#include <cstdint>
 
 #include <vector>
 
+#include <karin/common/geometry/size.h>
+#include <karin/common/color/color.h>
+#include <karin/graphics/image.h>
 #include "font_renderer_impl.h"
 
 namespace karin

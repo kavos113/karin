@@ -2,6 +2,7 @@
 #define CORE_TEST_GRAPHICS_VISUAL_VISUAL_TESTER_H
 
 #include <cstdlib>
+#include <cstddef>
 
 #include <string>
 #include <vector>

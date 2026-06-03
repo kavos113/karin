@@ -1,6 +1,8 @@
 #ifndef CORE_SRC_GRAPHICS_IOFFSCREENRENDERERIMPL_H
 #define CORE_SRC_GRAPHICS_IOFFSCREENRENDERERIMPL_H
 
+#include <cstddef>
+
 #include <vector>
 
 namespace karin

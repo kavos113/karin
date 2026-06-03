@@ -1,15 +1,20 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_D2D_DEVICE_RESOURCES_H
 #define SRC_GRAPHICS_GRAPHICS_D2D_DEVICE_RESOURCES_H
-#include <d2d1_1.h>
-#include <dwrite.h>
+
+#include <cstddef>
+#include <cstdint>
+
 #include <map>
 #include <unordered_map>
+#include <vector>
+
+#include <d2d1_1.h>
+#include <dwrite.h>
 #include <wrl/client.h>
 
 #include <karin/graphics/stroke_style.h>
 #include <karin/graphics/pattern.h>
 #include <karin/graphics/image.h>
-
 #include <path_impl.h>
 
 namespace karin

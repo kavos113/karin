@@ -1,6 +1,11 @@
 #ifndef CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_RENDERER_IMPL_H
 #define CORE_SRC_GRAPHICS_VULKAN_VULKAN_OFFSCREEN_RENDERER_IMPL_H
 
+#include <cstddef>
+
+#include <memory>
+#include <vector>
+
 #include <offscreen_renderer_impl.h>
 #include "vulkan_surface.h"
 #include "vulkan_offscreen_surface.h"

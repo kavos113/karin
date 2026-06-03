@@ -1,6 +1,8 @@
 #ifndef CORE_SRC_GRAPHICS_D2D_D2D_OFFSCREEN_SURFACE_H
 #define CORE_SRC_GRAPHICS_D2D_D2D_OFFSCREEN_SURFACE_H
 
+#include <cstddef>
+
 #include <vector>
 
 #include <wrl/client.h>

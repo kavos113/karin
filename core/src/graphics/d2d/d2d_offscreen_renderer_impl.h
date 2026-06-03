@@ -1,6 +1,8 @@
 #ifndef CORE_SRC_GRAPHICS_D2D_D2D_OFFSCREEN_RENDERER_IMPL_H
 #define CORE_SRC_GRAPHICS_D2D_D2D_OFFSCREEN_RENDERER_IMPL_H
 
+#include <cstddef>
+
 #include <memory>
 #include <vector>
 

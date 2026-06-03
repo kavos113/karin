@@ -1,6 +1,7 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 
+#include <cstddef>
 #include <cstdint>
 
 #include <vector>
@@ -12,7 +13,7 @@
 #include <karin/common/geometry/size.h>
 #include <karin/common/color/color.h>
 #include <karin/graphics/pattern.h>
-#include <karin/system/window.h>
+#include <karin/graphics/image.h>
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
 #include "vulkan_surface.h"

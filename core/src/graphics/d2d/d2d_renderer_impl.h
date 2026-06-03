@@ -1,17 +1,24 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_D2D_D2D_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_D2D_D2D_RENDERER_IMPL_H
 
-#include "d2d_color.h"
-#include "d2d_consts.h"
+#include <cstddef>
+#include <cstdint>
+
+#include <vector>
 
 #include <d2d1_1.h>
+#include <wrl/client.h>
 
+#include <karin/common/color/color.h>
+#include <karin/common/geometry/size.h>
+#include <karin/graphics/image.h>
 #include <renderer_impl.h>
-
 #include "d2d_device_resources.h"
 #include "d2d_window_surface.h"
 #include "d2d_font_renderer.h"
 #include "d2d_surface.h"
+#include "d2d_color.h"
+#include "d2d_consts.h"
 
 namespace karin
 {
