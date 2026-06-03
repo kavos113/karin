@@ -161,7 +161,7 @@ jobs:
       - name: Install ubuntu dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt install -y cmake g++ make libx11-dev vulkan-sdk ninja-build
+          sudo apt install -y cmake g++ make libx11-dev vulkan-sdk vulkan-validationlayers vulkan-tools ninja-build
 
       - name: setup Vulkan SDK
         if: contains(matrix.name, 'vulkan') && matrix.os == 'windows-latest'
