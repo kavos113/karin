@@ -137,7 +137,7 @@ jobs:
           - target: windows-vulkan
             os: windows-latest
             cmake_preset: "windows-vulkan-debug-headless"
-            name: "window-vulkan"
+            name: "windows-vulkan"
             vulkan_version: "1.4.321.1"
             swiftshader_build_os: "Windows"
     
