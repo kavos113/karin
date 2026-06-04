@@ -3,7 +3,7 @@
 
 #include <karin/system/window.h>
 #include <karin/system/event.h>
-#include <karin/graphics/renderer.h>
+#include <karin/graphics/window_renderer.h>
 
 #include "view_node.h"
 
@@ -42,7 +42,7 @@ private:
     std::unique_ptr<ViewNode> m_rootView;
 
     std::unique_ptr<karin::Window> m_window;
-    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<WindowRenderer> m_renderer;
     std::unique_ptr<EventDispatcher> m_eventDispatcher;
 
     bool m_needRelayout = true;

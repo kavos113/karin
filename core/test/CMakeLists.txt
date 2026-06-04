@@ -10,10 +10,27 @@ set(TEST_SRCS
         common/geometry/transform2d_test.cpp
         common/color/color_test.cpp
         common/utils/string_test.cpp
+
+        graphics/visual/clear_color_test.cpp
+        graphics/visual/example_test_hello_graphics.cpp
+        graphics/visual/example_test_draw_image.cpp
+        graphics/visual/example_test_draw_path.cpp
+        graphics/visual/example_test_draw_primitive_geometry.cpp
+        graphics/visual/example_test_draw_text.cpp
+        graphics/visual/example_test_draw_text_japanese.cpp
+        graphics/visual/example_test_fill_path.cpp
+        graphics/visual/example_test_fill_primitive_geometry.cpp
+        graphics/visual/example_test_linear_gradient_pattern.cpp
+        graphics/visual/example_test_radial_gradient_pattern.cpp
+        graphics/visual/example_test_transform.cpp
+
+        graphics/visual/visual_tester.cpp
 )
 
 set(TEST_DEPEND_SRCS
         ${SOURCE_DIR}/common/geometry/transform2d.cpp
+        ${THIRD_PARTY_DIR}/stb_image/stb_image_impl.cpp
+        ${THIRD_PARTY_DIR}/stb_image/stb_image_write_impl.cpp
 )
 
 if (WIN32 AND VULKAN AND DIRECTX)
@@ -45,10 +62,12 @@ add_executable(karin_test ${TEST_SRCS} ${TEST_DEPEND_SRCS})
 target_link_libraries(karin_test
     PRIVATE
         GTest::gtest_main
+        karin_graphics
 )
 target_include_directories(karin_test
     PRIVATE
         ${INCLUDE_DIR}
+        ${THIRD_PARTY_DIR}
         ${SOURCE_DIR}/common
         ${SOURCE_DIR}/graphics
         ${SOURCE_DIR}/graphics/text

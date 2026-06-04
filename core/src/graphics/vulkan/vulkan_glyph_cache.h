@@ -1,18 +1,20 @@
 #ifndef SRC_GRAPHICS_VULKAN_VULKAN_GLYPH_CACHE_H
 #define SRC_GRAPHICS_VULKAN_VULKAN_GLYPH_CACHE_H
 
-#include "vulkan_context.h"
+#include <cstddef>
+#include <cstdint>
 
-#include <karin/common/geometry/rectangle.h>
-#include <karin/common/geometry/point.h>
+#include <unordered_map>
+#include <vector>
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vma.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <unordered_map>
-#include <string>
-#include <vector>
+
+#include <karin/common/geometry/rectangle.h>
+#include <karin/common/geometry/point.h>
+#include "vulkan_context.h"
 
 namespace karin
 {

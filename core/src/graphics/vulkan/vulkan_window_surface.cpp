@@ -1,4 +1,4 @@
-#include "vulkan_surface.h"
+#include "vulkan_window_surface.h"
 
 #include <array>
 #include <iostream>
@@ -103,7 +103,7 @@ VkExtent2D getSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width
 
 namespace karin
 {
-VulkanSurface::VulkanSurface(Window::NativeHandle nativeHandle)
+VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     : m_window(nativeHandle)
 {
     createSurface();
@@ -113,10 +113,45 @@ VulkanSurface::VulkanSurface(Window::NativeHandle nativeHandle)
     createSwapChain(false);
 
     createImageView();
-    createViewport();
 }
 
-void VulkanSurface::cleanUp()
+void VulkanWindowSurface::createFrameBuffers(VkRenderPass renderPass)
+{
+    m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
+
+    for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
+    {
+        VkImageView attachments[] = {
+            m_swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo = {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = renderPass,
+            .attachmentCount = 1,
+            .pAttachments = attachments,
+            .width = m_swapChainExtent.width,
+            .height = m_swapChainExtent.height,
+            .layers = 1
+        };
+
+        if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create framebuffer");
+        }
+    }
+}
+
+void VulkanWindowSurface::destroyFrameBuffers()
+{
+    for (auto& framebuffer : m_swapChainFramebuffers)
+    {
+        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
+    }
+    m_swapChainFramebuffers.clear();
+}
+
+void VulkanWindowSurface::cleanUp()
 {
     for (auto& imageView : m_swapChainImageViews)
     {
@@ -137,8 +172,10 @@ void VulkanSurface::cleanUp()
     }
 }
 
-void VulkanSurface::resize()
+void VulkanWindowSurface::resize(VkRenderPass renderPass)
 {
+    destroyFrameBuffers();
+
     for (auto& imageView : m_swapChainImageViews)
     {
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
@@ -146,10 +183,11 @@ void VulkanSurface::resize()
 
     createSwapChain(true);
     createImageView();
-    createViewport();
+
+    createFrameBuffers(renderPass);
 }
 
-uint32_t VulkanSurface::acquireNextImage(VkSemaphore semaphore)
+bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
 {
     uint32_t imageIndex = 0;
     VkResult result = vkAcquireNextImageKHR(
@@ -163,23 +201,19 @@ uint32_t VulkanSurface::acquireNextImage(VkSemaphore semaphore)
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         std::cout << "[VkSurfaceManager] Swap chain out of date, resizing..." << std::endl;
-        return -1;
+        return false;
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
         throw std::runtime_error("failed to acquire next image from swap chain");
     }
 
-    return imageIndex;
+    m_imageIndex = imageIndex;
+
+    return true;
 }
 
-void VulkanSurface::setViewPorts(const VkCommandBuffer commandBuffer) const
-{
-    vkCmdSetViewport(commandBuffer, 0, 1, &m_viewport);
-    vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
-}
-
-bool VulkanSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) const
+bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
 {
     std::array semaphores = {waitSemaphore};
 
@@ -190,7 +224,7 @@ bool VulkanSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) cons
         .pWaitSemaphores = semaphores.data(),
         .swapchainCount = static_cast<uint32_t>(swapChains.size()),
         .pSwapchains = swapChains.data(),
-        .pImageIndices = &imageIndex,
+        .pImageIndices = &m_imageIndex,
         .pResults = nullptr
     };
 
@@ -207,7 +241,7 @@ bool VulkanSurface::present(VkSemaphore waitSemaphore, uint32_t imageIndex) cons
     return true;
 }
 
-void VulkanSurface::createSurface()
+void VulkanWindowSurface::createSurface()
 {
 #ifdef KARIN_PLATFORM_WINDOWS
     VkWin32SurfaceCreateInfoKHR createInfo = {
@@ -238,7 +272,8 @@ void VulkanSurface::createSurface()
 #endif
 }
 
-void VulkanSurface::createSwapChain(bool isRecreating)
+// TODO: width == 0 && height == 0のときに早期リターンするが，呼び出し元でそれを考慮できていない
+void VulkanWindowSurface::createSwapChain(bool isRecreating)
 {
     VkSurfaceFormatKHR surfaceFormat = getBestSwapSurfaceFormat(VulkanContext::instance().physicalDevice(), m_surface);
     VkPresentModeKHR presentMode = getBestSwapPresentMode(VulkanContext::instance().physicalDevice(), m_surface, !m_isResizing);
@@ -331,7 +366,7 @@ void VulkanSurface::createSwapChain(bool isRecreating)
     m_swapChainExtent = extent;
 }
 
-void VulkanSurface::createImageView()
+void VulkanWindowSurface::createImageView()
 {
     m_swapChainImageViews.resize(m_swapChainImages.size());
 
@@ -363,22 +398,4 @@ void VulkanSurface::createImageView()
         }
     }
 }
-
-void VulkanSurface::createViewport()
-{
-    m_viewport = {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(m_swapChainExtent.width),
-        .height = static_cast<float>(m_swapChainExtent.height),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    m_scissor = {
-        .offset = {0, 0},
-        .extent = m_swapChainExtent
-    };
-}
-
 } // karin

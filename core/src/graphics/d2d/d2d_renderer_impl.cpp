@@ -8,10 +8,9 @@
 
 namespace karin
 {
-D2DRendererImpl::D2DRendererImpl(HWND hwnd)
+D2DRendererImpl::D2DRendererImpl(std::unique_ptr<ID2DSurface> surface)
+    : m_surface(std::move(surface))
 {
-    m_surface = std::make_unique<D2DSurfaceManager>(hwnd);
-
     HRESULT hr = D2DContext::instance().device()->CreateDeviceContext(
         D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &m_deviceContext
     );
@@ -20,32 +19,24 @@ D2DRendererImpl::D2DRendererImpl(HWND hwnd)
         throw std::runtime_error("Failed to create D2D device context");
     }
 
+    m_surface->setDeviceContext(m_deviceContext);
+
     setTargetBitmap();
 
     m_deviceResources = std::make_unique<D2DDeviceResources>(m_deviceContext);
-
     m_fontRenderer = std::make_unique<D2DFontRenderer>(m_deviceContext, m_deviceResources.get());
 }
 
 void D2DRendererImpl::setTargetBitmap() const
 {
-    Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap;
-    HRESULT hr = m_deviceContext->CreateBitmapFromDxgiSurface(
-        m_surface->backBuffer().Get(),
-        bitmapProperties,
-        &bitmap
-    );
-    if (FAILED(hr))
-    {
-        throw std::runtime_error("Failed to create D2D bitmap from DXGI surface");
-    }
-
-    m_deviceContext->SetTarget(bitmap.Get());
+    m_deviceContext->SetTarget(m_surface->getTargetBitmap().Get());
 }
 
 void D2DRendererImpl::cleanUp()
 {
+    m_deviceContext->SetTarget(nullptr);
     m_deviceContext.Reset();
+    m_surface->cleanUp();
     m_surface = nullptr;
 }
 

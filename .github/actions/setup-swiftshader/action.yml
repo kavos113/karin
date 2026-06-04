@@ -1,0 +1,50 @@
+name: setup-swiftshader
+description: setup-swiftshader
+
+inputs:
+  build-os:
+    description: build os
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache swiftshader
+      id: cache-swiftshader
+      uses: actions/cache/restore@v4
+      with:
+        path: swiftshader
+        key: swiftshader-cache-${{ inputs.build-os }}
+
+    - name: Download swiftshader
+      if: steps.cache-swiftshader.outputs.cache-hit != 'true'
+      uses: actions/checkout@v5
+      with:
+        repository: "google/swiftshader"
+        path: "swiftshader"
+
+    - name: Build swiftshader (Ubuntu)
+      if: steps.cache-swiftshader.outputs.cache-hit != 'true' && inputs.build-os == 'ubuntu-latest'
+      run: |
+        cmake -S swiftshader -B swiftshader/build \
+         -DCMAKE_BUILD_TYPE=Release \
+         -G Ninja
+        cmake --build swiftshader/build --config Release --parallel
+      shell: bash
+
+    - name: Build swiftshader (Windows)
+      if: steps.cache-swiftshader.outputs.cache-hit != 'true' && inputs.build-os == 'windows-latest'
+      run: |
+        cmake -S swiftshader -B swiftshader/build \
+         -DCMAKE_BUILD_TYPE=Release \
+         -G "Visual Studio 17 2022" \
+         -A x64
+        cmake --build swiftshader/build --config Release --parallel
+      shell: bash
+
+    - name: Cache swiftshader
+      if: always() && steps.cache-swiftshader.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: swiftshader
+        key: swiftshader-cache-${{ inputs.build-os }}

@@ -12,19 +12,18 @@
 
 namespace karin
 {
-VulkanRendererImpl::VulkanRendererImpl(
-    Window::NativeHandle nativeHandle
-)
+VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
+    : m_surface(std::move(surface))
 {
-    m_surface = std::make_unique<VulkanSurface>(nativeHandle);
     m_extent = m_surface->extent();
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
 
+    createViewport();
     createCommandBuffers();
     createSyncObjects();
     createRenderPass();
-    createFrameBuffers();
+    m_surface->createFrameBuffers(m_renderPass);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -39,29 +38,25 @@ void VulkanRendererImpl::cleanUp()
 
     m_fontRenderer->cleanup();
 
-    for (const auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-    m_swapChainFramebuffers.clear();
+    m_surface->destroyFrameBuffers();
 
-    for (const auto& semaphore : m_swapChainSemaphores)
+    for (const auto& semaphore : m_imageAvailableSemaphores)
     {
         vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
     }
-    m_swapChainSemaphores.clear();
+    m_imageAvailableSemaphores.clear();
 
-    for (const auto& semaphore : m_finishQueueSemaphores)
+    for (const auto& semaphore : m_renderFinishedSemaphores)
     {
         vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
     }
-    m_finishQueueSemaphores.clear();
+    m_renderFinishedSemaphores.clear();
 
-    for (const auto& fence : m_swapChainFences)
+    for (const auto& fence : m_inflightFences)
     {
         vkDestroyFence(VulkanContext::instance().device(), fence, nullptr);
     }
-    m_swapChainFences.clear();
+    m_inflightFences.clear();
 
     for (auto& commandBuffer : m_commandBuffers)
     {
@@ -69,11 +64,11 @@ void VulkanRendererImpl::cleanUp()
     }
     m_commandBuffers.clear();
 
-    vmaDestroyBuffer(VulkanContext::instance().allocator(), m_vertexBuffer, m_vertexAllocation);
-    vmaDestroyBuffer(VulkanContext::instance().allocator(), m_indexBuffer, m_indexAllocation);
+    m_vertexBuffer.cleanup();
+    m_indexBuffer.cleanup();
     for (size_t i = 0; i < m_projMatrixBuffers.size(); ++i)
     {
-        vmaDestroyBuffer(VulkanContext::instance().allocator(), m_projMatrixBuffers[i], m_projMatrixBufferAllocations[i]);
+        m_projMatrixBuffers[i].cleanup();
     }
 
     vkDestroyDescriptorSetLayout(VulkanContext::instance().device(), m_projMatrixDescriptorSetLayout, nullptr);
@@ -91,20 +86,19 @@ void VulkanRendererImpl::cleanUp()
 
 bool VulkanRendererImpl::beginDraw()
 {
-    m_vertexMapPoint = m_vertexStartPoint;
-    m_indexMapPoint = m_indexStartPoint;
+    m_vertexBuffer.mappedData = m_vertexStartPoint;
+    m_indexBuffer.mappedData = m_indexStartPoint;
     m_vertexOffset = 0;
     m_indexCount = 0;
     m_drawCommands.clear();
 
-    vkWaitForFences(VulkanContext::instance().device(), 1, &m_swapChainFences[m_currentFrame], VK_TRUE, UINT64_MAX);
-    m_imageIndex = m_surface->acquireNextImage(m_swapChainSemaphores[m_currentFrame]);
-    if (m_imageIndex == -1)
+    vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
+    if (!m_surface->prepareNextImage(m_imageAvailableSemaphores[m_currentFrame]))
     {
         doResize();
         return false;
     }
-    vkResetFences(VulkanContext::instance().device(), 1, &m_swapChainFences[m_currentFrame]);
+    vkResetFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame]);
 
     vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
 
@@ -121,7 +115,7 @@ bool VulkanRendererImpl::beginDraw()
     VkRenderPassBeginInfo renderPassInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = m_renderPass,
-        .framebuffer = m_swapChainFramebuffers[m_imageIndex],
+        .framebuffer = m_surface->currentFrameBuffer(),
         .renderArea = {
             .offset = {0, 0},
             .extent = m_surface->extent(),
@@ -131,7 +125,8 @@ bool VulkanRendererImpl::beginDraw()
     };
     vkCmdBeginRenderPass(m_commandBuffers[m_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    m_surface->setViewPorts(m_commandBuffers[m_currentFrame]);
+    vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &m_viewport);
+    vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &m_scissor);
 
     return true;
 }
@@ -140,12 +135,12 @@ void VulkanRendererImpl::endDraw()
 {
     m_fontRenderer->flushGlyphUploads();
 
-    std::array vertexBuffers = {m_vertexBuffer};
+    std::array vertexBuffers = {m_vertexBuffer.buffer};
     std::array<VkDeviceSize, 1> offsets = {};
     vkCmdBindVertexBuffers(
         m_commandBuffers[m_currentFrame], 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data()
     );
-    vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
     std::ranges::sort(
         m_drawCommands,
@@ -280,8 +275,8 @@ void VulkanRendererImpl::endDraw()
         throw std::runtime_error("failed to record command buffer");
     }
 
-    std::array semaphores = {m_swapChainSemaphores[m_currentFrame]};
-    std::array signalSemaphores = {m_finishQueueSemaphores[m_imageIndex]};
+    std::array semaphores = {m_imageAvailableSemaphores[m_currentFrame]};
+    std::array signalSemaphores = {m_renderFinishedSemaphores[m_currentFrame]};
     std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     VkSubmitInfo submitInfo = {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -293,12 +288,12 @@ void VulkanRendererImpl::endDraw()
         .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()),
         .pSignalSemaphores = signalSemaphores.data(),
     };
-    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, m_swapChainFences[m_currentFrame]) != VK_SUCCESS)
+    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, m_inflightFences[m_currentFrame]) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to submit draw command buffer");
     }
 
-    bool ret = m_surface->present(m_finishQueueSemaphores[m_imageIndex], m_imageIndex);
+    bool ret = m_surface->present(m_renderFinishedSemaphores[m_currentFrame]);
     if (!ret)
     {
         doResize();
@@ -321,18 +316,19 @@ void VulkanRendererImpl::addCommand(
     PipelineType pipelineType
 )
 {
-    memcpy(m_vertexMapPoint, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
-    m_vertexMapPoint += vertices.size();
+    memcpy(m_vertexBuffer.mappedData, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
+    m_vertexBuffer.mappedData += vertices.size();
 
     for (uint16_t& index : indices)
     {
         index += m_vertexOffset;
     }
 
-    memcpy(m_indexMapPoint, indices.data(), indices.size() * sizeof(uint16_t));
-    m_indexMapPoint += indices.size();
+    memcpy(m_indexBuffer.mappedData, indices.data(), indices.size() * sizeof(uint16_t));
+    m_indexBuffer.mappedData += indices.size();
     m_indexCount += indices.size();
 
+    // TODO: オフセットのオーバーフロー
     m_vertexOffset += static_cast<uint16_t>(vertices.size());
 
     DrawCommand drawCommand = {
@@ -396,9 +392,9 @@ void VulkanRendererImpl::createCommandBuffers()
 
 void VulkanRendererImpl::createSyncObjects()
 {
-    m_swapChainSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_finishQueueSemaphores.resize(m_surface->imageCount());
-    m_swapChainFences.resize(MAX_FRAMES_IN_FLIGHT);
+    m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    m_inflightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo = {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
@@ -410,18 +406,11 @@ void VulkanRendererImpl::createSyncObjects()
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_swapChainSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_swapChainFences[i]) != VK_SUCCESS)
+        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_inflightFences[i]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create swap chain sync objects");
-        }
-    }
-
-    for (size_t i = 0; i < m_surface->imageCount(); i++)
-    {
-        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_finishQueueSemaphores[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create finish queue semaphore");
         }
     }
 }
@@ -440,16 +429,11 @@ void VulkanRendererImpl::createVertexBuffer()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
 
-    VmaAllocationInfo memoryInfo;
-    if (vmaCreateBuffer(
-        VulkanContext::instance().allocator(), &bufferInfo, &allocInfo, &m_vertexBuffer, &m_vertexAllocation, &memoryInfo
-    ) != VK_SUCCESS)
+    if (m_vertexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create vertex buffer");
     }
-
-    m_vertexMapPoint = static_cast<VulkanPipeline::Vertex*>(memoryInfo.pMappedData);
-    m_vertexStartPoint = m_vertexMapPoint;
+    m_vertexStartPoint = m_vertexBuffer.mappedData;
 }
 
 void VulkanRendererImpl::createIndexBuffer()
@@ -466,16 +450,11 @@ void VulkanRendererImpl::createIndexBuffer()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
 
-    VmaAllocationInfo memoryInfo;
-    if (vmaCreateBuffer(
-        VulkanContext::instance().allocator(), &bufferInfo, &allocInfo, &m_indexBuffer, &m_indexAllocation, &memoryInfo
-    ) != VK_SUCCESS)
+    if (m_indexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create index buffer");
     }
-
-    m_indexMapPoint = static_cast<uint16_t*>(memoryInfo.pMappedData);
-    m_indexStartPoint = m_indexMapPoint;
+    m_indexStartPoint = m_indexBuffer.mappedData;
 }
 
 void VulkanRendererImpl::createMatrixBuffer()
@@ -507,8 +486,6 @@ void VulkanRendererImpl::createMatrixBuffer()
 
     m_projMatrixDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
     m_projMatrixBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    m_projMatrixBufferAllocations.resize(MAX_FRAMES_IN_FLIGHT);
-    m_projMatrixBufferMemoryInfos.resize(MAX_FRAMES_IN_FLIGHT);
 
     std::vector layouts(MAX_FRAMES_IN_FLIGHT, m_projMatrixDescriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfoDesc = {
@@ -539,22 +516,19 @@ void VulkanRendererImpl::createMatrixBuffer()
             .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         };
 
-        if (vmaCreateBuffer(
-            VulkanContext::instance().allocator(), &bufferInfo, &allocInfo,
-            &m_projMatrixBuffers[i], &m_projMatrixBufferAllocations[i], &m_projMatrixBufferMemoryInfos[i]
-        ) != VK_SUCCESS)
+        if (m_projMatrixBuffers[i].create(bufferInfo, allocInfo) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create projection matrix buffer");
         }
 
         memcpy(
-            m_projMatrixBufferMemoryInfos[i].pMappedData,
+            m_projMatrixBuffers[i].mappedData,
             &m_projMatrixData,
             sizeof(MatrixBufferObject)
         );
 
         VkDescriptorBufferInfo bufferInfoDesc = {
-            .buffer = m_projMatrixBuffers[i],
+            .buffer = m_projMatrixBuffers[i].buffer,
             .offset = 0,
             .range = sizeof(MatrixBufferObject),
         };
@@ -581,7 +555,7 @@ void VulkanRendererImpl::createRenderPass()
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
         .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+        .finalLayout = m_surface->getRenderPassFinalLayout(),
     };
 
     VkAttachmentReference colorAttachmentRef = {
@@ -617,36 +591,6 @@ void VulkanRendererImpl::createRenderPass()
     if (vkCreateRenderPass(VulkanContext::instance().device(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create render pass");
-    }
-}
-
-void VulkanRendererImpl::createFrameBuffers()
-{
-    auto swapChainImageViews = m_surface->swapChainImageViews();
-    m_swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); i++)
-    {
-        std::array attachments = {
-            swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = m_renderPass,
-            .attachmentCount = 1,
-            .pAttachments = attachments.data(),
-            .width = m_extent.width,
-            .height = m_extent.height,
-            .layers = 1
-        };
-
-        if (vkCreateFramebuffer(
-            VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]
-        ) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer");
-        }
     }
 }
 
@@ -688,19 +632,29 @@ void VulkanRendererImpl::createPipeline()
     );
 }
 
+void VulkanRendererImpl::createViewport()
+{
+    m_viewport = {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<float>(m_extent.width),
+        .height = static_cast<float>(m_extent.height),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    m_scissor = {
+        .offset = {0, 0},
+        .extent = m_extent
+    };
+}
+
 void VulkanRendererImpl::doResize()
 {
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
-    for (const auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-
-    m_surface->resize();
+    m_surface->resize(m_renderPass);
     m_extent = m_surface->extent();
-
-    createFrameBuffers();
 
     m_projMatrixData.proj[0][0] = 2.0f / static_cast<float>(m_extent.width);
     m_projMatrixData.proj[1][1] = 2.0f / static_cast<float>(m_extent.height);
@@ -710,10 +664,12 @@ void VulkanRendererImpl::doResize()
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
         memcpy(
-            m_projMatrixBufferMemoryInfos[i].pMappedData,
+            m_projMatrixBuffers[i].mappedData,
             &m_projMatrixData,
             sizeof(MatrixBufferObject)
         );
     }
+
+    createViewport();
 }
 } // karin

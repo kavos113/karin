@@ -1,22 +1,25 @@
 #ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 #define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_RENDERER_IMPL_H
 
+#include <cstddef>
+#include <cstdint>
+
+#include <vector>
+#include <memory>
+#include <unordered_map>
+
+#include <renderer_impl.h>
+#include <font_renderer_impl.h>
+#include <karin/common/geometry/size.h>
+#include <karin/common/color/color.h>
+#include <karin/graphics/pattern.h>
+#include <karin/graphics/image.h>
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
 #include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
+#include "vulkan_buffer.h"
 #include "shaders/push_constants.h"
-
-#include <renderer_impl.h>
-#include <font_renderer_impl.h>
-#include <karin/common/geometry/rectangle.h>
-#include <karin/graphics/pattern.h>
-#include <karin/system/window.h>
-
-#include <vector>
-#include <cstdint>
-#include <memory>
-#include <unordered_map>
 
 namespace karin
 {
@@ -37,9 +40,7 @@ public:
         Text,
     };
 
-    VulkanRendererImpl(
-        Window::NativeHandle nativeHandle
-    );
+    VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface);
     ~VulkanRendererImpl() override = default;
 
     void cleanUp() override;
@@ -91,6 +92,9 @@ public:
         return m_fontRenderer.get();
     }
 
+protected:
+    std::unique_ptr<IVulkanSurface> m_surface;
+
 private:
     struct DrawCommand
     {
@@ -113,12 +117,11 @@ private:
     void createIndexBuffer();
     void createMatrixBuffer();
     void createRenderPass();
-    void createFrameBuffers();
     void createPipeline();
+    void createViewport();
 
     void doResize();
 
-    std::unique_ptr<VulkanSurface> m_surface;
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
@@ -126,25 +129,21 @@ private:
     std::vector<DrawCommand> m_drawCommands;
 
     uint8_t m_currentFrame = 0;
-    uint32_t m_imageIndex = 0;
 
-    std::vector<VkFramebuffer> m_swapChainFramebuffers;
     std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkSemaphore> m_finishQueueSemaphores;
-    std::vector<VkSemaphore> m_swapChainSemaphores;
-    std::vector<VkFence> m_swapChainFences;
+    std::vector<VkSemaphore> m_renderFinishedSemaphores;
+    std::vector<VkSemaphore> m_imageAvailableSemaphores;
+    std::vector<VkFence> m_inflightFences;
 
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
 
     VkExtent2D m_extent = {};
+    VkViewport m_viewport = {};
+    VkRect2D m_scissor = {};
 
-    VkBuffer m_vertexBuffer = VK_NULL_HANDLE;
-    VmaAllocation m_vertexAllocation = VK_NULL_HANDLE;
-    VulkanPipeline::Vertex* m_vertexMapPoint = nullptr;
+    VulkanBuffer<VulkanPipeline::Vertex> m_vertexBuffer;
     VulkanPipeline::Vertex* m_vertexStartPoint = nullptr;
-    VkBuffer m_indexBuffer = VK_NULL_HANDLE;
-    VmaAllocation m_indexAllocation = VK_NULL_HANDLE;
-    uint16_t* m_indexMapPoint = nullptr;
+    VulkanBuffer<uint16_t> m_indexBuffer;
     uint16_t* m_indexStartPoint = nullptr;
     uint16_t m_vertexOffset = 0;
     size_t m_indexCount = 0;
@@ -152,9 +151,7 @@ private:
     MatrixBufferObject m_projMatrixData = {};
     VkDescriptorSetLayout m_projMatrixDescriptorSetLayout = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> m_projMatrixDescriptorSets;
-    std::vector<VkBuffer> m_projMatrixBuffers;
-    std::vector<VmaAllocation> m_projMatrixBufferAllocations;
-    std::vector<VmaAllocationInfo> m_projMatrixBufferMemoryInfos;
+    std::vector<VulkanBuffer<MatrixBufferObject>> m_projMatrixBuffers;
 
     static constexpr VkDeviceSize vertexBufferSize = 1024 * 128; // 2MB
     static constexpr VkDeviceSize indexBufferSize = 1024 * 512; // 2MB

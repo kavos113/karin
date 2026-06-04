@@ -1,12 +1,15 @@
-#ifndef KARIN_GRAPHICS_GRAPHICS_RENDERER_H
-#define KARIN_GRAPHICS_GRAPHICS_RENDERER_H
-#include <vector>
+#ifndef CORE_KARIN_GRAPHICS_RENDERER_BASE_H
+#define CORE_KARIN_GRAPHICS_RENDERER_BASE_H
+
+#include <cstddef>
+#include <cstdint>
+
 #include <functional>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include <karin/system/window.h>
 #include <karin/common/color/color.h>
-
 #include "graphics_context.h"
 #include "image.h"
 
@@ -14,16 +17,10 @@ namespace karin
 {
 class IRendererImpl;
 
-/**
- * Renderer manages window surface(includes swapchain) of low-level graphics API(D2D -> ID2D1GraphicsContext, Vulkan -> VkSurface).
- *
- * It also has a list of draw commands that can be executed in the rendering loop.
- */
-class Renderer
+class RendererBase
 {
 public:
-    Renderer(Window* window);
-    ~Renderer();
+    virtual ~RendererBase();
 
     /**
      * Add a rendering command to the renderer.
@@ -41,7 +38,7 @@ public:
      * @param command rendering command. use GraphicsContext to draw.
      */
     void addDrawCommand(std::function<void(GraphicsContext &)> command);
-    void update() const;
+
     void setClearColor(const Color& color);
 
     Image createImage(const std::string& filePath);
@@ -49,13 +46,11 @@ public:
 
     void cleanUp();
 
-private:
-    Window* m_window;
+protected:
+    std::unique_ptr<IRendererImpl> m_impl;
 
     std::vector<std::function<void(GraphicsContext &)>> m_drawCommands;
-
-    std::unique_ptr<IRendererImpl> m_impl;
 };
 } // karin
 
-#endif //KARIN_GRAPHICS_GRAPHICS_RENDERER_H
+#endif //CORE_KARIN_GRAPHICS_RENDERER_BASE_H

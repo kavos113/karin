@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.28)
+project(karin_examples_offscreen_rendering)
+
+set(CMAKE_CXX_STANDARD 20)
+
+add_executable(karin_examples_offscreen_rendering main.cpp ${THIRD_PARTY_DIR}/stb_image/stb_image_write_impl.cpp)
+add_dependencies(karin_examples_offscreen_rendering karin_graphics)
+target_link_libraries(karin_examples_offscreen_rendering PRIVATE karin_graphics)
+target_include_directories(karin_examples_offscreen_rendering PRIVATE ${INCLUDE_DIR} ${THIRD_PARTY_DIR})

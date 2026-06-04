@@ -1,14 +1,18 @@
 #ifndef SRC_GRAPHICS_TEXT_WINDOWS_FREETYPE_DWRITE_FONT_LOADER_H
 #define SRC_GRAPHICS_TEXT_WINDOWS_FREETYPE_DWRITE_FONT_LOADER_H
 
-#include <text/font_loader_platform.h>
-#include <karin/graphics/font_face.h>
+#include <cstddef>
+
+#include <string>
+#include <vector>
+#include <memory>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <vector>
-#include <memory>
+#include <text/font_loader_platform.h>
+#include <karin/graphics/font_face.h>
+#include <karin/graphics/font.h>
 
 namespace karin
 {

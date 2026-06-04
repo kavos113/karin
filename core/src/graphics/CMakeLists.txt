@@ -1,5 +1,7 @@
 set(GRAPHICS_SOURCE
-        renderer.cpp
+        renderer_base.cpp
+        window_renderer.cpp
+        offscreen_renderer.cpp
         graphics_context.cpp
         path.cpp
         path_impl.cpp
@@ -15,8 +17,10 @@ set(GRAPHICS_SOURCE
 
 if (DIRECTX)
     set(GRAPHICS_SOURCE ${GRAPHICS_SOURCE}
-            d2d/d2d_surface_manager.cpp
+            d2d/d2d_window_surface.cpp
+            d2d/d2d_offscreen_surface.cpp
             d2d/d2d_renderer_impl.cpp
+            d2d/d2d_offscreen_renderer_impl.cpp
             d2d/d2d_graphics_context_impl.cpp
             d2d/d2d_device_resources.cpp
             d2d/d2d_context.cpp
@@ -29,8 +33,10 @@ elseif (VULKAN)
     set(GRAPHICS_SOURCE ${GRAPHICS_SOURCE}
             vulkan/vulkan_context.cpp
             vulkan/vulkan_debug_manager.cpp
-            vulkan/vulkan_surface.cpp
+            vulkan/vulkan_window_surface.cpp
+            vulkan/vulkan_offscreen_surface.cpp
             vulkan/vulkan_renderer_impl.cpp
+            vulkan/vulkan_offscreen_renderer_impl.cpp
             vulkan/vulkan_graphics_context_impl.cpp
             vulkan/vulkan_pipeline.cpp
             vulkan/vulkan_tessellator.cpp
@@ -137,4 +143,8 @@ elseif (APPLE)
     target_compile_definitions(karin_graphics PUBLIC KARIN_PLATFORM_MACOS)
 elseif (UNIX)
     target_compile_definitions(karin_graphics PUBLIC KARIN_PLATFORM_UNIX)
+endif ()
+
+if (HEADLESS)
+    target_compile_definitions(karin_graphics PUBLIC KARIN_OPTION_HEADLESS)
 endif ()

@@ -1,0 +1,46 @@
+#include <gtest/gtest.h>
+
+#include <memory>
+#include <numbers>
+
+#include <karin/graphics.h>
+#include <karin/common.h>
+
+#include "visual_tester.h"
+
+TEST(ExamplesVisualTest, FillPath)
+{
+    karin::OffscreenRenderer renderer(800, 600);
+
+    karin::Pattern redPattern = karin::SolidColorPattern(karin::Color(karin::Color::Red));
+
+    karin::Path path;
+    path.start(karin::Point(100, 100));
+    path.lineTo(karin::Point(150, 100));
+    path.arcTo(karin::Point(150, 150), 50.0f, 50.0f, std::numbers::pi / 2, 0.0f, true);
+    path.arcTo(karin::Point(250, 150), 50.0f, 50.0f, std::numbers::pi, std::numbers::pi / 2 * 3, true);
+    path.lineTo(karin::Point(300, 200));
+    path.arcTo(karin::Point(300, 250), 100.0f, 50.0f, std::numbers::pi / 2, std::numbers::pi, false);
+    path.arcTo(karin::Point(150, 250), 50.0f, 50.0f, 0.0f, std::numbers::pi / 2, true);
+    path.lineTo(karin::Point(100, 200));
+    path.close();
+
+    renderer.addDrawCommand(
+        [&redPattern, &path](karin::GraphicsContext& gc)
+        {
+            gc.fillPath(path, redPattern);
+        }
+    );
+
+    renderer.draw();
+
+    bool result = VisualTester::checkOrUpdate(
+        "fill_path",
+        renderer.getImageData(),
+        800,
+        600
+    );
+    ASSERT_TRUE(result);
+
+    renderer.cleanUp();
+}
