@@ -1,182 +1,146 @@
 #include <karin/common/geometry/transform2d.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
-#include <karin/common/geometry/point.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
+#include <numbers>
 
 namespace karin
 {
-class Transform2DImpl
+inline glm::mat3& toMat(float *data)
 {
-public:
-    Point translation = Point(0.0f, 0.0f);
-    float rotation = 0.0f; // in radians
-    Point scale = Point(1.0f, 1.0f);
+    return *reinterpret_cast<glm::mat3*>(data);
+}
 
-    Transform2DImpl() = default;
-    Transform2DImpl(const Transform2DImpl& other)
-        : translation(other.translation), rotation(other.rotation), scale(other.scale)
-    {
-    }
-    Transform2DImpl& operator=(const Transform2DImpl& other)
-    {
-        if (this != &other)
-        {
-            translation = other.translation;
-            rotation = other.rotation;
-            scale = other.scale;
-        }
-        return *this;
-    }
-
-    // unintended to be called with (isColMajor == false) and (isColMajor == true) from same process.
-    // results of below code:
-    //     auto m1 = matrix(true);
-    //     auto m2 = matrix(false);
-    // m1 and m2 will be same(m2 overrides m1)
-    const glm::mat4& matrix(bool isColMajor)
-    {
-        if (isColMajor)
-        {
-            m_matrix = glm::scale(
-                glm::rotate(
-                    glm::translate(glm::mat4(1.0f), glm::vec3(translation.x, translation.y, 0.0f)),
-                    rotation,
-                    glm::vec3(0.0f, 0.0f, 1.0f)
-                ),
-                glm::vec3(scale.x, scale.y, 1.0f)
-            );
-            return m_matrix;
-        }
-
-        m_matrix = glm::translate(
-            glm::rotate(
-                glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f)),
-                rotation,
-                glm::vec3(0.0f, 0.0f, 1.0f)
-            ),
-            glm::vec3(translation.x, translation.y, 0.0f)
-        );
-        return m_matrix;
-    }
-
-private:
-    glm::mat4 m_matrix = glm::mat4(1.0f);
-};
+inline const glm::mat3& toMat(const float *data)
+{
+    return *reinterpret_cast<const glm::mat3*>(data);
+}
 
 Transform2D::Transform2D()
-    : m_impl(std::make_unique<Transform2DImpl>())
+    : m_data()
 {
+    toMat(m_data) = glm::mat3(1.0f);
 }
 
 Transform2D::~Transform2D() = default;
 
 Transform2D::Transform2D(const Transform2D& other)
-    : m_impl(std::make_unique<Transform2DImpl>(*other.m_impl))
+    : m_data()
 {
+    toMat(m_data) = toMat(other.m_data);
 }
 
 Transform2D& Transform2D::operator=(const Transform2D& other)
 {
-    if (this != &other)
-    {
-        *m_impl = *other.m_impl;
-    }
+    toMat(m_data) = toMat(other.m_data);
     return *this;
 }
 
 Transform2D& Transform2D::translate(float tx, float ty)
 {
-    m_impl->translation.x += tx;
-    m_impl->translation.y += ty;
-    return *this;
-}
+    glm::mat3& mat = toMat(m_data);
 
-Transform2D& Transform2D::setTranslate(float tx, float ty)
-{
-    m_impl->translation.x = tx;
-    m_impl->translation.y = ty;
+    glm::mat3 trans(1.0f);
+    trans[2] = glm::vec3(tx, ty, 1.0f);
+    mat = mat * trans;
     return *this;
-}
-
-Point Transform2D::getTranslate() const
-{
-    return m_impl->translation;
 }
 
 Transform2D& Transform2D::rotate(float radian)
 {
-    m_impl->rotation += radian;
+    glm::mat3& mat = toMat(m_data);
+
+    float c = std::cos(radian);
+    float s = std::sin(radian);
+
+    glm::mat3 rot(1.0f);
+    rot[0][0] = c;
+    rot[0][1] = s;
+    rot[1][0] = -s;
+    rot[1][1] = c;
+    mat = mat * rot;
+
     return *this;
 }
 
 Transform2D& Transform2D::rotateDeg(float degree)
 {
-    m_impl->rotation += glm::radians(degree);
+    glm::mat3& mat = toMat(m_data);
+
+    float radian = degree * std::numbers::pi_v<float> / 180.0f;
+    float c = std::cos(radian);
+    float s = std::sin(radian);
+
+    glm::mat3 rot(1.0f);
+    rot[0][0] = c;
+    rot[0][1] = s;
+    rot[1][0] = -s;
+    rot[1][1] = c;
+    mat = mat * rot;
+
     return *this;
-}
-
-Transform2D& Transform2D::setRotate(float radian)
-{
-    m_impl->rotation = radian;
-    return *this;
-}
-
-Transform2D& Transform2D::setRotateDeg(float degree)
-{
-    m_impl->rotation = glm::radians(degree);
-    return *this;
-}
-
-float Transform2D::getRotate() const
-{
-    return m_impl->rotation;
-}
-
-float Transform2D::getRotateDeg() const
-{
-    return glm::degrees(m_impl->rotation);
 }
 
 Transform2D& Transform2D::scale(float sx, float sy)
 {
-    m_impl->scale.x *= sx;
-    m_impl->scale.y *= sy;
+    glm::mat3& mat = toMat(m_data);
+
+    glm::mat3 scaleMat(1.0f);
+    scaleMat[0][0] = sx;
+    scaleMat[1][1] = sy;
+    mat = mat * scaleMat;
+
     return *this;
 }
 
-Transform2D& Transform2D::setScale(float sx, float sy)
+Transform2D& Transform2D::multiply(const Transform2D& other)
 {
-    m_impl->scale.x = sx;
-    m_impl->scale.y = sy;
+    glm::mat3& mat = toMat(m_data);
+    mat = mat * toMat(other.m_data);
     return *this;
 }
 
-Point Transform2D::getScale() const
+Transform2D& Transform2D::operator*=(const Transform2D& other)
 {
-    return m_impl->scale;
+    return multiply(other);
 }
 
-const float* Transform2D::colMajorData() const
+Transform2D Transform2D::operator*(const Transform2D& other) const
 {
-    return &m_impl->matrix(true)[0][0];
+    Transform2D result(*this);
+    result.multiply(other);
+    return result;
 }
 
-const float* Transform2D::rowMajorData() const
+std::optional<Transform2D> Transform2D::inverse() const
 {
-    return &m_impl->matrix(false)[0][0];
+    Transform2D result;
+    glm::mat3 invMat = glm::inverse(toMat(m_data));
+    if (glm::determinant(toMat(m_data)) == 0.0f)
+    {
+        return std::nullopt; // Not invertible
+    }
+    toMat(result.m_data) = invMat;
+    return result;
 }
 
+const float* Transform2D::data() const
+{
+    return m_data;
+}
 
 std::ostream& operator<<(std::ostream& os, const Transform2D& transform)
 {
-    return os << "Transform2D(\n"
-              << "  translation: (" << transform.getTranslate().x << ", " << transform.getTranslate().y << ")\n"
-              << "  rotation (radians): " << transform.getRotate() << "\n"
-              << "  scale: (" << transform.getScale().x << ", " << transform.getScale().y << ")\n"
-              << ")";
+    const glm::mat3& mat = toMat(transform.data());
+    os << "Transform2D(\n";
+    for (int i = 0; i < 3; ++i)
+    {
+        os << "  " << mat[i][0] << ", " << mat[i][1] << ", " << mat[i][2] << "\n";
+    }
+    os << ")";
+    return os;
 }
 }

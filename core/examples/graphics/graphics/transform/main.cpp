@@ -34,16 +34,16 @@ int main()
                 karin::Rectangle(100, 100, 100, 100),
                 cyanPattern,
                 karin::Transform2D()
-                    .rotate(-std::numbers::pi / 4)
                     .translate(0, 100)
+                    .rotate(-std::numbers::pi / 4)
             );
 
             gc.fillEllipse(
                 karin::Point(400, 300), 50, 100,
                 magentaPattern,
                 karin::Transform2D()
-                    .rotate(std::numbers::pi / 4)
                     .translate(100, 0)
+                    .rotate(std::numbers::pi / 4)
             );
 
             gc.drawLine(
@@ -51,8 +51,8 @@ int main()
                 blackPattern,
                 karin::StrokeStyle(5),
                 karin::Transform2D()
-                    .rotate(std::numbers::pi / 6)
                     .translate(-50, 0)
+                    .rotate(std::numbers::pi / 6)
             );
 
             gc.drawRect(
@@ -60,8 +60,8 @@ int main()
                 whitePattern,
                 karin::StrokeStyle(3),
                 karin::Transform2D()
-                    .rotate(-std::numbers::pi / 3)
                     .translate(0, -50)
+                    .rotate(-std::numbers::pi / 3)
             );
 
             gc.drawRoundedRect(
@@ -70,8 +70,8 @@ int main()
                 yellowPattern,
                 karin::StrokeStyle(4),
                 karin::Transform2D()
-                    .rotate(std::numbers::pi / 8)
                     .translate(0, -50)
+                    .rotate(std::numbers::pi / 8)
             );
 
             gc.drawText(
@@ -79,8 +79,8 @@ int main()
                 karin::Point(300, 50),
                 blackPattern,
                 karin::Transform2D()
-                    .rotate(-std::numbers::pi / 12)
                     .translate(0, 50)
+                    .rotate(-std::numbers::pi / 12)
                     .scale(2.0f, 1.0f)
             );
             gc.drawRect(
@@ -88,8 +88,8 @@ int main()
                 magentaPattern,
                 karin::StrokeStyle(1),
                 karin::Transform2D()
-                    .rotate(-std::numbers::pi / 12)
                     .translate(0, 50)
+                    .rotate(-std::numbers::pi / 12)
                     .scale(2.0f, 1.0f)
             );
         }
