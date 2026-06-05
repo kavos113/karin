@@ -140,31 +140,18 @@ Microsoft::WRL::ComPtr<ID2D1LinearGradientBrush> D2DDeviceResources::linearGradi
     }
 
     Microsoft::WRL::ComPtr<ID2D1GradientStopCollection> gradientStops;
-    std::vector<D2D1_GRADIENT_STOP> stops(pattern.gradientPoints.points.size());
+    std::vector<D2D1_GRADIENT_STOP> stops;
+    stops.reserve(pattern.gradientPoints.points.size());
     for (const auto& [offset, color] : pattern.gradientPoints.points)
     {
         stops.push_back(D2D1::GradientStop(offset, toD2DColor(color)));
     }
 
-    D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE_CLAMP;
-    switch (pattern.gradientPoints.extendMode)
-    {
-    case ExtendMode::CLAMP:
-        extendMode = D2D1_EXTEND_MODE_CLAMP;
-        break;
-
-    case ExtendMode::REPEAT:
-        extendMode = D2D1_EXTEND_MODE_WRAP;
-        break;
-
-    case ExtendMode::MIRROR:
-        extendMode = D2D1_EXTEND_MODE_MIRROR;
-        break;
-    }
+    D2D1_EXTEND_MODE extendMode = toD2DExtendMode(pattern.gradientPoints.extendMode);
 
     HRESULT hr = m_deviceContext->CreateGradientStopCollection(
         stops.data(),
-        static_cast<UINT32>(stops.size()),
+        stops.size(),
         D2D1_GAMMA_2_2,
         extendMode,
         &gradientStops
