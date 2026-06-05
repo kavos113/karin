@@ -25,6 +25,8 @@ public:
         const Size& maxSize
     ) const;
 
+    void registerCustomFont(const std::string& filePath, const Font& font) const;
+
 private:
     std::unique_ptr<FontManager> m_fontManager;
     std::unique_ptr<TextLayouter> m_textLayouter;

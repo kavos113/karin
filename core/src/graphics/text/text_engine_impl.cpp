@@ -35,4 +35,9 @@ TextBlob TextEngineImpl::layoutText(
         .layoutSize = layoutSize,
     };
 }
+
+void TextEngineImpl::registerCustomFont(const std::string& filePath, const Font& font) const
+{
+    m_fontManager->registerCustomFont(filePath, font);
+}
 }

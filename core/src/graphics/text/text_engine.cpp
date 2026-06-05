@@ -20,4 +20,9 @@ TextBlob TextEngine::layoutText(
 {
     return m_impl->layoutText(text, textStyle, paragraphStyle, maxSize);
 }
+
+void TextEngine::registerCustomFont(const std::string& filePath, const Font& font) const
+{
+    m_impl->registerCustomFont(filePath, font);
+}
 }
