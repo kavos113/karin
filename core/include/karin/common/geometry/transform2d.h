@@ -4,11 +4,10 @@
 #include "point.h"
 
 #include <memory>
+#include <optional>
 
 namespace karin
 {
-class Transform2DImpl;
-
 class Transform2D
 {
 public:
@@ -18,30 +17,20 @@ public:
     Transform2D& operator=(const Transform2D& other);
 
     Transform2D& translate(float tx, float ty);
-    Transform2D& setTranslate(float tx, float ty);
-    Point getTranslate() const;
-
-    // radians. counter-clockwise
     Transform2D& rotate(float radian);
     Transform2D& rotateDeg(float degree);
-    Transform2D& setRotate(float radian);
-    Transform2D& setRotateDeg(float degree);
-    float getRotate() const; // in radians
-    float getRotateDeg() const; // in degrees
-
     Transform2D& scale(float sx, float sy);
-    Transform2D& setScale(float sx, float sy);
-    Point getScale() const;
 
-    // column-major order. for OpenGL, Vulkan
-    // translate * rotate * scale
-    const float* colMajorData() const;
-    // row-major order. for DirectX
-    // scale * rotate * translate
-    const float* rowMajorData() const;
+    Transform2D& multiply(const Transform2D& other);
+    Transform2D& operator*=(const Transform2D& other);
+    Transform2D operator*(const Transform2D& other) const;
+
+    std::optional<Transform2D> inverse() const;
+
+    const float *data() const;
 
 private:
-    std::unique_ptr<Transform2DImpl> m_impl;
+    float m_data[9];
 };
 
 std::ostream& operator<<(std::ostream& os, const Transform2D& transform);
