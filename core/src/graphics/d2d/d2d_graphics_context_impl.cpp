@@ -205,8 +205,8 @@ void D2DGraphicsContextImpl::drawRoundedRect(
 
     D2D1_ROUNDED_RECT roundedRect = {
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
-        std::max(0.0f, radiusX / rect.size.width),
-        std::max(0.0f, radiusY / rect.size.height)
+        std::max(0.0f, radiusX),
+        std::max(0.0f, radiusY)
     };
     m_deviceContext->DrawRoundedRectangle(
         roundedRect,

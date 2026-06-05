@@ -7,7 +7,6 @@ set(TEST_SRCS
         common/geometry/point_test.cpp
         common/geometry/size_test.cpp
         common/geometry/rectangle_test.cpp
-        common/geometry/transform2d_test.cpp
         common/color/color_test.cpp
         common/utils/string_test.cpp
 

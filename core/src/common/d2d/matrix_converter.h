@@ -2,8 +2,6 @@
 #define SRC_COMMON_D2D_MATRIX_CONVERTER_H
 
 #include <d2d1.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <karin/common/geometry/transform2d.h>
 
 namespace karin
@@ -11,13 +9,12 @@ namespace karin
 
 inline D2D1_MATRIX_3X2_F toD2DMatrix(const Transform2D& transform)
 {
-    const float* data = transform.rowMajorData();
-    const glm::mat4 mat = glm::make_mat4(data);
+    const float* data = transform.data();
 
     return D2D1::Matrix3x2F(
-        mat[0][0], mat[1][0],
-        mat[0][1], mat[1][1],
-        mat[3][0], mat[3][1]
+        data[0], data[1],
+        data[3], data[4],
+        data[6], data[7]
     );
 }
 }

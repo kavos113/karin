@@ -1,8 +1,6 @@
 #ifndef KARIN_COMMON_GEOMETRY_TRANSFORM2D_H
 #define KARIN_COMMON_GEOMETRY_TRANSFORM2D_H
 
-#include "point.h"
-
 #include <memory>
 #include <optional>
 
