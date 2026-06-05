@@ -3,7 +3,7 @@ export TEST_PROFILE="ubuntu"
 
 echo "Updating graphics test fixture for profile: $TEST_PROFILE"
 
-TEST_PATH="$(dirname "$(realpath "$0")")../../build/ubuntu-local-debug/core/test"
+TEST_PATH="$(dirname "$(realpath "$0")")/../../build/ubuntu-local-debug/core/test"
 DEST_PATH="$(dirname "$(realpath "$0")")/../test/fixtures/test_expect_images"
 echo "Test path: $TEST_PATH"
 echo "Destination path: $DEST_PATH"
