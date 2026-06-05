@@ -40,7 +40,7 @@ jobs:
 
       - name: Install vcpkg
         run: |
-          if (!Test-Path -Path .\vcpkg) {
+          if (-not (Test-Path -Path .\vcpkg)) {
             git clone https://github.com/microsoft/vcpkg.git
           }
           .\vcpkg\bootstrap-vcpkg.bat
