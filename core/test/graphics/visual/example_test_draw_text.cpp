@@ -38,7 +38,7 @@ TEST(ExamplesVisualTest, DrawText)
     renderer.draw();
 
     bool result = VisualTester::checkOrUpdate(
-        "hello_graphics",
+        "draw_text",
         renderer.getImageData(),
         800,
         600

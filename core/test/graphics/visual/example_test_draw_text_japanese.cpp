@@ -5,13 +5,13 @@
 
 #include "visual_tester.h"
 
-TEST(ExamplesVisualTest, DrawText)
+TEST(ExamplesVisualTest, DrawTextJapanese)
 {
     karin::OffscreenRenderer renderer(800, 600);
     renderer.setClearColor(karin::Color(karin::Color::Green));
 
     karin::TextEngine textEngine;
-    textEngine.registerCustomFont("fixtures/font/NotoSans-Regular.ttf", karin::Font("Noto Sans"));
+    textEngine.registerCustomFont("fixtures/font/NotoSansJP-Regular.ttf", karin::Font("Noto Sans"));
 
     karin::Pattern magentaPattern = karin::SolidColorPattern(karin::Color(255, 0, 255));
     karin::TextBlob textBlob = textEngine.layoutText(
@@ -38,7 +38,7 @@ TEST(ExamplesVisualTest, DrawText)
     renderer.draw();
 
     bool result = VisualTester::checkOrUpdate(
-        "hello_graphics",
+        "draw_text_japanese",
         renderer.getImageData(),
         800,
         600
