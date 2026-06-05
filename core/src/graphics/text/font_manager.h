@@ -14,7 +14,7 @@ class FontManager
 {
 public:
     FontManager();
-    ~FontManager() = default;
+    ~FontManager();
 
     std::shared_ptr<IFontFace> getFontFace(const Font& font);
 

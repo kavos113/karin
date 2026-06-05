@@ -7,6 +7,11 @@ FontManager::FontManager()
     m_fontLoader = std::make_unique<FontLoader>();
 }
 
+FontManager::~FontManager()
+{
+    m_fontCache.clear();
+}
+
 std::shared_ptr<IFontFace> FontManager::getFontFace(const Font& font)
 {
     if (auto it = m_fontCache.find(font.hash()); it != m_fontCache.end()) {
