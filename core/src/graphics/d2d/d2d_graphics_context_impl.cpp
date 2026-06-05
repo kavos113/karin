@@ -31,10 +31,15 @@ void D2DGraphicsContextImpl::fillRect(const Rectangle rect, const Pattern& patte
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-(rect.pos.x + rect.size.width / 2), -(rect.pos.y + rect.size.height / 2));
+    brush->SetTransform(brushTransform);
+
     m_deviceContext->FillRectangle(
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
         brush.Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -55,6 +60,9 @@ void D2DGraphicsContextImpl::fillEllipse(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-center.x, -center.y);
+    brush->SetTransform(brushTransform);
+
     D2D1_ELLIPSE ellipse = {
         D2D1::Point2F(0.0f, 0.0f),
         radiusX, radiusY
@@ -63,6 +71,8 @@ void D2DGraphicsContextImpl::fillEllipse(
         ellipse,
         brush.Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -83,6 +93,9 @@ void D2DGraphicsContextImpl::fillRoundedRect(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-(rect.pos.x + rect.size.width / 2), -(rect.pos.y + rect.size.height / 2));
+    brush->SetTransform(brushTransform);
+
     D2D1_ROUNDED_RECT roundedRect = {
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
         std::max(0.0f, radiusX),
@@ -92,6 +105,8 @@ void D2DGraphicsContextImpl::fillRoundedRect(
         roundedRect,
         brush.Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -112,6 +127,9 @@ void D2DGraphicsContextImpl::drawLine(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-((start.x + end.x) / 2), -((start.y + end.y) / 2));
+    brush->SetTransform(brushTransform);
+
     m_deviceContext->DrawLine(
         D2D1::Point2F(start.x - (start.x + end.x) / 2, start.y - (start.y + end.y) / 2),
         D2D1::Point2F(end.x - (start.x + end.x) / 2, end.y - (start.y + end.y) / 2),
@@ -119,6 +137,8 @@ void D2DGraphicsContextImpl::drawLine(
         strokeStyle.width,
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -139,12 +159,17 @@ void D2DGraphicsContextImpl::drawRect(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-(rect.pos.x + rect.size.width / 2), -(rect.pos.y + rect.size.height / 2));
+    brush->SetTransform(brushTransform);
+
     m_deviceContext->DrawRectangle(
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
         brush.Get(),
         strokeStyle.width,
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -169,6 +194,9 @@ void D2DGraphicsContextImpl::drawEllipse(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-center.x, -center.y);
+    brush->SetTransform(brushTransform);
+
     D2D1_ELLIPSE ellipse = {
         D2D1::Point2F(0.0f, 0.0f),
         radiusX, radiusY
@@ -179,6 +207,8 @@ void D2DGraphicsContextImpl::drawEllipse(
         strokeStyle.width,
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
@@ -203,6 +233,9 @@ void D2DGraphicsContextImpl::drawRoundedRect(
         throw std::runtime_error("Failed to get brush for pattern");
     }
 
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-(rect.pos.x + rect.size.width / 2), -(rect.pos.y + rect.size.height / 2));
+    brush->SetTransform(brushTransform);
+
     D2D1_ROUNDED_RECT roundedRect = {
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
         std::max(0.0f, radiusX),
@@ -214,6 +247,8 @@ void D2DGraphicsContextImpl::drawRoundedRect(
         strokeStyle.width,
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
+
+    brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
 }
