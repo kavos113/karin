@@ -22,7 +22,9 @@ public:
         const TextStyle& textStyle,
         const ParagraphStyle& paragraphStyle,
         const Size& maxSize
-    );
+    ) const;
+
+    void registerCustomFont(const std::string& filePath, const Font& font) const;
 
 private:
     std::unique_ptr<TextEngineImpl> m_impl;

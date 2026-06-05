@@ -23,7 +23,7 @@ struct GlyphPosition
 struct TextBlob
 {
     std::vector<GlyphPosition> glyphs;
-    std::unique_ptr<IFontFace> fontFace;
+    std::shared_ptr<IFontFace> fontFace;
     Font font;
     float fontEmSize;
 

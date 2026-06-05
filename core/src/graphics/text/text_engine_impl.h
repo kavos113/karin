@@ -1,11 +1,13 @@
 #ifndef SRC_GRAPHICS_TEXT_TEXT_ENGINE_IMPL_H
 #define SRC_GRAPHICS_TEXT_TEXT_ENGINE_IMPL_H
 
+#include <memory>
+
 #include <karin/graphics/text_blob.h>
 #include <karin/graphics/text_style.h>
 #include <karin/graphics/paragraph_style.h>
 
-#include "font_loader.h"
+#include "font_manager.h"
 #include "text_layouter.h"
 
 namespace karin
@@ -23,8 +25,10 @@ public:
         const Size& maxSize
     ) const;
 
+    void registerCustomFont(const std::string& filePath, const Font& font) const;
+
 private:
-    std::unique_ptr<FontLoader> m_fontLoader;
+    std::unique_ptr<FontManager> m_fontManager;
     std::unique_ptr<TextLayouter> m_textLayouter;
 };
 }
