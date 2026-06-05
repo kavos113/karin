@@ -71,12 +71,20 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
 
 VertexPushConstants createVertexPushConstantData(const Transform2D& transform, const Point& position)
 {
+    const float *data = transform.data();
+    glm::mat4 trans = glm::mat4(
+        data[0], data[1], 0.0f, 0.0f,
+        data[3], data[4], 0.0f, 0.0f,
+        0.0f,    0.0f,    1.0f, 0.0f,
+        data[6], data[7], 0.0f, 1.0f
+    );
+
     glm::mat4 translateMatrix = glm::translate(
         glm::mat4(1.0f),
         glm::vec3(position.x, position.y, 0.0f)
     );
     return VertexPushConstants{
-        .model = translateMatrix * glm::make_mat4(transform.colMajorData())
+        .model = translateMatrix * trans
     };
 }
 }
