@@ -4,7 +4,7 @@ namespace karin
 {
 TextEngineImpl::TextEngineImpl()
 {
-    m_fontLoader = std::make_unique<FontLoader>();
+    m_fontManager = std::make_unique<FontManager>();
     m_textLayouter = std::make_unique<TextLayouter>();
 }
 
@@ -15,7 +15,7 @@ TextBlob TextEngineImpl::layoutText(
     const Size& maxSize
 ) const
 {
-    std::unique_ptr<IFontFace> fontFace = m_fontLoader->loadFont(textStyle.font);
+    std::shared_ptr<IFontFace> fontFace = m_fontManager->getFontFace(textStyle.font);
 
     Size layoutSize{};
     std::vector<GlyphPosition> glyphs = TextLayouter::layout(

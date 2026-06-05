@@ -13,6 +13,7 @@ set(GRAPHICS_SOURCE
         text/text_engine.cpp
         text/text_engine_impl.cpp
         text/font_loader.cpp
+        text/font_manager.cpp
 )
 
 if (DIRECTX)

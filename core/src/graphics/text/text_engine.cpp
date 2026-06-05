@@ -16,7 +16,7 @@ TextBlob TextEngine::layoutText(
     const TextStyle& textStyle,
     const ParagraphStyle& paragraphStyle,
     const Size& maxSize
-)
+) const
 {
     return m_impl->layoutText(text, textStyle, paragraphStyle, maxSize);
 }
