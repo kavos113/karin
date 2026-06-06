@@ -22,6 +22,7 @@ set(GRAPHICS_HEADERS
         path_impl.h
         platform.h
         renderer_impl.h
+        canvas.h
         ${THIRD_PARTY_DIR}/stb_image/stb_image.h
 
         text/font_loader.h
@@ -128,7 +129,7 @@ endif ()
 
 # ------------ link libraries ------------
 
-add_library(karin_graphics STATIC ${GRAPHICS_SOURCE})
+add_library(karin_graphics STATIC ${GRAPHICS_SOURCE} ${GRAPHICS_HEADERS})
 target_include_directories(karin_graphics PUBLIC ${INCLUDE_DIR})
 target_include_directories(karin_graphics PRIVATE ${COMMON_DIR})
 target_include_directories(karin_graphics PRIVATE ${THIRD_PARTY_DIR})

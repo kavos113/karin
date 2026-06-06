@@ -43,7 +43,7 @@ elseif (UNIX)
     )
 endif ()
 
-add_library(karin_system STATIC ${SYSTEM_SOURCE})
+add_library(karin_system STATIC ${SYSTEM_SOURCE} ${SYSTEM_HEADER})
 target_include_directories(karin_system PUBLIC ${INCLUDE_DIR})
 target_include_directories(karin_system PRIVATE ${COMMON_DIR})
 target_include_directories(karin_system PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
