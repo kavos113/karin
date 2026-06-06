@@ -1,4 +1,4 @@
-#include "vulkan_graphics_context_impl.h"
+#include "vulkan_canvas.h"
 
 #include "glm_geometry.h"
 #include "vulkan_renderer_impl.h"
@@ -91,12 +91,12 @@ VertexPushConstants createVertexPushConstantData(const Transform2D& transform, c
 
 namespace karin
 {
-VulkanGraphicsContextImpl::VulkanGraphicsContextImpl(VulkanRendererImpl* renderer)
+VulkanCanvas::VulkanCanvas(VulkanRendererImpl* renderer)
     : m_renderer(renderer)
 {
 }
 
-void VulkanGraphicsContextImpl::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform)
+void VulkanCanvas::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform)
 {
     std::vector<VulkanPipeline::Vertex> vertices = {
         {
@@ -133,7 +133,7 @@ void VulkanGraphicsContextImpl::fillRect(Rectangle rect, const Pattern& pattern,
     );
 }
 
-void VulkanGraphicsContextImpl::fillEllipse(
+void VulkanCanvas::fillEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
 )
 {
@@ -172,7 +172,7 @@ void VulkanGraphicsContextImpl::fillEllipse(
     );
 }
 
-void VulkanGraphicsContextImpl::fillRoundedRect(
+void VulkanCanvas::fillRoundedRect(
     Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
 )
 {
@@ -215,7 +215,7 @@ void VulkanGraphicsContextImpl::fillRoundedRect(
     );
 }
 
-void VulkanGraphicsContextImpl::drawLine(
+void VulkanCanvas::drawLine(
     Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 )
 {
@@ -240,7 +240,7 @@ void VulkanGraphicsContextImpl::drawLine(
     );
 }
 
-void VulkanGraphicsContextImpl::drawRect(
+void VulkanCanvas::drawRect(
     Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 )
 {
@@ -294,7 +294,7 @@ void VulkanGraphicsContextImpl::drawRect(
     );
 }
 
-void VulkanGraphicsContextImpl::drawEllipse(
+void VulkanCanvas::drawEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D&
     transform
 )
@@ -327,7 +327,7 @@ void VulkanGraphicsContextImpl::drawEllipse(
     );
 }
 
-void VulkanGraphicsContextImpl::drawRoundedRect(
+void VulkanCanvas::drawRoundedRect(
     Rectangle rect,
     float radiusX,
     float radiusY,
@@ -434,7 +434,7 @@ void VulkanGraphicsContextImpl::drawRoundedRect(
     );
 }
 
-void VulkanGraphicsContextImpl::fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform)
+void VulkanCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform)
 {
     std::vector<VulkanPipeline::Vertex> vertices;
     std::vector<uint16_t> indices;
@@ -516,7 +516,7 @@ void VulkanGraphicsContextImpl::fillPath(const PathImpl& path, const Pattern& pa
     );
 }
 
-void VulkanGraphicsContextImpl::drawPath(
+void VulkanCanvas::drawPath(
     const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 )
 {
@@ -587,7 +587,7 @@ void VulkanGraphicsContextImpl::drawPath(
     );
 }
 
-void VulkanGraphicsContextImpl::drawImage(
+void VulkanCanvas::drawImage(
     Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
 )
 {

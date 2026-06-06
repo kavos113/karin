@@ -10,7 +10,7 @@
 
 #ifdef KARIN_PLATFORM_DIRECTX
 #include "d2d/d2d_renderer_impl.h"
-#include "d2d/d2d_graphics_context_impl.h"
+#include "d2d/d2d_canvas.h"
 #include "d2d/d2d_window_surface.h"
 #include "d2d/d2d_offscreen_surface.h"
 #include "d2d/d2d_offscreen_renderer_impl.h"
@@ -69,16 +69,16 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
 #endif
 }
 
-inline std::unique_ptr<IGraphicsContextImpl> createGraphicsContextImpl(IRendererImpl* impl)
+inline std::unique_ptr<ICanvas> createCanvas(IRendererImpl* impl)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto d2dImpl = dynamic_cast<D2DRendererImpl*>(impl);
-    return std::make_unique<D2DGraphicsContextImpl>(
+    return std::make_unique<D2DCanvas>(
         d2dImpl->deviceContext(),
         d2dImpl->deviceResources()
     );
 #elifdef KARIN_PLATFORM_VULKAN
-    return std::make_unique<VulkanGraphicsContextImpl>(
+    return std::make_unique<VulkanCanvas>(
         dynamic_cast<VulkanRendererImpl*>(impl)
     );
 #endif

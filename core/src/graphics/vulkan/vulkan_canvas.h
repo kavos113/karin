@@ -1,53 +1,60 @@
-#ifndef SRC_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_IMPL_H
-#define SRC_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_IMPL_H
+#ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+#define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
 
-#include "path_impl.h"
+#include "vulkan_renderer_impl.h"
 
+#include <karin/common/geometry/point.h>
 #include <karin/common/geometry/rectangle.h>
-#include <karin/common/geometry/transform2d.h>
 #include <karin/graphics/pattern.h>
 #include <karin/graphics/stroke_style.h>
-#include <karin/graphics/image.h>
+#include <canvas.h>
+#include <path_impl.h>
 
 namespace karin
 {
-class IGraphicsContextImpl
+class VulkanCanvas : public ICanvas
 {
 public:
-    virtual ~IGraphicsContextImpl() = default;
+    explicit VulkanCanvas(VulkanRendererImpl* renderer);
+    ~VulkanCanvas() override = default;
 
-    virtual void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) = 0;
-    virtual void fillEllipse(
+    void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) override;
+    void fillEllipse(
         Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-    ) = 0;
-    virtual void fillRoundedRect(
+    ) override;
+    void fillRoundedRect(
         Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-    ) = 0;
-    virtual void fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform) = 0;
-
-    virtual void drawLine(
+    ) override;
+    void fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform) override;
+    void drawLine(
         Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) = 0;
-    virtual void drawRect(
+    ) override;
+    void drawRect(
         Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) = 0;
-    virtual void drawEllipse(
+    ) override;
+    void drawEllipse(
         Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D&
         transform
-    ) = 0;
-    virtual void drawRoundedRect(
+    ) override;
+    void drawRoundedRect(
         Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle,
         const Transform2D&
         transform
-    ) = 0;
-    virtual void drawPath(
+    ) override;
+    void drawPath(
         const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) = 0;
+    ) override;
 
-    virtual void drawImage(
+    void drawImage(
         Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
-    ) = 0;
+    ) override;
+
+private:
+    VulkanRendererImpl* m_renderer;
+
+    static constexpr int CAP_ROUND_SEGMENTS = 8;
+    static constexpr int ELLIPSE_SEGMENTS = 32;
 };
 } // karin
 
-#endif //SRC_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_IMPL_H
+#endif //SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H

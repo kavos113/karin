@@ -1,13 +1,13 @@
 #include <karin/graphics/graphics_context.h>
 
 #include "platform.h"
-#include "graphics_context_impl.h"
+#include "canvas.h"
+#include "font_renderer_impl.h"
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(IRendererImpl* impl)
-    : m_rendererImpl(impl)
-    , m_impl(createGraphicsContextImpl(impl))
+GraphicsContext::GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer)
+    : m_canvas(std::move(canvas)), m_fontRenderer(fontRenderer)
 {
 }
 
@@ -15,42 +15,42 @@ GraphicsContext::~GraphicsContext() = default;
 
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) const
 {
-    m_impl->fillRect(rect, pattern, transform);
+    m_canvas->fillRect(rect, pattern, transform);
 }
 
 void GraphicsContext::fillEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
 ) const
 {
-    m_impl->fillEllipse(center, radiusX, radiusY, pattern, transform);
+    m_canvas->fillEllipse(center, radiusX, radiusY, pattern, transform);
 }
 
 void GraphicsContext::fillRoundedRect(
     Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
 ) const
 {
-    m_impl->fillRoundedRect(rect, radiusX, radiusY, pattern, transform);
+    m_canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, transform);
 }
 
 void GraphicsContext::drawLine(
     Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 ) const
 {
-    m_impl->drawLine(start, end, pattern, strokeStyle, transform);
+    m_canvas->drawLine(start, end, pattern, strokeStyle, transform);
 }
 
 void GraphicsContext::drawRect(
     Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 ) const
 {
-    m_impl->drawRect(rect, pattern, strokeStyle, transform);
+    m_canvas->drawRect(rect, pattern, strokeStyle, transform);
 }
 
 void GraphicsContext::drawEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 ) const
 {
-    m_impl->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, transform);
+    m_canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, transform);
 }
 
 void GraphicsContext::drawRoundedRect(
@@ -58,30 +58,30 @@ void GraphicsContext::drawRoundedRect(
     const Transform2D& transform
 ) const
 {
-    m_impl->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, transform);
+    m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, transform);
 }
 
 void GraphicsContext::fillPath(const Path& path, const Pattern& pattern, const Transform2D& transform) const
 {
-    m_impl->fillPath(*path.impl(), pattern, transform);
+    m_canvas->fillPath(*path.impl(), pattern, transform);
 }
 
 void GraphicsContext::drawPath(
     const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
 ) const
 {
-    m_impl->drawPath(*path.impl(), pattern, strokeStyle, transform);
+    m_canvas->drawPath(*path.impl(), pattern, strokeStyle, transform);
 }
 
 void GraphicsContext::drawImage(
     Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
 ) const
 {
-    m_impl->drawImage(image, destRect, srcRect, opacity, transform);
+    m_canvas->drawImage(image, destRect, srcRect, opacity, transform);
 }
 
 void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform) const
 {
-    m_rendererImpl->fontRenderer()->drawText(text, start, pattern, transform);
+    m_fontRenderer->drawText(text, start, pattern, transform);
 }
 } // karin
