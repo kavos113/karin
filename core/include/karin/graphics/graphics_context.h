@@ -48,7 +48,15 @@ public:
     void withSave(Func func)
     {
         save();
-        func();
+        try
+        {
+            func();
+        }
+        catch (...)
+        {
+            restore();
+            throw;
+        }
         restore();
     }
 
