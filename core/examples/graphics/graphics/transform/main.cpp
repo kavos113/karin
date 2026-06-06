@@ -45,7 +45,7 @@ int main()
                 gc.fillEllipse(
                     karin::Point(400, 300), 50, 100,
                     magentaPattern
-                ); 
+                );
             });
             
             gc.withSave([&]
