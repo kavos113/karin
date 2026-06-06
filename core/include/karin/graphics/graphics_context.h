@@ -45,19 +45,19 @@ public:
     void multiplyTransform(const Transform2D& transform);
     void setTransform(const Transform2D& transform);
 
-    void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
-    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
-    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
-    void fillPath(const Path& path, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
+    void fillRect(Rectangle rect, const Pattern& pattern) const;
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const;
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const;
+    void fillPath(const Path& path, const Pattern& pattern) const;
 
-    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(), const Transform2D& transform = Transform2D()) const;
-    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(), const Transform2D& transform = Transform2D()) const;
-    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(), const Transform2D& transform = Transform2D()) const;
-    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(), const Transform2D& transform = Transform2D()) const;
-    void drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(), const Transform2D& transform = Transform2D()) const;
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
 
-    void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f, const Transform2D& transform = Transform2D()) const;
-    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f) const;
+    void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
 private:
     std::unique_ptr<ICanvas> m_canvas;

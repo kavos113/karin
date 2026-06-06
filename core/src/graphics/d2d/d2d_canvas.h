@@ -25,37 +25,18 @@ public:
 
     ~D2DCanvas() override = default;
 
-    void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) override;
-    void fillEllipse(
-        Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-    ) override;
-    void fillRoundedRect(
-        Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-    ) override;
-    void fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform) override;
+    void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state) override;
 
-    void drawLine(
-        Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) override;
-    void drawRect(
-        Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) override;
-    void drawEllipse(
-        Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D&
-        transform
-    ) override;
-    void drawRoundedRect(
-        Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle,
-        const Transform2D&
-        transform
-    ) override;
-    void drawPath(
-        const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-    ) override;
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawPath(const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
 
-    void drawImage(
-        Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
-    ) override;
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) override;
 
 private:
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;

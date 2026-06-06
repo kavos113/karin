@@ -44,75 +44,58 @@ void GraphicsContext::setTransform(const Transform2D& transform)
     m_currentState.transform = transform;
 }
 
-void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) const
+void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
 {
-    m_canvas->fillRect(rect, pattern, transform);
+    m_canvas->fillRect(rect, pattern, m_currentState);
 }
 
-void GraphicsContext::fillEllipse(
-    Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-) const
+void GraphicsContext::fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const
 {
-    m_canvas->fillEllipse(center, radiusX, radiusY, pattern, transform);
+    m_canvas->fillEllipse(center, radiusX, radiusY, pattern, m_currentState);
 }
 
-void GraphicsContext::fillRoundedRect(
-    Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
-) const
+void GraphicsContext::fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const
 {
-    m_canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, transform);
+    m_canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, m_currentState);
 }
 
-void GraphicsContext::drawLine(
-    Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-) const
+void GraphicsContext::drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawLine(start, end, pattern, strokeStyle, transform);
+    m_canvas->drawLine(start, end, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::drawRect(
-    Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-) const
+void GraphicsContext::drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawRect(rect, pattern, strokeStyle, transform);
+    m_canvas->drawRect(rect, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::drawEllipse(
-    Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-) const
+void GraphicsContext::drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, transform);
+    m_canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::drawRoundedRect(
-    Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle,
-    const Transform2D& transform
-) const
+void GraphicsContext::drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, transform);
+    m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::fillPath(const Path& path, const Pattern& pattern, const Transform2D& transform) const
+void GraphicsContext::fillPath(const Path& path, const Pattern& pattern) const
 {
-    m_canvas->fillPath(*path.impl(), pattern, transform);
+    m_canvas->fillPath(*path.impl(), pattern, m_currentState);
 }
 
-void GraphicsContext::drawPath(
-    const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
-) const
+void GraphicsContext::drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawPath(*path.impl(), pattern, strokeStyle, transform);
+    m_canvas->drawPath(*path.impl(), pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::drawImage(
-    Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
-) const
+void GraphicsContext::drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity) const
 {
-    m_canvas->drawImage(image, destRect, srcRect, opacity, transform);
+    m_canvas->drawImage(image, destRect, srcRect, opacity, m_currentState);
 }
 
-void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform) const
+void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern) const
 {
-    m_fontRenderer->drawText(text, start, pattern, transform);
+    m_fontRenderer->drawText(text, start, pattern, m_currentState);
 }
 } // karin
