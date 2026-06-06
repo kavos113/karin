@@ -28,6 +28,13 @@ private:
     );
 
     static void ensureExpectedImageDirectoryExists();
+    static void saveDiffImage(
+        const std::string& testName,
+        const unsigned char* actualImageData,
+        const unsigned char *expectedImageData,
+        int width,
+        int height
+    );
 
     static std::string getEnv(const char* varName, const char* defaultValue = nullptr);
 

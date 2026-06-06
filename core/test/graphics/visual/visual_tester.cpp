@@ -88,6 +88,17 @@ bool VisualTester::checkOrUpdate(
     if (!result)
     {
         std::cerr << "[ERROR] Image comparison failed for " << testName << std::endl;
+
+        if (getEnv("SAVE_DIFF_IMAGES", "0") == "1")
+        {
+            saveDiffImage(
+                testName,
+                reinterpret_cast<const unsigned char*>(convertedImageData.data()),
+                expectedImageData,
+                width,
+                height
+            );
+        }
     }
 
     return result;
@@ -136,6 +147,71 @@ void VisualTester::ensureExpectedImageDirectoryExists()
     {
         std::filesystem::create_directories(expectedImageDirectory);
     }
+}
+
+void VisualTester::saveDiffImage(
+    const std::string& testName,
+    const unsigned char* actualImageData,
+    const unsigned char* expectedImageData,
+    int width,
+    int height
+)
+{
+    std::vector<std::byte> diffImageData(width * height * 4);
+    for (size_t i = 0; i < width * height * 4; i += 4)
+    {
+        int diffR = std::abs(static_cast<int>(actualImageData[i + 0]) - static_cast<int>(expectedImageData[i + 0]));
+        int diffG = std::abs(static_cast<int>(actualImageData[i + 1]) - static_cast<int>(expectedImageData[i + 1]));
+        int diffB = std::abs(static_cast<int>(actualImageData[i + 2]) - static_cast<int>(expectedImageData[i + 2]));
+
+        diffImageData[i + 0] = static_cast<std::byte>(diffR);
+        diffImageData[i + 1] = static_cast<std::byte>(diffG);
+        diffImageData[i + 2] = static_cast<std::byte>(diffB);
+        diffImageData[i + 3] = static_cast<std::byte>(255); // Fully opaque
+    }
+
+    int result = stbi_write_png(
+        std::format("{}/{}_diff.png", expectedImageDirectory, testName).c_str(),
+        width,
+        height,
+        4,
+        diffImageData.data(),
+        width * 4
+    );
+    if (result == 0)
+    {
+        std::cerr << "[ERROR] Failed to write diff image for " << testName << std::endl;
+        return;
+    }
+
+    for (size_t i = 0; i < width * height * 4; i += 4)
+    {
+        int avgR = (static_cast<int>(actualImageData[i + 0]) + static_cast<int>(expectedImageData[i + 0])) / 2;
+        int avgG = (static_cast<int>(actualImageData[i + 1]) + static_cast<int>(expectedImageData[i + 1])) / 2;
+        int avgB = (static_cast<int>(actualImageData[i + 2]) + static_cast<int>(expectedImageData[i + 2])) / 2;
+
+        diffImageData[i + 0] = static_cast<std::byte>(avgR);
+        diffImageData[i + 1] = static_cast<std::byte>(avgG);
+        diffImageData[i + 2] = static_cast<std::byte>(avgB);
+        diffImageData[i + 3] = static_cast<std::byte>(255); // Fully opaque
+    }
+
+    result = stbi_write_png(
+        std::format("{}/{}_avg.png", expectedImageDirectory, testName).c_str(),
+        width,
+        height,
+        4,
+        diffImageData.data(),
+        width * 4
+    );
+    if (result == 0)
+    {
+        std::cerr << "[ERROR] Failed to write average image for " << testName << std::endl;
+        return;
+    }
+
+    std::cerr << "[INFO] Saved diff and average images for " << testName << std::endl;
+
 }
 
 std::string VisualTester::getEnv(const char* varName, const char* defaultValue)
