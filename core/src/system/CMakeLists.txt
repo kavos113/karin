@@ -2,6 +2,11 @@ set(SYSTEM_SOURCE
         application.cpp
         window.cpp
 )
+set(SYSTEM_HEADER
+        application_impl.h
+        window_impl.h
+        platform.h
+)
 
 if (WIN32)
     set(SYSTEM_SOURCE ${SYSTEM_SOURCE}
@@ -12,6 +17,15 @@ if (WIN32)
             windows/win_converter.cpp
             windows/win_context.cpp
     )
+    set(SYSTEM_HEADER ${SYSTEM_HEADER}
+            windows/win_application_impl.h
+            windows/win_window_impl.h
+            windows/win_window_class_registry.h
+            windows/win_event.h
+            windows/win_converter.h
+            windows/win_context.h
+
+    )
 elseif (UNIX)
     set(SYSTEM_SOURCE ${SYSTEM_SOURCE}
             x11/x11_application_impl.cpp
@@ -19,6 +33,13 @@ elseif (UNIX)
             x11/x11_converter.cpp
             x11/x11_context.cpp
             x11/x11_event.cpp
+    )
+    set(SYSTEM_HEADER ${SYSTEM_HEADER}
+            x11/x11_application_impl.h
+            x11/x11_window_impl.h
+            x11/x11_converter.h
+            x11/x11_context.h
+            x11/x11_event.h
     )
 endif ()
 

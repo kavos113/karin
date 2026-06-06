@@ -9,6 +9,10 @@ set(GUI_SOURCES
         text_node.cpp
         event_dispatcher.cpp
 )
+set(GUI_HEADERS
+        application_context.h
+        event_dispatcher.h
+)
 
 add_library(karin_gui STATIC ${GUI_SOURCES})
 target_include_directories(karin_gui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
