@@ -30,67 +30,70 @@ int main()
     renderer.addDrawCommand(
         [&cyanPattern, &magentaPattern, &yellowPattern, &blackPattern, &whitePattern, &blob](karin::GraphicsContext& gc)
         {
-            gc.fillRect(
-                karin::Rectangle(100, 100, 100, 100),
-                cyanPattern,
+            gc.setTransform(
                 karin::Transform2D()
                     .translate(0, 100)
                     .rotate(-std::numbers::pi / 4)
             );
+            gc.fillRect(
+                karin::Rectangle(100, 100, 100, 100),
+                cyanPattern
+            );
 
             gc.fillEllipse(
                 karin::Point(400, 300), 50, 100,
-                magentaPattern,
-                karin::Transform2D()
-                    .translate(100, 0)
-                    .rotate(std::numbers::pi / 4)
+                magentaPattern
             );
 
-            gc.drawLine(
-                karin::Point(600, 100), karin::Point(700, 200),
-                blackPattern,
-                karin::StrokeStyle(5),
+            gc.setTransform(
                 karin::Transform2D()
                     .translate(-50, 0)
                     .rotate(std::numbers::pi / 6)
             );
+            gc.drawLine(
+                karin::Point(600, 100), karin::Point(700, 200),
+                blackPattern,
+                karin::StrokeStyle(5)
+            );
 
-            gc.drawRect(
-                karin::Rectangle(500, 400, 150, 100),
-                whitePattern,
-                karin::StrokeStyle(3),
+            gc.setTransform(
                 karin::Transform2D()
                     .translate(0, -50)
                     .rotate(-std::numbers::pi / 3)
             );
+            gc.drawRect(
+                karin::Rectangle(500, 400, 150, 100),
+                whitePattern,
+                karin::StrokeStyle(3)
+            );
 
-            gc.drawRoundedRect(
-                karin::Rectangle(200, 400, 150, 100),
-                20, 20,
-                yellowPattern,
-                karin::StrokeStyle(4),
+            gc.setTransform(
                 karin::Transform2D()
                     .translate(0, -50)
                     .rotate(std::numbers::pi / 8)
             );
+            gc.drawRoundedRect(
+                karin::Rectangle(200, 400, 150, 100),
+                20, 20,
+                yellowPattern,
+                karin::StrokeStyle(4)
+            );
 
-            gc.drawText(
-                blob,
-                karin::Point(300, 50),
-                blackPattern,
+            gc.setTransform(
                 karin::Transform2D()
                     .translate(0, 50)
                     .rotate(-std::numbers::pi / 12)
                     .scale(2.0f, 1.0f)
             );
+            gc.drawText(
+                blob,
+                karin::Point(300, 50),
+                blackPattern
+            );
             gc.drawRect(
                 karin::Rectangle(300, 50, 200, 50),
                 magentaPattern,
-                karin::StrokeStyle(1),
-                karin::Transform2D()
-                    .translate(0, 50)
-                    .rotate(-std::numbers::pi / 12)
-                    .scale(2.0f, 1.0f)
+                karin::StrokeStyle(1)
             );
         }
     );
