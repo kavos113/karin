@@ -2,6 +2,7 @@
 #define KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 
 #include <memory>
+#include <vector>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -15,6 +16,7 @@
 
 namespace karin
 {
+
 class ICanvas;
 class IFontRendererImpl;
 /**
@@ -32,6 +34,17 @@ private:
     friend class OffscreenRenderer;
 
 public:
+    struct State
+    {
+        Transform2D transform;
+    };
+
+    void save();
+    void restore();
+    void reset();
+    void multiplyTransform(const Transform2D& transform);
+    void setTransform(const Transform2D& transform);
+
     void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
@@ -48,8 +61,12 @@ public:
 
 private:
     std::unique_ptr<ICanvas> m_canvas;
-
     IFontRendererImpl* m_fontRenderer;
+
+    State m_currentState;
+    std::vector<State> m_stateStack;
+
+    static constexpr size_t MAX_STATE_STACK_SIZE = 128;
 };
 } // karin
 

@@ -9,9 +9,40 @@ namespace karin
 GraphicsContext::GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer)
     : m_canvas(std::move(canvas)), m_fontRenderer(fontRenderer)
 {
+    m_stateStack.reserve(MAX_STATE_STACK_SIZE);
 }
 
 GraphicsContext::~GraphicsContext() = default;
+
+void GraphicsContext::save()
+{
+    m_stateStack.push_back(m_currentState);
+}
+
+void GraphicsContext::restore()
+{
+    if (!m_stateStack.empty())
+    {
+        m_currentState = m_stateStack.back();
+        m_stateStack.pop_back();
+    }
+}
+
+void GraphicsContext::reset()
+{
+    m_currentState = State();
+    m_stateStack.clear();
+}
+
+void GraphicsContext::multiplyTransform(const Transform2D& transform)
+{
+    m_currentState.transform = m_currentState.transform * transform;
+}
+
+void GraphicsContext::setTransform(const Transform2D& transform)
+{
+    m_currentState.transform = transform;
+}
 
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform) const
 {
