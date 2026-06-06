@@ -43,7 +43,6 @@ public:
     void restore();
     void reset();
     void multiplyTransform(const Transform2D& transform);
-    void setTransform(const Transform2D& transform);
 
     template<typename Func>
     void withSave(Func func)

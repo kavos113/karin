@@ -39,11 +39,6 @@ void GraphicsContext::multiplyTransform(const Transform2D& transform)
     m_currentState.transform = m_currentState.transform * transform;
 }
 
-void GraphicsContext::setTransform(const Transform2D& transform)
-{
-    m_currentState.transform = transform;
-}
-
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
 {
     m_canvas->fillRect(rect, pattern, m_currentState);

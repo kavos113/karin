@@ -73,14 +73,23 @@ inline std::unique_ptr<ICanvas> createCanvas(IRendererImpl* impl)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto d2dImpl = dynamic_cast<D2DRendererImpl*>(impl);
+    if (d2dImpl == nullptr)
+    {
+        throw std::runtime_error("Invalid renderer implementation for DirectX canvas");
+    }
+
     return std::make_unique<D2DCanvas>(
         d2dImpl->deviceContext(),
         d2dImpl->deviceResources()
     );
 #elifdef KARIN_PLATFORM_VULKAN
-    return std::make_unique<VulkanCanvas>(
-        dynamic_cast<VulkanRendererImpl*>(impl)
-    );
+    auto vulkanImpl = dynamic_cast<VulkanRendererImpl*>(impl);
+    if (vulkanImpl == nullptr)
+    {
+        throw std::runtime_error("Invalid renderer implementation for Vulkan canvas");
+    }
+
+    return std::make_unique<VulkanCanvas>(vulkanImpl);
 #endif
 
     return nullptr;
