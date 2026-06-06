@@ -4,9 +4,9 @@
 #include <memory>
 
 #include <karin/system/window.h>
-#include "graphics_context_impl.h"
 #include "offscreen_renderer_impl.h"
 #include "renderer_impl.h"
+#include "canvas.h"
 
 #ifdef KARIN_PLATFORM_DIRECTX
 #include "d2d/d2d_renderer_impl.h"
@@ -20,6 +20,7 @@
 #include "vulkan/vulkan_window_surface.h"
 #include "vulkan/vulkan_offscreen_surface.h"
 #include "vulkan/vulkan_offscreen_renderer_impl.h"
+#include "vulkan/vulkan_canvas.h"
 #include "text/font_loader.h"
 #endif
 
