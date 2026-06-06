@@ -45,6 +45,14 @@ public:
     void multiplyTransform(const Transform2D& transform);
     void setTransform(const Transform2D& transform);
 
+    template<typename Func>
+    void withSave(Func func)
+    {
+        save();
+        func();
+        restore();
+    }
+
     void fillRect(Rectangle rect, const Pattern& pattern) const;
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const;
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const;

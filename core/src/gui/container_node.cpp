@@ -60,16 +60,15 @@ void ContainerNode::drawInternal(GraphicsContext& gc) const
 {
     drawBackground(gc);
 
-    gc.save();
-
-    Rectangle layout = getLayout();
-    gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
-    for (const auto& child : m_children)
+    gc.withSave([&]
     {
-        child->draw(gc);
-    }
-
-    gc.restore();
+        Rectangle layout = getLayout();
+        gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
+        for (const auto& child : m_children)
+        {
+            child->draw(gc);
+        }
+    });
 
     drawForeground(gc);
 }
