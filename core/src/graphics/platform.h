@@ -16,7 +16,6 @@
 #include "d2d/d2d_offscreen_renderer_impl.h"
 #elifdef KARIN_PLATFORM_VULKAN
 #include "vulkan/vulkan_renderer_impl.h"
-#include "vulkan/vulkan_graphics_context_impl.h"
 #include "vulkan/vulkan_window_surface.h"
 #include "vulkan/vulkan_offscreen_surface.h"
 #include "vulkan/vulkan_offscreen_renderer_impl.h"

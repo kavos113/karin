@@ -56,19 +56,22 @@ void ContainerNode::onDetachFromWindow()
     }
 }
 
-void ContainerNode::drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const
+void ContainerNode::drawInternal(GraphicsContext& gc) const
 {
-    drawBackground(gc, parentTransform);
+    drawBackground(gc);
+
+    gc.save();
 
     Rectangle layout = getLayout();
-    Transform2D transform = parentTransform;
-    transform.translate(layout.pos.x, layout.pos.y);
+    gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
     for (const auto& child : m_children)
     {
-        child->draw(gc, transform);
+        child->draw(gc);
     }
 
-    drawForeground(gc, parentTransform);
+    gc.restore();
+
+    drawForeground(gc);
 }
 
 void ContainerNode::addChild(std::unique_ptr<ViewNode> child)

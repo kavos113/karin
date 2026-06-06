@@ -24,7 +24,7 @@ public:
 
     void setText(const std::string& text);
 
-    void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const override;
+    void drawInternal(GraphicsContext& gc) const override;
     YGSize measure(Size availableSize) const override;
 
 private:

@@ -2,11 +2,11 @@
 
 namespace karin::gui
 {
-void RectangleNode::drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const
+void RectangleNode::drawBackground(GraphicsContext& gc) const
 {
     Rectangle layout = getLayout();
     Pattern pattern = SolidColorPattern(m_color);
 
-    gc.fillRect(layout, pattern, parentTransform);
+    gc.fillRect(layout, pattern);
 }
 } // karin::gui

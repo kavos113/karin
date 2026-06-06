@@ -48,7 +48,7 @@ public:
     explicit ViewNode(Size size);
     virtual ~ViewNode();
 
-    void draw(GraphicsContext& gc, const Transform2D& parentTransform) const;
+    void draw(GraphicsContext& gc) const;
     virtual ViewNode* hitTest(const Point& point);
 
     void calculateLayout() const;
@@ -72,14 +72,14 @@ public:
     void triggerClick(Point point) const;
 
 protected:
-    virtual void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const = 0;
+    virtual void drawInternal(GraphicsContext& gc) const = 0;
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
 
 private:
-    void drawBorder(GraphicsContext& gc, const Transform2D& transform) const;
-    void drawBackgroundColor(GraphicsContext& gc, const Transform2D& parentTransform) const;
+    void drawBorder(GraphicsContext& gc) const;
+    void drawBackgroundColor(GraphicsContext& gc) const;
 
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;

@@ -13,7 +13,7 @@ public:
     ~RectangleNode() override = default;
 
 protected:
-    void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const override;
+    void drawBackground(GraphicsContext& gc) const override;
 
 private:
     Color m_color;
