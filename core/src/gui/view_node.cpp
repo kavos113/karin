@@ -85,7 +85,10 @@ ViewNode::~ViewNode()
 void ViewNode::draw(GraphicsContext& gc) const
 {
     drawBackgroundColor(gc);
-    drawInternal(gc);
+    gc.withSave([&]
+    {
+        drawInternal(gc);
+    });
     drawBorder(gc);
 }
 
