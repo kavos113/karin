@@ -4,6 +4,7 @@
 #include <d2d1_3.h>
 #include <wrl/client.h>
 
+#include <karin/graphics/graphics_context.h>
 #include "font_renderer_impl.h"
 #include "d2d_device_resources.h"
 
@@ -15,7 +16,7 @@ public:
     explicit D2DFontRenderer(Microsoft::WRL::ComPtr<ID2D1DeviceContext> d2dContext, D2DDeviceResources* deviceResources);
     ~D2DFontRenderer() override;
 
-    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform) const override;
+    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state) const override;
 
 private:
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;

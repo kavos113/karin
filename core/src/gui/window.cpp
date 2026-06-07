@@ -36,11 +36,7 @@ void Window::beforeRun()
                 m_needRelayout = false;
             }
 
-            Rectangle layout = m_rootView->getLayout();
-            Transform2D transform;
-            transform.translate(layout.pos.x, layout.pos.y);
-
-            m_rootView->draw(gc, transform);
+            m_rootView->draw(gc);
         }
     );
 

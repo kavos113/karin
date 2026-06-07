@@ -21,13 +21,22 @@ WinWindowImpl::WinWindowImpl(
 {
     std::wstring wtitle = toWString(title);
 
+    RECT rect = { 0, 0, width, height };
+    AdjustWindowRectEx(
+        &rect,
+        WS_OVERLAPPEDWINDOW,
+        FALSE,
+        0
+    );
+
     m_hwnd = CreateWindowEx(
         0,
         WinApplicationImpl::CLASS_NAME,
         wtitle.c_str(),
         WS_OVERLAPPEDWINDOW,
         x, y,
-        width, height,
+        rect.right - rect.left,
+        rect.bottom - rect.top,
         nullptr,
         nullptr,
         GetModuleHandle(nullptr),

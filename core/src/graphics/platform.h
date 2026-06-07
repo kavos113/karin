@@ -4,22 +4,22 @@
 #include <memory>
 
 #include <karin/system/window.h>
-#include "graphics_context_impl.h"
 #include "offscreen_renderer_impl.h"
 #include "renderer_impl.h"
+#include "canvas.h"
 
 #ifdef KARIN_PLATFORM_DIRECTX
 #include "d2d/d2d_renderer_impl.h"
-#include "d2d/d2d_graphics_context_impl.h"
+#include "d2d/d2d_canvas.h"
 #include "d2d/d2d_window_surface.h"
 #include "d2d/d2d_offscreen_surface.h"
 #include "d2d/d2d_offscreen_renderer_impl.h"
 #elifdef KARIN_PLATFORM_VULKAN
 #include "vulkan/vulkan_renderer_impl.h"
-#include "vulkan/vulkan_graphics_context_impl.h"
 #include "vulkan/vulkan_window_surface.h"
 #include "vulkan/vulkan_offscreen_surface.h"
 #include "vulkan/vulkan_offscreen_renderer_impl.h"
+#include "vulkan/vulkan_canvas.h"
 #include "text/font_loader.h"
 #endif
 
@@ -69,18 +69,27 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
 #endif
 }
 
-inline std::unique_ptr<IGraphicsContextImpl> createGraphicsContextImpl(IRendererImpl* impl)
+inline std::unique_ptr<ICanvas> createCanvas(IRendererImpl* impl)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto d2dImpl = dynamic_cast<D2DRendererImpl*>(impl);
-    return std::make_unique<D2DGraphicsContextImpl>(
+    if (d2dImpl == nullptr)
+    {
+        throw std::runtime_error("Invalid renderer implementation for DirectX canvas");
+    }
+
+    return std::make_unique<D2DCanvas>(
         d2dImpl->deviceContext(),
         d2dImpl->deviceResources()
     );
 #elifdef KARIN_PLATFORM_VULKAN
-    return std::make_unique<VulkanGraphicsContextImpl>(
-        dynamic_cast<VulkanRendererImpl*>(impl)
-    );
+    auto vulkanImpl = dynamic_cast<VulkanRendererImpl*>(impl);
+    if (vulkanImpl == nullptr)
+    {
+        throw std::runtime_error("Invalid renderer implementation for Vulkan canvas");
+    }
+
+    return std::make_unique<VulkanCanvas>(vulkanImpl);
 #endif
 
     return nullptr;

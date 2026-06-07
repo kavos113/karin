@@ -1,0 +1,47 @@
+#ifndef SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H
+#define SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H
+
+#include <d2d1_1.h>
+#include <wrl/client.h>
+
+#include <karin/common/geometry/rectangle.h>
+#include <karin/common/geometry/point.h>
+#include <karin/graphics/stroke_style.h>
+#include <karin/graphics/pattern.h>
+#include <karin/graphics/image.h>
+#include <canvas.h>
+#include "d2d_device_resources.h"
+
+
+namespace karin
+{
+class D2DCanvas : public ICanvas
+{
+public:
+    D2DCanvas(
+        Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext,
+        D2DDeviceResources* deviceResources
+    );
+
+    ~D2DCanvas() override = default;
+
+    void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state) override;
+
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawPath(const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) override;
+
+private:
+    Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
+    D2DDeviceResources* m_deviceResources;
+};
+} // karin
+
+#endif //SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H

@@ -1,0 +1,43 @@
+#ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+#define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+
+#include <karin/common/geometry/point.h>
+#include <karin/common/geometry/rectangle.h>
+#include <karin/graphics/pattern.h>
+#include <karin/graphics/stroke_style.h>
+#include <karin/graphics/image.h>
+#include <karin/graphics/graphics_context.h>
+#include <canvas.h>
+#include <path_impl.h>
+#include "vulkan_renderer_impl.h"
+
+namespace karin
+{
+class VulkanCanvas : public ICanvas
+{
+public:
+    explicit VulkanCanvas(VulkanRendererImpl* renderer);
+    ~VulkanCanvas() override = default;
+
+    void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
+    void fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state) override;
+
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+    void drawPath(const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) override;
+
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) override;
+
+private:
+    VulkanRendererImpl* m_renderer;
+
+    static constexpr int CAP_ROUND_SEGMENTS = 8;
+    static constexpr int ELLIPSE_SEGMENTS = 32;
+};
+} // karin
+
+#endif //SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H

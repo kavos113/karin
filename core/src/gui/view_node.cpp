@@ -82,11 +82,14 @@ ViewNode::~ViewNode()
     YGNodeFree(m_yogaNode);
 }
 
-void ViewNode::draw(GraphicsContext& gc, const Transform2D& parentTransform) const
+void ViewNode::draw(GraphicsContext& gc) const
 {
-    drawBackgroundColor(gc, parentTransform);
-    drawInternal(gc, parentTransform);
-    drawBorder(gc, parentTransform);
+    drawBackgroundColor(gc);
+    gc.withSave([&]
+    {
+        drawInternal(gc);
+    });
+    drawBorder(gc);
 }
 
 void ViewNode::calculateLayout() const
@@ -206,7 +209,7 @@ void ViewNode::triggerClick(Point point) const
     }
 }
 
-void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) const
+void ViewNode::drawBorder(GraphicsContext& gc) const
 {
     Rectangle layout = getLayout();
 
@@ -222,8 +225,7 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
             topLeft,
             bottomLeft,
             pattern,
-            toStrokeStyle(m_borders[0].style, m_borders[0].width),
-            transform
+            toStrokeStyle(m_borders[0].style, m_borders[0].width)
         );
     }
 
@@ -234,8 +236,7 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
             topLeft,
             topRight,
             pattern,
-            toStrokeStyle(m_borders[1].style, m_borders[1].width),
-            transform
+            toStrokeStyle(m_borders[1].style, m_borders[1].width)
         );
     }
 
@@ -246,8 +247,7 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
             topRight,
             bottomRight,
             pattern,
-            toStrokeStyle(m_borders[2].style, m_borders[2].width),
-            transform
+            toStrokeStyle(m_borders[2].style, m_borders[2].width)
         );
     }
 
@@ -258,20 +258,19 @@ void ViewNode::drawBorder(GraphicsContext& gc, const Transform2D& transform) con
             bottomLeft,
             bottomRight,
             pattern,
-            toStrokeStyle(m_borders[3].style, m_borders[3].width),
-            transform
+            toStrokeStyle(m_borders[3].style, m_borders[3].width)
         );
     }
 }
 
-void ViewNode::drawBackgroundColor(GraphicsContext& gc, const Transform2D& parentTransform) const
+void ViewNode::drawBackgroundColor(GraphicsContext& gc) const
 {
     if (m_backgroundColor.has_value())
     {
         Rectangle layout = getLayout();
         Pattern pattern = SolidColorPattern(m_backgroundColor.value());
 
-        gc.fillRect(layout, pattern, parentTransform);
+        gc.fillRect(layout, pattern);
     }
 }
 

@@ -1,4 +1,4 @@
-#include "vulkan_graphics_context_impl.h"
+#include "vulkan_canvas.h"
 
 #include "glm_geometry.h"
 #include "vulkan_renderer_impl.h"
@@ -69,9 +69,9 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
     );
 }
 
-VertexPushConstants createVertexPushConstantData(const Transform2D& transform, const Point& position)
+VertexPushConstants createVertexPushConstantData(const GraphicsContext::State& state, const Point& position)
 {
-    const float *data = transform.data();
+    const float *data = state.transform.data();
     glm::mat4 trans = glm::mat4(
         data[0], data[1], 0.0f, 0.0f,
         data[3], data[4], 0.0f, 0.0f,
@@ -91,12 +91,12 @@ VertexPushConstants createVertexPushConstantData(const Transform2D& transform, c
 
 namespace karin
 {
-VulkanGraphicsContextImpl::VulkanGraphicsContextImpl(VulkanRendererImpl* renderer)
+VulkanCanvas::VulkanCanvas(VulkanRendererImpl* renderer)
     : m_renderer(renderer)
 {
 }
 
-void VulkanGraphicsContextImpl::fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform)
+void VulkanCanvas::fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state)
 {
     std::vector<VulkanPipeline::Vertex> vertices = {
         {
@@ -124,7 +124,7 @@ void VulkanGraphicsContextImpl::fillRect(Rectangle rect, const Pattern& pattern,
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             rect.pos.x + rect.size.width / 2.0f,
             rect.pos.y + rect.size.height / 2.0f
         )),
@@ -133,8 +133,8 @@ void VulkanGraphicsContextImpl::fillRect(Rectangle rect, const Pattern& pattern,
     );
 }
 
-void VulkanGraphicsContextImpl::fillEllipse(
-    Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
+void VulkanCanvas::fillEllipse(
+    Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices = {
@@ -166,14 +166,14 @@ void VulkanGraphicsContextImpl::fillEllipse(
     m_renderer->addCommand(
         vertices, indices,
         fragData,
-        createVertexPushConstantData(transform, center),
+        createVertexPushConstantData(state, center),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry
     );
 }
 
-void VulkanGraphicsContextImpl::fillRoundedRect(
-    Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform
+void VulkanCanvas::fillRoundedRect(
+    Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices = {
@@ -206,7 +206,7 @@ void VulkanGraphicsContextImpl::fillRoundedRect(
     m_renderer->addCommand(
         vertices, indices,
         fragData,
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             rect.pos.x + rect.size.width / 2.0f,
             rect.pos.y + rect.size.height / 2.0f
         )),
@@ -215,8 +215,8 @@ void VulkanGraphicsContextImpl::fillRoundedRect(
     );
 }
 
-void VulkanGraphicsContextImpl::drawLine(
-    Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
+void VulkanCanvas::drawLine(
+    Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices;
@@ -231,7 +231,7 @@ void VulkanGraphicsContextImpl::drawLine(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             (start.x + end.x) / 2.0f,
             (start.y + end.y) / 2.0f
         )),
@@ -240,8 +240,8 @@ void VulkanGraphicsContextImpl::drawLine(
     );
 }
 
-void VulkanGraphicsContextImpl::drawRect(
-    Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
+void VulkanCanvas::drawRect(
+    Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices;
@@ -285,7 +285,7 @@ void VulkanGraphicsContextImpl::drawRect(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             rect.pos.x + rect.size.width / 2.0f,
             rect.pos.y + rect.size.height / 2.0f
         )),
@@ -294,9 +294,8 @@ void VulkanGraphicsContextImpl::drawRect(
     );
 }
 
-void VulkanGraphicsContextImpl::drawEllipse(
-    Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D&
-    transform
+void VulkanCanvas::drawEllipse(
+    Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices;
@@ -321,18 +320,18 @@ void VulkanGraphicsContextImpl::drawEllipse(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, center),
+        createVertexPushConstantData(state, center),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry
     );
 }
 
-void VulkanGraphicsContextImpl::drawRoundedRect(
+void VulkanCanvas::drawRoundedRect(
     Rectangle rect,
     float radiusX,
     float radiusY,
     const Pattern& pattern,
-    const StrokeStyle& strokeStyle, const Transform2D& transform
+    const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices;
@@ -425,7 +424,7 @@ void VulkanGraphicsContextImpl::drawRoundedRect(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             rect.pos.x + rect.size.width / 2.0f,
             rect.pos.y + rect.size.height / 2.0f
         )),
@@ -434,7 +433,7 @@ void VulkanGraphicsContextImpl::drawRoundedRect(
     );
 }
 
-void VulkanGraphicsContextImpl::fillPath(const PathImpl& path, const Pattern& pattern, const Transform2D& transform)
+void VulkanCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
 {
     std::vector<VulkanPipeline::Vertex> vertices;
     std::vector<uint16_t> indices;
@@ -510,14 +509,14 @@ void VulkanGraphicsContextImpl::fillPath(const PathImpl& path, const Pattern& pa
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(0.0f, 0.0f)),
+        createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry
     );
 }
 
-void VulkanGraphicsContextImpl::drawPath(
-    const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const Transform2D& transform
+void VulkanCanvas::drawPath(
+    const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
     std::vector<VulkanPipeline::Vertex> vertices;
@@ -581,14 +580,14 @@ void VulkanGraphicsContextImpl::drawPath(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(0.0f, 0.0f)),
+        createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry
     );
 }
 
-void VulkanGraphicsContextImpl::drawImage(
-    Image image, Rectangle destRect, Rectangle srcRect, float opacity, const Transform2D& transform
+void VulkanCanvas::drawImage(
+    Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state
 )
 {
     Rectangle normalizedSrcRect{
@@ -641,7 +640,7 @@ void VulkanGraphicsContextImpl::drawImage(
     m_renderer->addCommand(
         vertices, indices,
         pushConstants,
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             destRect.pos.x + destRect.size.width / 2.0f,
             destRect.pos.y + destRect.size.height / 2.0f
         )),

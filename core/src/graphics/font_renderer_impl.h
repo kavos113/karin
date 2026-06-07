@@ -2,9 +2,9 @@
 #define SRC_GRAPHICS_FONT_RENDERER_H
 
 #include <karin/common/geometry/point.h>
-#include <karin/common/geometry/transform2d.h>
 #include <karin/graphics/pattern.h>
 #include <karin/graphics/text_blob.h>
+#include <karin/graphics/graphics_context.h>
 
 namespace karin
 {
@@ -14,7 +14,7 @@ public:
     IFontRendererImpl() = default;
     virtual ~IFontRendererImpl() = default;
 
-    virtual void drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform = Transform2D()) const = 0;
+    virtual void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state) const = 0;
 };
 } // karin
 

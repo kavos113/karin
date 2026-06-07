@@ -2,6 +2,7 @@
 #define KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 
 #include <memory>
+#include <vector>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -15,9 +16,9 @@
 
 namespace karin
 {
-class IRendererImpl;
-class IGraphicsContextImpl;
 
+class ICanvas;
+class IFontRendererImpl;
 /**
  * GraphicsContext provides basic drawing operations(e.g., drawRect).
  *
@@ -26,53 +27,61 @@ class IGraphicsContextImpl;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(IRendererImpl* impl);
+    explicit GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer);
     ~GraphicsContext();
 
     friend class WindowRenderer;
     friend class OffscreenRenderer;
 
 public:
-    void fillRect(Rectangle rect, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
-    void fillEllipse(
-        Point center, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()
-    ) const;
-    void fillRoundedRect(
-        Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const Transform2D& transform = Transform2D()
-    ) const;
-    void fillPath(const Path& path, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
+    struct State
+    {
+        Transform2D transform;
+    };
 
-    void drawLine(
-        Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(),
-        const Transform2D& transform = Transform2D()
-    ) const;
-    void drawRect(
-        Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(),
-        const Transform2D& transform = Transform2D()
-    ) const;
-    void drawEllipse(
-        Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(),
-        const Transform2D& transform = Transform2D()
-    ) const;
-    void drawRoundedRect(
-        Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(),
-        const Transform2D& transform = Transform2D()
-    ) const;
-    void drawPath(
-        const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle(),
-        const Transform2D& transform = Transform2D()
-    ) const;
+    void save();
+    void restore();
+    void reset();
+    void multiplyTransform(const Transform2D& transform);
 
-    void drawImage(
-        Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f,
-        const Transform2D& transform = Transform2D()
-    ) const;
-    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform = Transform2D()) const;
+    template<typename Func>
+    void withSave(Func func)
+    {
+        save();
+        try
+        {
+            func();
+        }
+        catch (...)
+        {
+            restore();
+            throw;
+        }
+        restore();
+    }
+
+    void fillRect(Rectangle rect, const Pattern& pattern) const;
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const;
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const;
+    void fillPath(const Path& path, const Pattern& pattern) const;
+
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f) const;
+    void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
 private:
-    IRendererImpl* m_rendererImpl;
+    std::unique_ptr<ICanvas> m_canvas;
+    IFontRendererImpl* m_fontRenderer;
 
-    std::unique_ptr<IGraphicsContextImpl> m_impl;
+    State m_currentState;
+    std::vector<State> m_stateStack;
+
+    static constexpr size_t MAX_STATE_STACK_SIZE = 128;
 };
 } // karin
 

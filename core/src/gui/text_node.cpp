@@ -18,7 +18,7 @@ void TextNode::setText(const std::string& text)
     requestRelayout();
 }
 
-void TextNode::drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const
+void TextNode::drawInternal(GraphicsContext& gc) const
 {
     Rectangle layout = getLayout();
     Point start = layout.pos;
@@ -26,7 +26,7 @@ void TextNode::drawInternal(GraphicsContext& gc, const Transform2D& parentTransf
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
-    gc.drawText(textBlob, start, m_pattern, parentTransform);
+    gc.drawText(textBlob, start, m_pattern);
 }
 
 YGSize TextNode::measure(Size availableSize) const

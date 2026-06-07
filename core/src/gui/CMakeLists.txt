@@ -14,7 +14,7 @@ set(GUI_HEADERS
         event_dispatcher.h
 )
 
-add_library(karin_gui STATIC ${GUI_SOURCES})
+add_library(karin_gui STATIC ${GUI_SOURCES} ${GUI_HEADERS})
 target_include_directories(karin_gui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(karin_gui PRIVATE ${COMMON_DIR})
 target_include_directories(karin_gui PUBLIC ${INCLUDE_DIR})

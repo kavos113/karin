@@ -31,8 +31,7 @@ void WindowRenderer::update()
                 return false;
             }
 
-            GraphicsContext context(m_impl.get());
-
+            GraphicsContext context(createCanvas(m_impl.get()), m_impl->fontRenderer());
             for (const auto& command : m_drawCommands)
             {
                 command(context);

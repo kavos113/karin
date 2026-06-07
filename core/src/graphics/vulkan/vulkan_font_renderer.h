@@ -1,8 +1,8 @@
 #ifndef SRC_GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
 #define SRC_GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
 
+#include <karin/graphics/graphics_context.h>
 #include "font_renderer_impl.h"
-
 #include "vulkan_glyph_cache.h"
 
 namespace karin
@@ -15,7 +15,7 @@ public:
     explicit VulkanFontRenderer(VulkanRendererImpl *renderer, size_t maxFramesInFlight);
     ~VulkanFontRenderer() override;
 
-    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const Transform2D& transform) const override;
+    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state) const override;
 
     void cleanup() const;
 

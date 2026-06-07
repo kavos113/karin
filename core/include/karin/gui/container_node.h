@@ -38,10 +38,10 @@ public:
     ViewNode* hitTest(const Point& point) override;
 
 protected:
-    void drawInternal(GraphicsContext& gc, const Transform2D& parentTransform) const final;
+    void drawInternal(GraphicsContext& gc) const final;
 
-    virtual void drawBackground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
-    virtual void drawForeground(GraphicsContext& gc, const Transform2D& parentTransform) const {}
+    virtual void drawBackground(GraphicsContext& gc) const {}
+    virtual void drawForeground(GraphicsContext& gc) const {}
 
     std::vector<std::unique_ptr<ViewNode>> m_children;
 };

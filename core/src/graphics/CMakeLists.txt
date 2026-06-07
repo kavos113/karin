@@ -17,11 +17,11 @@ set(GRAPHICS_SOURCE
 )
 set(GRAPHICS_HEADERS
         font_renderer_impl.h
-        graphics_context_impl.h
         offscreen_renderer_impl.h
         path_impl.h
         platform.h
         renderer_impl.h
+        canvas.h
         ${THIRD_PARTY_DIR}/stb_image/stb_image.h
 
         text/font_loader.h
@@ -39,7 +39,7 @@ if (DIRECTX)
             d2d/d2d_offscreen_surface.cpp
             d2d/d2d_renderer_impl.cpp
             d2d/d2d_offscreen_renderer_impl.cpp
-            d2d/d2d_graphics_context_impl.cpp
+            d2d/d2d_canvas.cpp
             d2d/d2d_device_resources.cpp
             d2d/d2d_context.cpp
             d2d/d2d_font_renderer.cpp
@@ -52,7 +52,7 @@ if (DIRECTX)
             d2d/d2d_surface.h
             d2d/d2d_renderer_impl.h
             d2d/d2d_offscreen_renderer_impl.h
-            d2d/d2d_graphics_context_impl.h
+            d2d/d2d_canvas.h
             d2d/d2d_device_resources.h
             d2d/d2d_context.h
             d2d/d2d_font_renderer.h
@@ -72,7 +72,7 @@ elseif (VULKAN)
             vulkan/vulkan_offscreen_surface.cpp
             vulkan/vulkan_renderer_impl.cpp
             vulkan/vulkan_offscreen_renderer_impl.cpp
-            vulkan/vulkan_graphics_context_impl.cpp
+            vulkan/vulkan_canvas.cpp
             vulkan/vulkan_pipeline.cpp
             vulkan/vulkan_tessellator.cpp
             vulkan/vulkan_device_resources.cpp
@@ -89,7 +89,7 @@ elseif (VULKAN)
             vulkan/vulkan_surface.h
             vulkan/vulkan_renderer_impl.h
             vulkan/vulkan_offscreen_renderer_impl.h
-            vulkan/vulkan_graphics_context_impl.h
+            vulkan/vulkan_canvas.h
             vulkan/vulkan_pipeline.h
             vulkan/vulkan_tessellator.h
             vulkan/vulkan_device_resources.h
@@ -100,7 +100,6 @@ elseif (VULKAN)
             vulkan/vulkan_surface.h
             vulkan/glm_geometry.h
             vulkan/vma.h
-            vulkan/vma_impl.h
             vulkan/shaders/shaders.h
             vulkan/shaders/push_constants.h
             text/freetype/freetype_font_face.h
@@ -128,7 +127,7 @@ endif ()
 
 # ------------ link libraries ------------
 
-add_library(karin_graphics STATIC ${GRAPHICS_SOURCE})
+add_library(karin_graphics STATIC ${GRAPHICS_SOURCE} ${GRAPHICS_HEADERS})
 target_include_directories(karin_graphics PUBLIC ${INCLUDE_DIR})
 target_include_directories(karin_graphics PRIVATE ${COMMON_DIR})
 target_include_directories(karin_graphics PRIVATE ${THIRD_PARTY_DIR})

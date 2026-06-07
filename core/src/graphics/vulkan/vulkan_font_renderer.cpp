@@ -58,9 +58,9 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
     );
 }
 
-VertexPushConstants createVertexPushConstantData(const Transform2D& transform, const Point& position)
+VertexPushConstants createVertexPushConstantData(const GraphicsContext::State& state, const Point& position)
 {
-    const float *data = transform.data();
+    const float *data = state.transform.data();
     glm::mat4 trans = glm::mat4(
         data[0], data[1], 0.0f, 0.0f,
         data[3], data[4], 0.0f, 0.0f,
@@ -94,7 +94,7 @@ void VulkanFontRenderer::cleanup() const
 
 void VulkanFontRenderer::drawText(
     const TextBlob& text, Point start, const Pattern& pattern,
-    const Transform2D& transform
+    const GraphicsContext::State& state
 ) const
 {
     auto* ftFontFace = dynamic_cast<FreetypeFontFace*>(text.fontFace.get());
@@ -178,7 +178,7 @@ void VulkanFontRenderer::drawText(
     m_renderer->addCommand(
         vertices, indices,
         createFragPushConstantData(pattern),
-        createVertexPushConstantData(transform, Point(
+        createVertexPushConstantData(state, Point(
             start.x + text.layoutSize.width / 2.0f,
             start.y + text.layoutSize.height / 2.0f
         )),
