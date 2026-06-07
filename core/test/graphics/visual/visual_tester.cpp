@@ -171,7 +171,7 @@ void VisualTester::saveDiffImage(
     }
 
     int result = stbi_write_png(
-        std::format("{}/{}_diff.png", expectedImageDirectory, testName).c_str(),
+        std::format("{}_diff.png", testName).c_str(),
         width,
         height,
         4,
@@ -197,7 +197,7 @@ void VisualTester::saveDiffImage(
     }
 
     result = stbi_write_png(
-        std::format("{}/{}_avg.png", expectedImageDirectory, testName).c_str(),
+        std::format("{}_avg.png", testName).c_str(),
         width,
         height,
         4,
