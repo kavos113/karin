@@ -143,4 +143,26 @@ std::ostream& operator<<(std::ostream& os, const Transform2D& transform)
     os << ")";
     return os;
 }
+
+Point operator*(const Transform2D& transform, const Point& point)
+{
+    const glm::mat3& mat = toMat(transform.data());
+    glm::vec3 transformed = mat * glm::vec3(point.x, point.y, 1.0f);
+    return Point(transformed.x, transformed.y);
+}
+
+Rectangle applyTransform(const Transform2D& transform, const Rectangle& rect)
+{
+    Point topLeft = transform * rect.pos;
+    Point topRight = transform * Point(rect.pos.x + rect.size.width, rect.pos.y);
+    Point bottomLeft = transform * Point(rect.pos.x, rect.pos.y + rect.size.height);
+    Point bottomRight = transform * Point(rect.pos.x + rect.size.width, rect.pos.y + rect.size.height);
+
+    float minX = std::min({topLeft.x, topRight.x, bottomLeft.x, bottomRight.x});
+    float maxX = std::max({topLeft.x, topRight.x, bottomLeft.x, bottomRight.x});
+    float minY = std::min({topLeft.y, topRight.y, bottomLeft.y, bottomRight.y});
+    float maxY = std::max({topLeft.y, topRight.y, bottomLeft.y, bottomRight.y});
+
+    return Rectangle(Point(minX, minY), Size(maxX - minX, maxY - minY));
+}
 }

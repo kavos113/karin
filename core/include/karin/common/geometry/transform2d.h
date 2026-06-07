@@ -4,6 +4,9 @@
 #include <memory>
 #include <optional>
 
+#include "point.h"
+#include "rectangle.h"
+
 namespace karin
 {
 class Transform2D
@@ -32,6 +35,10 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const Transform2D& transform);
+
+Point operator*(const Transform2D& transform, const Point& point);
+Rectangle applyTransform(const Transform2D& transform, const Rectangle& rect);
+
 } // karin
 
 #endif //KARIN_COMMON_GEOMETRY_TRANSFORM2D_H

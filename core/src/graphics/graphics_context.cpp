@@ -63,13 +63,15 @@ void GraphicsContext::multiplyTransform(const Transform2D& transform)
 
 void GraphicsContext::clip(Rectangle rect)
 {
+    Rectangle transformedRect = applyTransform(m_currentState.transform, rect);
+
     if (m_currentState.clipRect.has_value())
     {
-        m_currentState.clipRect = intersectRects(m_currentState.clipRect.value(), rect);
+        m_currentState.clipRect = intersectRects(m_currentState.clipRect.value(), transformedRect);
     }
     else
     {
-        m_currentState.clipRect = rect;
+        m_currentState.clipRect = transformedRect;
     }
 }
 
