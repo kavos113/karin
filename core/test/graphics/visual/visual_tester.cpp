@@ -157,8 +157,9 @@ void VisualTester::saveDiffImage(
     int height
 )
 {
-    std::vector<std::byte> diffImageData(width * height * 4);
-    for (size_t i = 0; i < width * height * 4; i += 4)
+    const size_t pixelBytes = static_cast<size_t>(width) * static_cast<size_t>(height) * static_cast<size_t>(4);
+    std::vector<std::byte> diffImageData(pixelBytes);
+    for (size_t i = 0; i < pixelBytes; i += 4)
     {
         int diffR = std::abs(static_cast<int>(actualImageData[i + 0]) - static_cast<int>(expectedImageData[i + 0]));
         int diffG = std::abs(static_cast<int>(actualImageData[i + 1]) - static_cast<int>(expectedImageData[i + 1]));
@@ -184,7 +185,7 @@ void VisualTester::saveDiffImage(
         return;
     }
 
-    for (size_t i = 0; i < width * height * 4; i += 4)
+    for (size_t i = 0; i < pixelBytes; i += 4)
     {
         int avgR = (static_cast<int>(actualImageData[i + 0]) + static_cast<int>(expectedImageData[i + 0])) / 2;
         int avgG = (static_cast<int>(actualImageData[i + 1]) + static_cast<int>(expectedImageData[i + 1])) / 2;
