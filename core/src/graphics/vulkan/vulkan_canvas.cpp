@@ -125,11 +125,12 @@ void VulkanCanvas::fillRect(Rectangle rect, const Pattern& pattern, const Graphi
         vertices, indices,
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(
-            rect.pos.x + rect.size.width / 2.0f,
-            rect.pos.y + rect.size.height / 2.0f
-        )),
+                                         rect.pos.x + rect.size.width / 2.0f,
+                                         rect.pos.y + rect.size.height / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -168,7 +169,8 @@ void VulkanCanvas::fillEllipse(
         fragData,
         createVertexPushConstantData(state, center),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -207,11 +209,12 @@ void VulkanCanvas::fillRoundedRect(
         vertices, indices,
         fragData,
         createVertexPushConstantData(state, Point(
-            rect.pos.x + rect.size.width / 2.0f,
-            rect.pos.y + rect.size.height / 2.0f
-        )),
+                                         rect.pos.x + rect.size.width / 2.0f,
+                                         rect.pos.y + rect.size.height / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -232,11 +235,12 @@ void VulkanCanvas::drawLine(
         vertices, indices,
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(
-            (start.x + end.x) / 2.0f,
-            (start.y + end.y) / 2.0f
-        )),
+                                         (start.x + end.x) / 2.0f,
+                                         (start.y + end.y) / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -286,11 +290,12 @@ void VulkanCanvas::drawRect(
         vertices, indices,
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(
-            rect.pos.x + rect.size.width / 2.0f,
-            rect.pos.y + rect.size.height / 2.0f
-        )),
+                                         rect.pos.x + rect.size.width / 2.0f,
+                                         rect.pos.y + rect.size.height / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -322,7 +327,8 @@ void VulkanCanvas::drawEllipse(
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, center),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -425,11 +431,12 @@ void VulkanCanvas::drawRoundedRect(
         vertices, indices,
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(
-            rect.pos.x + rect.size.width / 2.0f,
-            rect.pos.y + rect.size.height / 2.0f
-        )),
+                                         rect.pos.x + rect.size.width / 2.0f,
+                                         rect.pos.y + rect.size.height / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -511,7 +518,8 @@ void VulkanCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const 
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -582,7 +590,8 @@ void VulkanCanvas::drawPath(
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 
@@ -641,11 +650,12 @@ void VulkanCanvas::drawImage(
         vertices, indices,
         pushConstants,
         createVertexPushConstantData(state, Point(
-            destRect.pos.x + destRect.size.width / 2.0f,
-            destRect.pos.y + destRect.size.height / 2.0f
-        )),
+                                         destRect.pos.x + destRect.size.width / 2.0f,
+                                         destRect.pos.y + destRect.size.height / 2.0f
+                                     )),
         imagePattern,
-        VulkanRendererImpl::PipelineType::Geometry
+        VulkanRendererImpl::PipelineType::Geometry,
+        state.clipRect
     );
 }
 } // karin

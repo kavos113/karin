@@ -10,6 +10,23 @@
 #include <ranges>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace
+{
+VkRect2D toVkRect(const karin::Rectangle& rect)
+{
+    return VkRect2D{
+        .offset = {
+            static_cast<int32_t>(rect.pos.x),
+            static_cast<int32_t>(rect.pos.y)
+        },
+        .extent = {
+            static_cast<uint32_t>(rect.size.width),
+            static_cast<uint32_t>(rect.size.height)
+        }
+    };
+}
+}
+
 namespace karin
 {
 VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
@@ -208,6 +225,11 @@ void VulkanRendererImpl::endDraw()
                 sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
             );
 
+            if (command.scissor.has_value())
+            {
+                vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &command.scissor.value());
+            }
+
             vkCmdDrawIndexed(m_commandBuffers[m_currentFrame], command.indexCount, 1, command.indexOffset, 0, 0);
         }
     }
@@ -264,6 +286,11 @@ void VulkanRendererImpl::endDraw()
                 sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
             );
 
+            if (command.scissor.has_value())
+            {
+                vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &command.scissor.value());
+            }
+
             vkCmdDrawIndexed(m_commandBuffers[m_currentFrame], command.indexCount, 1, command.indexOffset, 0, 0);
         }
     }
@@ -313,7 +340,8 @@ void VulkanRendererImpl::addCommand(
     const FragPushConstants& fragData,
     const VertexPushConstants& vertData,
     const Pattern& pattern,
-    PipelineType pipelineType
+    PipelineType pipelineType,
+    std::optional<Rectangle> clipRect
 )
 {
     memcpy(m_vertexBuffer.mappedData, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
@@ -337,6 +365,7 @@ void VulkanRendererImpl::addCommand(
         .fragData = fragData,
         .vertData = vertData,
         .pipelineType = pipelineType,
+        .scissor = clipRect.has_value() ? std::make_optional(toVkRect(clipRect.value())) : std::nullopt,
     };
 
     std::visit(

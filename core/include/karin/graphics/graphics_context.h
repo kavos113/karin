@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <optional>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -37,12 +38,14 @@ public:
     struct State
     {
         Transform2D transform;
+        std::optional<Rectangle> clipRect = std::nullopt;
     };
 
     void save();
     void restore();
     void reset();
     void multiplyTransform(const Transform2D& transform);
+    void clip(Rectangle rect);
 
     template<typename Func>
     void withSave(Func func)
