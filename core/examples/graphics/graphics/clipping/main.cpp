@@ -19,6 +19,10 @@ int main()
         {
             gc.withSave([&]
             {
+                gc.multiplyTransform(
+                    karin::Transform2D()
+                        .translate(150, 50)
+                );
                 gc.clip(karin::Rectangle(150, 100, 300, 300));
 
                 gc.fillRect(karin::Rectangle(100, 100, 200, 200), redPattern);
