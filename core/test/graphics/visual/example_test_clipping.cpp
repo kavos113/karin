@@ -1,15 +1,15 @@
-#include <karin/system.h>
+#include <gtest/gtest.h>
+
 #include <karin/graphics.h>
 #include <karin/common.h>
 
-#include <memory>
+#include "visual_tester.h"
 
-int main()
+TEST(ExamplesVisualTest, Clipping)
 {
-    karin::Application& app = karin::Application::instance();
-    std::unique_ptr<karin::Window> window = app.createWindow("Hello Graphics", 100, 100, 800, 600);
+    karin::OffscreenRenderer renderer(800, 600);
 
-    karin::WindowRenderer renderer(window.get());
+    renderer.setClearColor(karin::Color(karin::Color::Green));
 
     karin::Pattern redPattern = karin::SolidColorPattern(karin::Color(karin::Color::Red));
     karin::Pattern bluePattern = karin::SolidColorPattern(karin::Color(karin::Color::Blue));
@@ -28,14 +28,15 @@ int main()
         }
     );
 
-    renderer.update();
+    renderer.draw();
 
-    window->setStatus(karin::Window::ShowStatus::SHOW);
-
-    karin::EventPayload event;
-    while (app.waitEvent(event)) {}
+    bool result = VisualTester::checkOrUpdate(
+        "clipping",
+        renderer.getImageData(),
+        800,
+        600
+    );
+    ASSERT_TRUE(result);
 
     renderer.cleanUp();
-
-    return 0;
 }
