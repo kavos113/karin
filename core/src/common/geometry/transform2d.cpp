@@ -2,10 +2,11 @@
 
 #include <cmath>
 
-#include <glm/glm.hpp>
-
+#include <algorithm>
 #include <iostream>
 #include <numbers>
+
+#include <glm/glm.hpp>
 
 namespace karin
 {
