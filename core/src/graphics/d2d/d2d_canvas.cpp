@@ -25,6 +25,16 @@ void D2DCanvas::fillRect(const Rectangle rect, const Pattern& pattern, const Gra
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(rect.pos.x + rect.size.width / 2, rect.pos.y + rect.size.height / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
 
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
+
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
     {
@@ -38,6 +48,11 @@ void D2DCanvas::fillRect(const Rectangle rect, const Pattern& pattern, const Gra
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
         brush.Get()
     );
+
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
 
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
@@ -53,6 +68,16 @@ void D2DCanvas::fillEllipse(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(center.x, center.y);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -72,6 +97,11 @@ void D2DCanvas::fillEllipse(
         brush.Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
@@ -86,6 +116,16 @@ void D2DCanvas::fillRoundedRect(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(rect.pos.x + rect.size.width / 2, rect.pos.y + rect.size.height / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -106,6 +146,11 @@ void D2DCanvas::fillRoundedRect(
         brush.Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
@@ -120,6 +165,16 @@ void D2DCanvas::drawLine(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation((start.x + end.x) / 2, (start.y + end.y) / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -138,6 +193,11 @@ void D2DCanvas::drawLine(
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
@@ -152,6 +212,16 @@ void D2DCanvas::drawRect(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(rect.pos.x + rect.size.width / 2, rect.pos.y + rect.size.height / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -168,6 +238,11 @@ void D2DCanvas::drawRect(
         strokeStyle.width,
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
+
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
 
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
@@ -187,6 +262,16 @@ void D2DCanvas::drawEllipse(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(center.x, center.y);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -208,6 +293,11 @@ void D2DCanvas::drawEllipse(
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
@@ -226,6 +316,16 @@ void D2DCanvas::drawRoundedRect(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(rect.pos.x + rect.size.width / 2, rect.pos.y + rect.size.height / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -248,6 +348,11 @@ void D2DCanvas::drawRoundedRect(
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     brush->SetTransform(D2D1::Matrix3x2F::Identity());
 
     m_deviceContext->SetTransform(oldTransform);
@@ -258,6 +363,16 @@ void D2DCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const Gra
     D2D1_MATRIX_3X2_F oldTransform;
     m_deviceContext->GetTransform(&oldTransform);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto geometry = m_deviceResources->pathGeometry(path);
     if (!geometry)
@@ -277,6 +392,11 @@ void D2DCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const Gra
         nullptr
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     m_deviceContext->SetTransform(oldTransform);
 }
 
@@ -287,6 +407,16 @@ void D2DCanvas::drawPath(
     D2D1_MATRIX_3X2_F oldTransform;
     m_deviceContext->GetTransform(&oldTransform);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto geometry = m_deviceResources->pathGeometry(path);
     if (!geometry)
@@ -307,6 +437,11 @@ void D2DCanvas::drawPath(
         m_deviceResources->strokeStyle(strokeStyle).Get()
     );
 
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+
     m_deviceContext->SetTransform(oldTransform);
 }
 
@@ -319,6 +454,16 @@ void D2DCanvas::drawImage(
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(destRect.pos.x + destRect.size.width / 2, destRect.pos.y + destRect.size.height / 2);
     m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value());
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
 
     auto bitmap = m_deviceResources->bitmap(image);
     if (!bitmap)
@@ -341,6 +486,11 @@ void D2DCanvas::drawImage(
         D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
         srcRectPtr
     );
+
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
 
     m_deviceContext->SetTransform(oldTransform);
 }
