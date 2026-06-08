@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <optional>
 
 #include <renderer_impl.h>
 #include <font_renderer_impl.h>
@@ -64,7 +65,8 @@ public:
         const FragPushConstants& fragData,
         const VertexPushConstants& vertData,
         const Pattern& pattern,
-        PipelineType pipelineType
+        PipelineType pipelineType,
+        std::optional<Rectangle> clipRect = std::nullopt
     );
 
     void startResizing() override
@@ -103,6 +105,7 @@ private:
         FragPushConstants fragData;
         VertexPushConstants vertData;
         PipelineType pipelineType;
+        std::optional<VkRect2D> scissor;
         std::vector<VkDescriptorSet> descriptorSets;
     };
 

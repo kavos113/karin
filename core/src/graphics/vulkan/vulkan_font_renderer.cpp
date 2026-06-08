@@ -179,11 +179,12 @@ void VulkanFontRenderer::drawText(
         vertices, indices,
         createFragPushConstantData(pattern),
         createVertexPushConstantData(state, Point(
-            start.x + text.layoutSize.width / 2.0f,
-            start.y + text.layoutSize.height / 2.0f
-        )),
+                                         start.x + text.layoutSize.width / 2.0f,
+                                         start.y + text.layoutSize.height / 2.0f
+                                     )),
         pattern,
-        VulkanRendererImpl::PipelineType::Text
+        VulkanRendererImpl::PipelineType::Text,
+        state.clipRect
     );
 }
 } // karin
