@@ -18,12 +18,14 @@ fun UiBuilder.Container(
     direction: LayoutDirection,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
+    enableClip: Boolean = false,
     content: UiBuilder.() -> Unit
 ) {
     val handle = ContainerNodeHandle()
     handle.setLayoutDirection(direction)
     handle.setLayoutWrap(wrap)
     handle.setGap(gap)
+    handle.setEnableClip(enableClip)
 
     handle.applyStyle(style)
     handle.applyLayout(layout)
@@ -43,6 +45,7 @@ fun UiBuilder.Column(
     event: Event = Event.Default,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
+    enableClip: Boolean = false,
     content: UiBuilder.() -> Unit
 ) = Container(
     style = style,
@@ -51,6 +54,7 @@ fun UiBuilder.Column(
     direction = LayoutDirection.Column,
     wrap = wrap,
     gap = gap,
+    enableClip = enableClip,
     content = content
 )
 
@@ -60,6 +64,7 @@ fun UiBuilder.Row(
     event: Event = Event.Default,
     wrap: LayoutWrap = LayoutWrap.Wrap,
     gap: Float = 0f,
+    enableClip: Boolean = false,
     content: UiBuilder.() -> Unit
 ) = Container(
     style = style,
@@ -68,5 +73,6 @@ fun UiBuilder.Row(
     direction = LayoutDirection.Row,
     wrap = wrap,
     gap = gap,
+    enableClip = enableClip,
     content = content
 )
