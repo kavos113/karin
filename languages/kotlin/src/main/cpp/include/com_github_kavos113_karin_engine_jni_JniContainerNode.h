@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    setEnableClip
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setEnableClip
+  (JNIEnv *, jclass, jlong, jboolean);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
  * Method:    removeChild
  * Signature: (JJ)V
  */
