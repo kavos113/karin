@@ -11,6 +11,7 @@ class JniContainerNode {
     static native void setLayoutDirection(long containerPtr, int direction);
     static native void setGap(long containerPtr, float gap);
     static native void setWrapMode(long containerPtr, int wrapMode);
+    static native void setEnableClip(long containerPtr, boolean enableClip);
 
     static native void removeChild(long containerPtr, long childPtr);
     static native void clearChildren(long containerPtr);

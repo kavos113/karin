@@ -58,6 +58,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
     container->setWrapMode(static_cast<ContainerNode::WrapMode>(mode));
 }
 
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setEnableClip
+    (JNIEnv *env, jclass cls, jlong containerPtr, jboolean enable)
+{
+    CHECK_JNI_PTR(containerPtr);
+    auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
+    container->setEnableClip(enable);
+}
+
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_removeChild
     (JNIEnv *env, jclass cls, jlong containerPtr, jlong childPtr)
 {

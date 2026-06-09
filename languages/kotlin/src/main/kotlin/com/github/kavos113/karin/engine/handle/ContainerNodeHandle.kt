@@ -29,6 +29,10 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
         JniContainerNodeBridge.setGap(this.ptr, gap)
     }
 
+    fun setEnableClip(enableClip: Boolean) {
+        JniContainerNodeBridge.setEnableClip(this.ptr, enableClip)
+    }
+
     fun removeChild(child: ViewNodeHandle) {
         val childPtr = child.ptr
         JniContainerNodeBridge.removeChild(this.ptr, childPtr)
