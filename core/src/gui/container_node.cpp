@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <ranges>
 
+#include <yoga/Yoga.h>
+
+#include <karin/common/geometry/rectangle.h>
+
 namespace
 {
 YGFlexDirection toYogaFlexDirection(karin::gui::ContainerNode::LayoutDirection direction)
@@ -67,10 +71,8 @@ void ContainerNode::drawInternal(GraphicsContext& gc) const
 
         if (m_enableClip)
         {
-            gc.clip(Rectangle{
-                .pos = { 0, 0 },
-                .size = { layout.size.width, layout.size.height }
-            });
+            Rectangle clipRect(0, 0, layout.size.width, layout.size.height);
+            gc.clip(clipRect);
         }
 
         for (const auto& child : m_children)
