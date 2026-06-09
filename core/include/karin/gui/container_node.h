@@ -34,6 +34,7 @@ public:
     void setLayoutDirection(LayoutDirection direction);
     void setGap(float gap);
     void setWrapMode(WrapMode mode);
+    void setEnableClip(bool enable);
 
     ViewNode* hitTest(const Point& point) override;
 
@@ -44,6 +45,8 @@ protected:
     virtual void drawForeground(GraphicsContext& gc) const {}
 
     std::vector<std::unique_ptr<ViewNode>> m_children;
+
+    bool m_enableClip = false;
 };
 } // karin::gui
 

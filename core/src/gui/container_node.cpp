@@ -64,6 +64,15 @@ void ContainerNode::drawInternal(GraphicsContext& gc) const
     {
         Rectangle layout = getLayout();
         gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
+
+        if (m_enableClip)
+        {
+            gc.clip(Rectangle{
+                .pos = { 0, 0 },
+                .size = { layout.size.width, layout.size.height }
+            });
+        }
+
         for (const auto& child : m_children)
         {
             child->draw(gc);
@@ -128,6 +137,11 @@ void ContainerNode::setGap(float gap)
 void ContainerNode::setWrapMode(WrapMode mode)
 {
     YGNodeStyleSetFlexWrap(m_yogaNode, toYogaWrap(mode));
+}
+
+void ContainerNode::setEnableClip(bool enable)
+{
+    m_enableClip = enable;
 }
 
 ViewNode* ContainerNode::hitTest(const Point& point)
