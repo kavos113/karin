@@ -6,6 +6,7 @@ set(GRAPHICS_SOURCE
         path.cpp
         path_impl.cpp
         hash.cpp
+        canvas.cpp
         ${THIRD_PARTY_DIR}/stb_image/stb_image_impl.cpp
         ${COMMON_DIR}/geometry/transform2d.cpp
 
@@ -21,7 +22,9 @@ set(GRAPHICS_HEADERS
         path_impl.h
         platform.h
         renderer_impl.h
-        Painter.h
+        painter.h
+        canvas.h
+        draw_instruction.h
         ${THIRD_PARTY_DIR}/stb_image/stb_image.h
 
         text/font_loader.h
