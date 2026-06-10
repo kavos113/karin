@@ -6,11 +6,11 @@
 #include <karin/system/window.h>
 #include "offscreen_renderer_impl.h"
 #include "renderer_impl.h"
-#include "canvas.h"
+#include "painter.h"
 
 #ifdef KARIN_PLATFORM_DIRECTX
 #include "d2d/d2d_renderer_impl.h"
-#include "d2d/d2d_canvas.h"
+#include "d2d/d2d_painter.h"
 #include "d2d/d2d_window_surface.h"
 #include "d2d/d2d_offscreen_surface.h"
 #include "d2d/d2d_offscreen_renderer_impl.h"
@@ -69,7 +69,7 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
 #endif
 }
 
-inline std::unique_ptr<ICanvas> createCanvas(IRendererImpl* impl)
+inline std::unique_ptr<IPainter> createPainter(IRendererImpl* impl)
 {
 #ifdef KARIN_PLATFORM_DIRECTX
     auto d2dImpl = dynamic_cast<D2DRendererImpl*>(impl);
@@ -78,7 +78,7 @@ inline std::unique_ptr<ICanvas> createCanvas(IRendererImpl* impl)
         throw std::runtime_error("Invalid renderer implementation for DirectX canvas");
     }
 
-    return std::make_unique<D2DCanvas>(
+    return std::make_unique<D2DPainter>(
         d2dImpl->deviceContext(),
         d2dImpl->deviceResources()
     );

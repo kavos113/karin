@@ -18,7 +18,7 @@
 namespace karin
 {
 
-class ICanvas;
+class IPainter;
 class IFontRendererImpl;
 /**
  * GraphicsContext provides basic drawing operations(e.g., drawRect).
@@ -28,7 +28,7 @@ class IFontRendererImpl;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer);
+    explicit GraphicsContext(std::unique_ptr<IPainter> canvas, IFontRendererImpl* fontRenderer);
     ~GraphicsContext();
 
     friend class WindowRenderer;
@@ -78,7 +78,7 @@ public:
     void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
 private:
-    std::unique_ptr<ICanvas> m_canvas;
+    std::unique_ptr<IPainter> m_canvas;
     IFontRendererImpl* m_fontRenderer;
 
     State m_currentState;

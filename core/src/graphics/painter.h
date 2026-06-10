@@ -11,10 +11,10 @@
 
 namespace karin
 {
-class ICanvas
+class IPainter
 {
 public:
-    virtual ~ICanvas() = default;
+    virtual ~IPainter() = default;
 
     virtual void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) = 0;
     virtual void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) = 0;

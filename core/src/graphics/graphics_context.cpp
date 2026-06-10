@@ -1,7 +1,7 @@
 #include <karin/graphics/graphics_context.h>
 
 #include "platform.h"
-#include "canvas.h"
+#include "painter.h"
 #include "font_renderer_impl.h"
 
 namespace
@@ -28,7 +28,7 @@ karin::Rectangle intersectRects(const karin::Rectangle& a, const karin::Rectangl
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer)
+GraphicsContext::GraphicsContext(std::unique_ptr<IPainter> canvas, IFontRendererImpl* fontRenderer)
     : m_canvas(std::move(canvas)), m_fontRenderer(fontRenderer)
 {
     m_stateStack.reserve(MAX_STATE_STACK_SIZE);
