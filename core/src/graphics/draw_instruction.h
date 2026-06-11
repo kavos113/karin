@@ -15,32 +15,6 @@
 namespace karin
 {
 
-struct DrawInstructionFillRect;
-struct DrawInstructionFillEllipse;
-struct DrawInstructionFillRoundedRect;
-struct DrawInstructionFillPath;
-struct DrawInstructionDrawLine;
-struct DrawInstructionDrawRect;
-struct DrawInstructionDrawEllipse;
-struct DrawInstructionDrawRoundedRect;
-struct DrawInstructionDrawPath;
-struct DrawInstructionDrawImage;
-struct DrawInstructionDrawText;
-
-using DrawInstruction = std::variant<
-    DrawInstructionFillRect,
-    DrawInstructionFillEllipse,
-    DrawInstructionFillRoundedRect,
-    DrawInstructionFillPath,
-    DrawInstructionDrawLine,
-    DrawInstructionDrawRect,
-    DrawInstructionDrawEllipse,
-    DrawInstructionDrawRoundedRect,
-    DrawInstructionDrawPath,
-    DrawInstructionDrawImage,
-    DrawInstructionDrawText
->;
-
 struct DrawInstructionFillRect
 {
     Rectangle rect;
@@ -134,6 +108,20 @@ struct DrawInstructionDrawText
     Pattern pattern;
     GraphicsContext::State state;
 };
+
+using DrawInstruction = std::variant<
+    DrawInstructionFillRect,
+    DrawInstructionFillEllipse,
+    DrawInstructionFillRoundedRect,
+    DrawInstructionFillPath,
+    DrawInstructionDrawLine,
+    DrawInstructionDrawRect,
+    DrawInstructionDrawEllipse,
+    DrawInstructionDrawRoundedRect,
+    DrawInstructionDrawPath,
+    DrawInstructionDrawImage,
+    DrawInstructionDrawText
+>;
 
 }
 

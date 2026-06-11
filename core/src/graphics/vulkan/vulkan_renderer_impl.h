@@ -20,7 +20,7 @@
 #include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
 #include "vulkan_buffer.h"
-#include "shaders/push_constants.h"2
+#include "shaders/push_constants.h"
 
 namespace karin
 {

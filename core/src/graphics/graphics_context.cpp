@@ -1,7 +1,6 @@
 #include <karin/graphics/graphics_context.h>
 
 #include "canvas.h"
-#include "platform.h"
 
 namespace
 {
