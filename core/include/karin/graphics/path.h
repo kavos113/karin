@@ -37,7 +37,7 @@ private:
     std::shared_ptr<PathImpl> m_impl;
 
 private:
-    friend class GraphicsContext;
+    friend class Canvas;
 
     PathImpl* impl() const;
 };

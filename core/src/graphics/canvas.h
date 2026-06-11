@@ -10,7 +10,10 @@
 #include <karin/graphics/pattern.h>
 #include <karin/graphics/image.h>
 #include <karin/graphics/graphics_context.h>
+#include <karin/graphics/text_blob.h>
 #include "draw_instruction.h"
+#include "painter.h"
+#include "font_renderer_impl.h"
 
 namespace karin
 {
@@ -28,7 +31,9 @@ public:
     void drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state);
     void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state);
-    
+
+    void paint(IPainter *painter, IFontRendererImpl* fontRenderer) const;
+
 private:
     std::vector<DrawInstruction> m_drawInstructions;
 };

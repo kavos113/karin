@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_CANVAS_H
-#define CORE_SRC_GRAPHICS_CANVAS_H
+#ifndef CORE_SRC_GRAPHICS_PAINTER_H
+#define CORE_SRC_GRAPHICS_PAINTER_H
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -31,4 +31,4 @@ public:
 };
 } // karin
 
-#endif //CORE_SRC_GRAPHICS_CANVAS_H
+#endif //CORE_SRC_GRAPHICS_PAINTER_H
