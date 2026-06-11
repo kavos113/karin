@@ -2,6 +2,7 @@
 
 #include "platform.h"
 #include "renderer_impl.h"
+#include "canvas.h"
 
 #include <vector>
 
@@ -31,11 +32,16 @@ void WindowRenderer::update()
                 return false;
             }
 
-            GraphicsContext context(createCanvas(m_impl.get()), m_impl->fontRenderer());
+            Canvas canvas;
+            GraphicsContext context(&canvas);
             for (const auto& command : m_drawCommands)
             {
                 command(context);
             }
+
+            auto painter = createPainter(m_impl.get());
+            auto fontRenderer = m_impl->fontRenderer();
+            canvas.paint(painter.get(), fontRenderer);
 
             m_impl->endDraw();
 

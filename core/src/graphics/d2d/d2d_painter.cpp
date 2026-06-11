@@ -1,4 +1,4 @@
-#include "d2d_canvas.h"
+#include "d2d_painter.h"
 
 #include "d2d_geometry.h"
 
@@ -21,7 +21,7 @@ D2D1_RECT_F applyTransition(const D2D1_RECT_F& rect, float dx, float dy)
 
 namespace karin
 {
-D2DCanvas::D2DCanvas(
+D2DPainter::D2DPainter(
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext,
     D2DDeviceResources* deviceResources
 )
@@ -30,7 +30,7 @@ D2DCanvas::D2DCanvas(
 {
 }
 
-void D2DCanvas::fillRect(const Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state)
+void D2DPainter::fillRect(const Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state)
 {
     float centerX = rect.pos.x + rect.size.width / 2;
     float centerY = rect.pos.y + rect.size.height / 2;
@@ -75,7 +75,7 @@ void D2DCanvas::fillRect(const Rectangle rect, const Pattern& pattern, const Gra
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::fillEllipse(
+void D2DPainter::fillEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
@@ -123,7 +123,7 @@ void D2DCanvas::fillEllipse(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::fillRoundedRect(
+void D2DPainter::fillRoundedRect(
     Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
@@ -175,7 +175,7 @@ void D2DCanvas::fillRoundedRect(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawLine(
+void D2DPainter::drawLine(
     Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -225,7 +225,7 @@ void D2DCanvas::drawLine(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawRect(
+void D2DPainter::drawRect(
     Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -274,7 +274,7 @@ void D2DCanvas::drawRect(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawEllipse(
+void D2DPainter::drawEllipse(
     Point center,
     float radiusX,
     float radiusY,
@@ -328,7 +328,7 @@ void D2DCanvas::drawEllipse(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawRoundedRect(
+void D2DPainter::drawRoundedRect(
     Rectangle rect,
     float radiusX,
     float radiusY,
@@ -386,7 +386,7 @@ void D2DCanvas::drawRoundedRect(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
+void D2DPainter::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
 {
     D2D1_MATRIX_3X2_F oldTransform;
     m_deviceContext->GetTransform(&oldTransform);
@@ -429,7 +429,7 @@ void D2DCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const Gra
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawPath(
+void D2DPainter::drawPath(
     const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -475,7 +475,7 @@ void D2DCanvas::drawPath(
     m_deviceContext->SetTransform(oldTransform);
 }
 
-void D2DCanvas::drawImage(
+void D2DPainter::drawImage(
     Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state
 )
 {

@@ -3,6 +3,7 @@
 #include "offscreen_renderer_impl.h"
 #include "renderer_impl.h"
 #include "platform.h"
+#include "canvas.h"
 
 namespace karin
 {
@@ -35,12 +36,16 @@ void OffscreenRenderer::draw() const
         return;
     }
 
-    GraphicsContext context(createCanvas(m_impl.get()), m_impl->fontRenderer());
-
+    Canvas canvas;
+    GraphicsContext context(&canvas);
     for (const auto& command : m_drawCommands)
     {
         command(context);
     }
+
+    auto painter = createPainter(m_impl.get());
+    auto fontRenderer = m_impl->fontRenderer();
+    canvas.paint(painter.get(), fontRenderer);
 
     m_impl->endDraw();
 }

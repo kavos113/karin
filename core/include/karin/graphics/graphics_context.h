@@ -18,8 +18,7 @@
 namespace karin
 {
 
-class ICanvas;
-class IFontRendererImpl;
+class Canvas;
 /**
  * GraphicsContext provides basic drawing operations(e.g., drawRect).
  *
@@ -28,7 +27,7 @@ class IFontRendererImpl;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer);
+    explicit GraphicsContext(Canvas *canvas);
     ~GraphicsContext();
 
     friend class WindowRenderer;
@@ -66,20 +65,19 @@ public:
     void fillRect(Rectangle rect, const Pattern& pattern) const;
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const;
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const;
-    void fillPath(const Path& path, const Pattern& pattern) const;
+    void fillPath(Path path, const Pattern& pattern) const;
 
     void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
     void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
     void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
     void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
-    void drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
+    void drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
 
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f) const;
     void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
 private:
-    std::unique_ptr<ICanvas> m_canvas;
-    IFontRendererImpl* m_fontRenderer;
+    Canvas* m_canvas;
 
     State m_currentState;
     std::vector<State> m_stateStack;

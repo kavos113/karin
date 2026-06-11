@@ -1,6 +1,8 @@
 #ifndef CORE_SRC_GRAPHICS_CANVAS_H
 #define CORE_SRC_GRAPHICS_CANVAS_H
 
+#include <vector>
+
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
 #include <karin/graphics/path.h>
@@ -8,26 +10,35 @@
 #include <karin/graphics/pattern.h>
 #include <karin/graphics/image.h>
 #include <karin/graphics/graphics_context.h>
+#include <karin/graphics/text_blob.h>
+#include "draw_instruction.h"
+#include "painter.h"
+#include "font_renderer_impl.h"
 
 namespace karin
 {
-class ICanvas
+class Canvas
 {
 public:
-    virtual ~ICanvas() = default;
+    Canvas() = default;
+    ~Canvas() = default;
 
-    virtual void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) = 0;
-    virtual void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) = 0;
-    virtual void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) = 0;
-    virtual void fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state) = 0;
+    void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state);
+    void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);
+    void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);
+    void fillPath(Path path, const Pattern& pattern, const GraphicsContext::State& state);
+    void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
+    void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
+    void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
+    void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
+    void drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
+    void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state);
+    void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state);
 
-    virtual void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
-    virtual void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
-    virtual void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
-    virtual void drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
-    virtual void drawPath(const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
+    void paint(IPainter *painter, IFontRendererImpl* fontRenderer) const;
 
-    virtual void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) = 0;
+private:
+    std::vector<DrawInstruction> m_drawInstructions;
 };
 } // karin
 

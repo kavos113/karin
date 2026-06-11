@@ -1,4 +1,4 @@
-#include "vulkan_canvas.h"
+#include "vulkan_painter.h"
 
 #include "glm_geometry.h"
 #include "vulkan_renderer_impl.h"
@@ -91,12 +91,12 @@ VertexPushConstants createVertexPushConstantData(const GraphicsContext::State& s
 
 namespace karin
 {
-VulkanCanvas::VulkanCanvas(VulkanRendererImpl* renderer)
+VulkanPainter::VulkanPainter(VulkanRendererImpl* renderer)
     : m_renderer(renderer)
 {
 }
 
-void VulkanCanvas::fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state)
+void VulkanPainter::fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state)
 {
     std::vector<VulkanPipeline::Vertex> vertices = {
         {
@@ -134,7 +134,7 @@ void VulkanCanvas::fillRect(Rectangle rect, const Pattern& pattern, const Graphi
     );
 }
 
-void VulkanCanvas::fillEllipse(
+void VulkanPainter::fillEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
@@ -174,7 +174,7 @@ void VulkanCanvas::fillEllipse(
     );
 }
 
-void VulkanCanvas::fillRoundedRect(
+void VulkanPainter::fillRoundedRect(
     Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
@@ -218,7 +218,7 @@ void VulkanCanvas::fillRoundedRect(
     );
 }
 
-void VulkanCanvas::drawLine(
+void VulkanPainter::drawLine(
     Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -244,7 +244,7 @@ void VulkanCanvas::drawLine(
     );
 }
 
-void VulkanCanvas::drawRect(
+void VulkanPainter::drawRect(
     Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -299,7 +299,7 @@ void VulkanCanvas::drawRect(
     );
 }
 
-void VulkanCanvas::drawEllipse(
+void VulkanPainter::drawEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -332,7 +332,7 @@ void VulkanCanvas::drawEllipse(
     );
 }
 
-void VulkanCanvas::drawRoundedRect(
+void VulkanPainter::drawRoundedRect(
     Rectangle rect,
     float radiusX,
     float radiusY,
@@ -440,7 +440,7 @@ void VulkanCanvas::drawRoundedRect(
     );
 }
 
-void VulkanCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
+void VulkanPainter::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
 {
     std::vector<VulkanPipeline::Vertex> vertices;
     std::vector<uint16_t> indices;
@@ -523,7 +523,7 @@ void VulkanCanvas::fillPath(const PathImpl& path, const Pattern& pattern, const 
     );
 }
 
-void VulkanCanvas::drawPath(
+void VulkanPainter::drawPath(
     const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
@@ -595,7 +595,7 @@ void VulkanCanvas::drawPath(
     );
 }
 
-void VulkanCanvas::drawImage(
+void VulkanPainter::drawImage(
     Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state
 )
 {

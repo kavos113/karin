@@ -1,8 +1,6 @@
 #include <karin/graphics/graphics_context.h>
 
-#include "platform.h"
 #include "canvas.h"
-#include "font_renderer_impl.h"
 
 namespace
 {
@@ -28,8 +26,8 @@ karin::Rectangle intersectRects(const karin::Rectangle& a, const karin::Rectangl
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(std::unique_ptr<ICanvas> canvas, IFontRendererImpl* fontRenderer)
-    : m_canvas(std::move(canvas)), m_fontRenderer(fontRenderer)
+GraphicsContext::GraphicsContext(Canvas* canvas)
+    : m_canvas(canvas)
 {
     m_stateStack.reserve(MAX_STATE_STACK_SIZE);
 }
@@ -110,14 +108,14 @@ void GraphicsContext::drawRoundedRect(Rectangle rect, float radiusX, float radiu
     m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::fillPath(const Path& path, const Pattern& pattern) const
+void GraphicsContext::fillPath(Path path, const Pattern& pattern) const
 {
-    m_canvas->fillPath(*path.impl(), pattern, m_currentState);
+    m_canvas->fillPath(std::move(path), pattern, m_currentState);
 }
 
-void GraphicsContext::drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
+void GraphicsContext::drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawPath(*path.impl(), pattern, strokeStyle, m_currentState);
+    m_canvas->drawPath(std::move(path), pattern, strokeStyle, m_currentState);
 }
 
 void GraphicsContext::drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity) const
@@ -127,6 +125,6 @@ void GraphicsContext::drawImage(Image image, Rectangle destRect, Rectangle srcRe
 
 void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern) const
 {
-    m_fontRenderer->drawText(text, start, pattern, m_currentState);
+    m_canvas->drawText(text, start, pattern, m_currentState);
 }
 } // karin

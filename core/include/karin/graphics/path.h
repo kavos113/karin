@@ -14,8 +14,13 @@ public:
     Path();
     ~Path();
 
-    void start(Point start) const;
-    void lineTo(Point end) const;
+    Path(const Path& other) = default;
+    Path& operator=(const Path& other) = default;
+    Path(Path&&) noexcept = default;
+    Path& operator=(Path&&) noexcept = default;
+
+    void start(Point start);
+    void lineTo(Point end);
     void arcTo(
         Point center,
         float radiusX,
@@ -23,14 +28,16 @@ public:
         float startAngle,
         float endAngle,
         bool isSmallArc
-    ) const;
-    void close() const;
+    );
+    void close();
 
 private:
-    std::unique_ptr<PathImpl> m_impl;
+    void detachIfNeeded();
+
+    std::shared_ptr<PathImpl> m_impl;
 
 private:
-    friend class GraphicsContext;
+    friend class Canvas;
 
     PathImpl* impl() const;
 };

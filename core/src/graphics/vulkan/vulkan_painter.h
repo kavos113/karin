@@ -1,29 +1,23 @@
-#ifndef SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H
-#define SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H
+#ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+#define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
 
-#include <d2d1_1.h>
-#include <wrl/client.h>
-
-#include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
-#include <karin/graphics/stroke_style.h>
+#include <karin/common/geometry/rectangle.h>
 #include <karin/graphics/pattern.h>
+#include <karin/graphics/stroke_style.h>
 #include <karin/graphics/image.h>
-#include <canvas.h>
-#include "d2d_device_resources.h"
-
+#include <karin/graphics/graphics_context.h>
+#include <painter.h>
+#include <path_impl.h>
+#include "vulkan_renderer_impl.h"
 
 namespace karin
 {
-class D2DCanvas : public ICanvas
+class VulkanPainter : public IPainter
 {
 public:
-    D2DCanvas(
-        Microsoft::WRL::ComPtr<ID2D1DeviceContext> deviceContext,
-        D2DDeviceResources* deviceResources
-    );
-
-    ~D2DCanvas() override = default;
+    explicit VulkanPainter(VulkanRendererImpl* renderer);
+    ~VulkanPainter() override = default;
 
     void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state) override;
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) override;
@@ -39,9 +33,11 @@ public:
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) override;
 
 private:
-    Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
-    D2DDeviceResources* m_deviceResources;
+    VulkanRendererImpl* m_renderer;
+
+    static constexpr int CAP_ROUND_SEGMENTS = 8;
+    static constexpr int ELLIPSE_SEGMENTS = 32;
 };
 } // karin
 
-#endif //SRC_GRAPHICS_GRAPHICS_D2D_D2D_GRAPHICS_CONTEXT_IMPL_H
+#endif //SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
