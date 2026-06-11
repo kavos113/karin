@@ -19,8 +19,7 @@
 #include "vulkan/vulkan_window_surface.h"
 #include "vulkan/vulkan_offscreen_surface.h"
 #include "vulkan/vulkan_offscreen_renderer_impl.h"
-#include "vulkan/vulkan_canvas.h"
-#include "text/font_loader.h"
+#include "vulkan/vulkan_painter.h"
 #endif
 
 namespace karin
@@ -89,7 +88,7 @@ inline std::unique_ptr<IPainter> createPainter(IRendererImpl* impl)
         throw std::runtime_error("Invalid renderer implementation for Vulkan canvas");
     }
 
-    return std::make_unique<VulkanCanvas>(vulkanImpl);
+    return std::make_unique<VulkanPainter>(vulkanImpl);
 #endif
 
     return nullptr;

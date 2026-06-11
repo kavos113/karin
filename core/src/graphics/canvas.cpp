@@ -100,7 +100,7 @@ void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer) const
                 }
                 else if constexpr (std::is_same_v<T, DrawInstructionFillPath>)
                 {
-                    painter->fillPath(inst.path.impl(), inst.pattern, inst.state);
+                    painter->fillPath(*inst.path.impl(), inst.pattern, inst.state);
                 }
                 else if constexpr (std::is_same_v<T, DrawInstructionDrawLine>)
                 {
@@ -120,7 +120,7 @@ void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer) const
                 }
                 else if constexpr (std::is_same_v<T, DrawInstructionDrawPath>)
                 {
-                    painter->drawPath(inst.path.impl(), inst.pattern, inst.strokeStyle, inst.state);
+                    painter->drawPath(*inst.path.impl(), inst.pattern, inst.strokeStyle, inst.state);
                 }
                 else if constexpr (std::is_same_v<T, DrawInstructionDrawImage>)
                 {
