@@ -110,12 +110,12 @@ void GraphicsContext::drawRoundedRect(Rectangle rect, float radiusX, float radiu
     m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
 }
 
-void GraphicsContext::fillPath(const Path& path, const Pattern& pattern) const
+void GraphicsContext::fillPath(Path path, const Pattern& pattern) const
 {
     m_canvas->fillPath(*path.impl(), pattern, m_currentState);
 }
 
-void GraphicsContext::drawPath(const Path& path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
+void GraphicsContext::drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
     m_canvas->drawPath(*path.impl(), pattern, strokeStyle, m_currentState);
 }
