@@ -27,8 +27,8 @@ karin::Rectangle intersectRects(const karin::Rectangle& a, const karin::Rectangl
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(std::unique_ptr<Canvas> canvas)
-    : m_canvas(std::move(canvas))
+GraphicsContext::GraphicsContext(Canvas* canvas)
+    : m_canvas(canvas)
 {
     m_stateStack.reserve(MAX_STATE_STACK_SIZE);
 }
@@ -124,4 +124,8 @@ void GraphicsContext::drawImage(Image image, Rectangle destRect, Rectangle srcRe
     m_canvas->drawImage(image, destRect, srcRect, opacity, m_currentState);
 }
 
+void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern) const
+{
+    m_canvas->drawText(text, start, pattern, m_currentState);
+}
 } // karin

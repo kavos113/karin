@@ -20,6 +20,9 @@ namespace karin
 class Canvas
 {
 public:
+    Canvas() = default;
+    ~Canvas() = default;
+
     void fillRect(Rectangle rect, const Pattern& pattern, const GraphicsContext::State& state);
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);

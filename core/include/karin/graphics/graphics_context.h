@@ -27,7 +27,7 @@ class Canvas;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(std::unique_ptr<Canvas> canvas);
+    explicit GraphicsContext(Canvas *canvas);
     ~GraphicsContext();
 
     friend class WindowRenderer;
@@ -77,7 +77,7 @@ public:
     void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
 private:
-    std::unique_ptr<Canvas> m_canvas;
+    Canvas* m_canvas;
 
     State m_currentState;
     std::vector<State> m_stateStack;
