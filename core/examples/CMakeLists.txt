@@ -16,6 +16,7 @@ add_subdirectory(graphics/transform)
 add_subdirectory(graphics/offscreen_rendering)
 add_subdirectory(graphics/clipping)
 add_subdirectory(graphics/z-index)
+add_subdirectory(graphics/opacity)
 
 add_subdirectory(gui/hello_layout)
 add_subdirectory(gui/text_node)

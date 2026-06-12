@@ -13,10 +13,10 @@ namespace
 {
 using namespace karin;
 
-FragPushConstants createFragPushConstantData(const Pattern& pattern)
+FragPushConstants createFragPushConstantData(const Pattern& pattern, float alpha)
 {
     return std::visit(
-        []<typename T0>(const T0& p) -> FragPushConstants
+        [alpha]<typename T0>(const T0& p) -> FragPushConstants
         {
             using T = std::decay_t<T0>;
             if constexpr (std::is_same_v<T, SolidColorPattern>)
@@ -24,7 +24,8 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 Color color = p.color();
                 return FragPushConstants{
                     .color = {color.r, color.g, color.b, color.a},
-                    .patternType = static_cast<uint32_t>(PatternType::SolidColor)
+                    .patternType = static_cast<uint32_t>(PatternType::SolidColor),
+                    .patternParams = {alpha, 0.0f, 0.0f, 0.0f}
                 };
             }
             else if constexpr (std::is_same_v<T, LinearGradientPattern>)
@@ -32,6 +33,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.start.x, p.start.y, p.end.x, p.end.y},
                     .patternType = static_cast<uint32_t>(PatternType::LinearGradient),
+                    .patternParams = {alpha, 0.0f, 0.0f, 0.0f}
                 };
             }
             else if constexpr (std::is_same_v<T, RadialGradientPattern>)
@@ -39,7 +41,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.center.x, p.center.y, p.offset.x, p.offset.y},
                     .patternType = static_cast<uint32_t>(PatternType::RadialGradient),
-                    .patternParams = {p.radiusX, p.radiusY, 0.0f, 0.0f},
+                    .patternParams = {alpha , p.radiusX, p.radiusY, 0.0f},
                 };
             }
             else if constexpr (std::is_same_v<T, ImagePattern>)
@@ -47,7 +49,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.offset.x, p.offset.y, p.scaleX, p.scaleY},
                     .patternType = static_cast<uint32_t>(PatternType::Image),
-                    .patternParams = {p.image.width(), p.image.height(), 1.0f, 0.0f}
+                    .patternParams = {alpha, p.image.width(), p.image.height(), 1.0f}
                 };
             }
             else
@@ -177,7 +179,7 @@ void VulkanFontRenderer::drawText(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(
                                          start.x + text.layoutSize.width / 2.0f,
                                          start.y + text.layoutSize.height / 2.0f

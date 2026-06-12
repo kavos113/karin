@@ -36,4 +36,6 @@ void main() {
     } else {
         discard;
     }
+
+    outColor.a *= push.patternParams.x;
 }

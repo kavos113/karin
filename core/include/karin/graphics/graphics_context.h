@@ -38,6 +38,7 @@ public:
         Transform2D transform;
         std::optional<Rectangle> clipRect = std::nullopt;
         float zIndex = 0.0f;
+        float alpha = 1.0f;
     };
 
     void save();
@@ -47,6 +48,8 @@ public:
     void clip(Rectangle rect);
     void setZIndex(float zIndex);
     void translateZ(float dz);
+    void setAlpha(float alpha);
+    void multiplyAlpha(float alpha);
 
     template<typename Func>
     void withSave(Func func)

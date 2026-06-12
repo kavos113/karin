@@ -24,10 +24,10 @@ namespace
 {
 using namespace karin;
 
-FragPushConstants createFragPushConstantData(const Pattern& pattern)
+FragPushConstants createFragPushConstantData(const Pattern& pattern, float alpha)
 {
     return std::visit(
-        []<typename T0>(const T0& p) -> FragPushConstants
+        [alpha]<typename T0>(const T0& p) -> FragPushConstants
         {
             using T = std::decay_t<T0>;
             if constexpr (std::is_same_v<T, SolidColorPattern>)
@@ -35,7 +35,8 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 Color color = p.color();
                 return FragPushConstants{
                     .color = {color.r, color.g, color.b, color.a},
-                    .patternType = static_cast<uint32_t>(PatternType::SolidColor)
+                    .patternType = static_cast<uint32_t>(PatternType::SolidColor),
+                    .patternParams = {alpha, 0.0f, 0.0f, 0.0f}
                 };
             }
             else if constexpr (std::is_same_v<T, LinearGradientPattern>)
@@ -43,6 +44,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.start.x, p.start.y, p.end.x, p.end.y},
                     .patternType = static_cast<uint32_t>(PatternType::LinearGradient),
+                    .patternParams = {alpha, 0.0f, 0.0f, 0.0f}
                 };
             }
             else if constexpr (std::is_same_v<T, RadialGradientPattern>)
@@ -50,7 +52,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.center.x, p.center.y, p.offset.x, p.offset.y},
                     .patternType = static_cast<uint32_t>(PatternType::RadialGradient),
-                    .patternParams = {p.radiusX, p.radiusY, 0.0f, 0.0f},
+                    .patternParams = {alpha, p.radiusX, p.radiusY, 0.0f},
                 };
             }
             else if constexpr (std::is_same_v<T, ImagePattern>)
@@ -58,7 +60,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.offset.x, p.offset.y, p.scaleX, p.scaleY},
                     .patternType = static_cast<uint32_t>(PatternType::Image),
-                    .patternParams = {p.image.width(), p.image.height(), 1.0f, 0.0f}
+                    .patternParams = {alpha, p.image.width(), p.image.height(), 1.0f}
                 };
             }
             else
@@ -123,7 +125,7 @@ void VulkanPainter::fillRect(Rectangle rect, const Pattern& pattern, const Graph
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(
                                          rect.pos.x + rect.size.width / 2.0f,
                                          rect.pos.y + rect.size.height / 2.0f
@@ -161,7 +163,7 @@ void VulkanPainter::fillEllipse(
         0, 1, 2, 2, 3, 0
     };
 
-    auto fragData = createFragPushConstantData(pattern);
+    auto fragData = createFragPushConstantData(pattern, state.alpha);
     fragData.shapeType = static_cast<uint32_t>(ShapeType::Ellipse);
 
     m_renderer->addCommand(
@@ -201,7 +203,7 @@ void VulkanPainter::fillRoundedRect(
         0, 1, 2, 2, 3, 0
     };
 
-    auto fragData = createFragPushConstantData(pattern);
+    auto fragData = createFragPushConstantData(pattern, state.alpha);
     fragData.shapeType = static_cast<uint32_t>(ShapeType::RoundedRectangle);
     fragData.shapeParams = glm::vec2(radiusX / rect.size.width * 2.0f, radiusY / rect.size.height * 2.0f);
 
@@ -233,7 +235,7 @@ void VulkanPainter::drawLine(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(
                                          (start.x + end.x) / 2.0f,
                                          (start.y + end.y) / 2.0f
@@ -288,7 +290,7 @@ void VulkanPainter::drawRect(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(
                                          rect.pos.x + rect.size.width / 2.0f,
                                          rect.pos.y + rect.size.height / 2.0f
@@ -324,7 +326,7 @@ void VulkanPainter::drawEllipse(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, center),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry,
@@ -429,7 +431,7 @@ void VulkanPainter::drawRoundedRect(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(
                                          rect.pos.x + rect.size.width / 2.0f,
                                          rect.pos.y + rect.size.height / 2.0f
@@ -515,7 +517,7 @@ void VulkanPainter::fillPath(const PathImpl& path, const Pattern& pattern, const
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry,
@@ -587,7 +589,7 @@ void VulkanPainter::drawPath(
 
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern),
+        createFragPushConstantData(pattern, state.alpha),
         createVertexPushConstantData(state, Point(0.0f, 0.0f)),
         pattern,
         VulkanRendererImpl::PipelineType::Geometry,
@@ -643,8 +645,8 @@ void VulkanPainter::drawImage(
         .scaleX = normalizedSrcRect.size.width,
         .scaleY = normalizedSrcRect.size.height
     };
-    FragPushConstants pushConstants = createFragPushConstantData(imagePattern);
-    pushConstants.patternParams.z = 0.0f;
+    FragPushConstants pushConstants = createFragPushConstantData(imagePattern, state.alpha);
+    pushConstants.patternParams.w = 0.0f; // uvmode = 0
 
     m_renderer->addCommand(
         vertices, indices,
