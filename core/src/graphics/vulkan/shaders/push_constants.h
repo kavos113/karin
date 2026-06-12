@@ -27,8 +27,9 @@ struct FragPushConstants
     uint32_t shapeType = static_cast<uint32_t>(ShapeType::Nothing);
     uint32_t patternType = static_cast<uint32_t>(PatternType::SolidColor);
 
-    // radiusX(float) + radiusY(float) in radial gradient
-    // imageSize(vec2), uvMode(float) in image (0 = uv(image), 1 = window coordinates(image pattern))
+    // x: alpha
+    // radiusX(float) (=y) + radiusY(float) (=z) in radial gradient
+    // imageSize(vec2) (=yz) + uvMode(float) (=w) in image (0 = uv(image), 1 = window coordinates(image pattern))
     glm::vec4 patternParams;
 };
 

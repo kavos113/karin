@@ -50,7 +50,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.center.x, p.center.y, p.offset.x, p.offset.y},
                     .patternType = static_cast<uint32_t>(PatternType::RadialGradient),
-                    .patternParams = {p.radiusX, p.radiusY, 0.0f, 0.0f},
+                    .patternParams = {0.0f, p.radiusX, p.radiusY, 0.0f},
                 };
             }
             else if constexpr (std::is_same_v<T, ImagePattern>)
@@ -58,7 +58,7 @@ FragPushConstants createFragPushConstantData(const Pattern& pattern)
                 return FragPushConstants{
                     .color = {p.offset.x, p.offset.y, p.scaleX, p.scaleY},
                     .patternType = static_cast<uint32_t>(PatternType::Image),
-                    .patternParams = {p.image.width(), p.image.height(), 1.0f, 0.0f}
+                    .patternParams = {0.0f, p.image.width(), p.image.height(), 1.0f}
                 };
             }
             else
@@ -644,7 +644,7 @@ void VulkanPainter::drawImage(
         .scaleY = normalizedSrcRect.size.height
     };
     FragPushConstants pushConstants = createFragPushConstantData(imagePattern);
-    pushConstants.patternParams.z = 0.0f;
+    pushConstants.patternParams.w = 0.0f; // uvmode = 0
 
     m_renderer->addCommand(
         vertices, indices,

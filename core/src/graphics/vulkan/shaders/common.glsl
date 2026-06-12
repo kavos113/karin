@@ -37,7 +37,7 @@ float linear_gradient_t() {
 float radial_gradient_t() {
     vec2 center = push.color.xy;
     vec2 offset = push.color.zw;
-    vec2 radius = push.patternParams.xy;
+    vec2 radius = push.patternParams.yz;
 
     vec2 d = (pixelPos - center - offset) / radius;
     vec2 o = -offset / radius;
@@ -69,13 +69,13 @@ float radial_gradient_t() {
 vec4 image_color() {
     vec4 color;
 
-    float uvMode = push.patternParams.z;
+    float uvMode = push.patternParams.w;
     if (uvMode == 0.0) {
         color = texture(tex, uv);
     } else {
         vec2 offset = push.color.xy;
         vec2 scale = push.color.zw;
-        vec2 size = push.patternParams.xy;
+        vec2 size = push.patternParams.yz;
 
         vec2 windowUv = (pixelPos + offset) / (size * scale);
         color = texture(tex, windowUv);
