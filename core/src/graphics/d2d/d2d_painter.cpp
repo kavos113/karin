@@ -59,6 +59,8 @@ void D2DPainter::fillRect(const Rectangle rect, const Pattern& pattern, const Gr
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
+    brush->SetOpacity(state.alpha);
 
     m_deviceContext->FillRectangle(
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
@@ -103,6 +105,7 @@ void D2DPainter::fillEllipse(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-center.x, -center.y);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     D2D1_ELLIPSE ellipse = {
         D2D1::Point2F(0.0f, 0.0f),
@@ -154,6 +157,7 @@ void D2DPainter::fillRoundedRect(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     D2D1_ROUNDED_RECT roundedRect = {
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
@@ -206,6 +210,7 @@ void D2DPainter::drawLine(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     m_deviceContext->DrawLine(
         D2D1::Point2F(start.x - centerX, start.y - centerY),
@@ -256,6 +261,7 @@ void D2DPainter::drawRect(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     m_deviceContext->DrawRectangle(
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
@@ -306,6 +312,7 @@ void D2DPainter::drawEllipse(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-center.x, -center.y);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     D2D1_ELLIPSE ellipse = {
         D2D1::Point2F(0.0f, 0.0f),
@@ -363,6 +370,7 @@ void D2DPainter::drawRoundedRect(
 
     D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
     brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
 
     D2D1_ROUNDED_RECT roundedRect = {
         D2D1::RectF(-rect.size.width / 2.0f, -rect.size.height / 2.0f, rect.size.width / 2.0f, rect.size.height / 2.0f),
