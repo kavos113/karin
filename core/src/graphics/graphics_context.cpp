@@ -83,6 +83,16 @@ void GraphicsContext::translateZ(float dz)
     m_currentState.zIndex += dz;
 }
 
+void GraphicsContext::setAlpha(float alpha)
+{
+    m_currentState.alpha = alpha;
+}
+
+void GraphicsContext::multiplyAlpha(float alpha)
+{
+    m_currentState.alpha *= alpha;
+}
+
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
 {
     m_canvas->fillRect(rect, pattern, m_currentState);
