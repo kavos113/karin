@@ -35,7 +35,7 @@ public:
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state);
     void drawText(const TextBlob& text, Point start, const Pattern& pattern, const GraphicsContext::State& state);
 
-    void paint(IPainter *painter, IFontRendererImpl* fontRenderer) const;
+    void paint(IPainter *painter, IFontRendererImpl* fontRenderer);
 
 private:
     void sortInstructions();

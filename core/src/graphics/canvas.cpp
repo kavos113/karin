@@ -80,8 +80,10 @@ void Canvas::drawText(const TextBlob& text, Point start, const Pattern& pattern,
     m_drawInstructions.emplace_back(state, instruction);
 }
 
-void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer) const
+void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer)
 {
+    sortInstructions();
+
     for (const auto& instruction : m_drawInstructions)
     {
         std::visit(
