@@ -38,6 +38,8 @@ public:
     void paint(IPainter *painter, IFontRendererImpl* fontRenderer) const;
 
 private:
+    void sortInstructions();
+
     std::vector<DrawInstruction> m_drawInstructions;
 };
 } // karin
