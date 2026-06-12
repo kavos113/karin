@@ -37,7 +37,7 @@ public:
     {
         Transform2D transform;
         std::optional<Rectangle> clipRect = std::nullopt;
-        float z_index = 0.0f;
+        float zIndex = 0.0f;
     };
 
     void save();

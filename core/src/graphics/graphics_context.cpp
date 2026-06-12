@@ -75,12 +75,12 @@ void GraphicsContext::clip(Rectangle rect)
 
 void GraphicsContext::setZIndex(float zIndex)
 {
-    m_currentState.z_index = zIndex;
+    m_currentState.zIndex = zIndex;
 }
 
 void GraphicsContext::translateZ(float dz)
 {
-    m_currentState.z_index += dz;
+    m_currentState.zIndex += dz;
 }
 
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
