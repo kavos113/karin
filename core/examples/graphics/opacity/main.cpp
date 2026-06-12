@@ -11,7 +11,7 @@ int main()
 
     karin::WindowRenderer renderer(window.get());
 
-    renderer.setClearColor(karin::Color(karin::Color::Green));
+    renderer.setClearColor(karin::Color(karin::Color::White));
 
     karin::Pattern cyanPattern = karin::SolidColorPattern(karin::Color(0, 255, 255));
     karin::Pattern magentaPattern = karin::SolidColorPattern(karin::Color(255, 0, 255));
@@ -22,6 +22,9 @@ int main()
             gc.fillRect(karin::Rectangle(100, 100, 200, 200), cyanPattern);
             gc.multiplyAlpha(0.5f);
             gc.fillRect(karin::Rectangle(200, 200, 200, 200), magentaPattern);
+
+            gc.setAlpha(1.0f);
+            gc.fillRect(karin::Rectangle(450, 100, 100, 100), magentaPattern);
         }
     );
 
