@@ -15,6 +15,7 @@ add_subdirectory(graphics/draw_text_japanese)
 add_subdirectory(graphics/transform)
 add_subdirectory(graphics/offscreen_rendering)
 add_subdirectory(graphics/clipping)
+add_subdirectory(graphics/z-index)
 
 add_subdirectory(gui/hello_layout)
 add_subdirectory(gui/text_node)
