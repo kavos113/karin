@@ -73,6 +73,16 @@ void GraphicsContext::clip(Rectangle rect)
     }
 }
 
+void GraphicsContext::setZIndex(float zIndex)
+{
+    m_currentState.z_index = zIndex;
+}
+
+void GraphicsContext::translateZ(float dz)
+{
+    m_currentState.z_index += dz;
+}
+
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
 {
     m_canvas->fillRect(rect, pattern, m_currentState);
