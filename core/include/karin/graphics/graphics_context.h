@@ -1,7 +1,6 @@
 #ifndef KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 #define KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 
-#include <memory>
 #include <vector>
 #include <optional>
 
@@ -38,6 +37,7 @@ public:
     {
         Transform2D transform;
         std::optional<Rectangle> clipRect = std::nullopt;
+        float zIndex = 0.0f;
     };
 
     void save();
@@ -45,6 +45,8 @@ public:
     void reset();
     void multiplyTransform(const Transform2D& transform);
     void clip(Rectangle rect);
+    void setZIndex(float zIndex);
+    void translateZ(float dz);
 
     template<typename Func>
     void withSave(Func func)
