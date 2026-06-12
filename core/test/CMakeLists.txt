@@ -24,6 +24,7 @@ set(TEST_SRCS
         graphics/visual/example_test_transform.cpp
         graphics/visual/example_test_clipping.cpp
         graphics/visual/example_test_z-index.cpp
+        graphics/visual/example_test_opacity.cpp
 
         graphics/visual/visual_tester.cpp
 )
