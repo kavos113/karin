@@ -1,7 +1,6 @@
 #ifndef KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 #define KARIN_GRAPHICS_GRAPHICS_GRAPHICS_CONTEXT_H
 
-#include <memory>
 #include <vector>
 #include <optional>
 

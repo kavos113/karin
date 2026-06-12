@@ -6,7 +6,7 @@ namespace
 {
 using namespace karin;
 
-karin::Rectangle intersectRects(const karin::Rectangle& a, const karin::Rectangle& b)
+Rectangle intersectRects(const Rectangle& a, const Rectangle& b)
 {
     float x1 = std::max(a.pos.x, b.pos.x);
     float y1 = std::max(a.pos.y, b.pos.y);
@@ -15,11 +15,11 @@ karin::Rectangle intersectRects(const karin::Rectangle& a, const karin::Rectangl
 
     if (x2 >= x1 && y2 >= y1)
     {
-        return karin::Rectangle(Point(x1, y1), Size(x2 - x1, y2 - y1));
+        return Rectangle(Point(x1, y1), Size(x2 - x1, y2 - y1));
     }
     else
     {
-        return karin::Rectangle(Point(0, 0), Size(0, 0));
+        return Rectangle(Point(0, 0), Size(0, 0));
     }
 }
 }
