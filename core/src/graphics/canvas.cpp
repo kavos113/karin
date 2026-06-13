@@ -80,6 +80,12 @@ void Canvas::drawText(const TextBlob& text, Point start, const Pattern& pattern,
     m_drawInstructions.emplace_back(state, instruction);
 }
 
+void Canvas::drawLayer(Rectangle bounds, float alpha, const Canvas& layerCanvas, const GraphicsContext::State& state)
+{
+    DrawInstructionDrawLayer instruction{bounds, alpha, layerCanvas.m_drawInstructions};
+    m_drawInstructions.emplace_back(state, instruction);
+}
+
 void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer)
 {
     sortInstructions();

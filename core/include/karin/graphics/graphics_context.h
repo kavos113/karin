@@ -81,6 +81,9 @@ public:
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f) const;
     void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
+    void saveLayer(Rectangle bounds, float alpha = 1.0f);
+    void restoreLayer();
+
 private:
     Canvas* m_canvas;
 

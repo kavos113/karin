@@ -2,6 +2,7 @@
 #define CORE_SRC_GRAPHICS_DRAW_INSTRUCTION_H
 
 #include <variant>
+#include <vector>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -14,6 +15,8 @@
 
 namespace karin
 {
+
+struct DrawInstruction;
 
 struct DrawInstructionFillRect
 {
@@ -98,6 +101,13 @@ struct DrawInstructionDrawText
     Pattern pattern;
 };
 
+struct DrawInstructionDrawLayer
+{
+    Rectangle bounds;
+    float alpha;
+    std::vector<DrawInstruction> instructions;
+};
+
 struct DrawInstruction
 {
     GraphicsContext::State state;
@@ -112,7 +122,8 @@ struct DrawInstruction
         DrawInstructionDrawRoundedRect,
         DrawInstructionDrawPath,
         DrawInstructionDrawImage,
-        DrawInstructionDrawText
+        DrawInstructionDrawText,
+        DrawInstructionDrawLayer
     > instruction;
 };
 

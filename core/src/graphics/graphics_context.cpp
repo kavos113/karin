@@ -147,4 +147,12 @@ void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern&
 {
     m_canvas->drawText(text, start, pattern, m_currentState);
 }
+
+void GraphicsContext::saveLayer(Rectangle bounds, float alpha)
+{
+}
+
+void GraphicsContext::restoreLayer()
+{
+}
 } // karin
