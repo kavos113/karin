@@ -535,4 +535,26 @@ void D2DPainter::drawImage(
 
     m_deviceContext->SetTransform(oldTransform);
 }
+
+void D2DPainter::pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state)
+{
+    D2D1_LAYER_PARAMETERS layerParams = {
+        .contentBounds = toD2DRect(bounds),
+        .geometricMask = nullptr,
+        .maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE,
+        .maskTransform = D2D1::Matrix3x2F::Identity(),
+        .opacity = alpha * state.alpha,
+        .opacityBrush = nullptr,
+        .layerOptions = D2D1_LAYER_OPTIONS_NONE
+    };
+
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform));
+    m_deviceContext->PushLayer(&layerParams, nullptr);
+}
+
+void D2DPainter::popLayer()
+{
+    m_deviceContext->PopLayer();
+    m_deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+}
 } // karin

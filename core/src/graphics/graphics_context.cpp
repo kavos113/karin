@@ -242,7 +242,7 @@ void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern&
     }
 }
 
-void GraphicsContext::saveLayer(Rectangle bounds, float alpha)
+void GraphicsContext::beginLayer(Rectangle bounds, float alpha)
 {
     Layer newLayer{
         .canvas = std::make_unique<Canvas>(),
@@ -252,7 +252,7 @@ void GraphicsContext::saveLayer(Rectangle bounds, float alpha)
     m_layerStack.push_back(std::move(newLayer));
 }
 
-void GraphicsContext::restoreLayer()
+void GraphicsContext::endLayer()
 {
     if (!m_layerStack.empty())
     {

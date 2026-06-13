@@ -38,6 +38,9 @@ public:
 
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) override;
 
+    void pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state) override;
+    void popLayer() override;
+
 private:
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
     D2DDeviceResources* m_deviceResources;
