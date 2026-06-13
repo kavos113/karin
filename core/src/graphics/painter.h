@@ -28,6 +28,9 @@ public:
     virtual void drawPath(const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
 
     virtual void drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity, const GraphicsContext::State& state) = 0;
+
+    virtual void pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state) = 0;
+    virtual void popLayer() = 0;
 };
 } // karin
 

@@ -140,6 +140,15 @@ void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer)
                 {
                     fontRenderer->drawText(inst.text, inst.start, inst.pattern, instruction.state);
                 }
+                else if constexpr (std::is_same_v<T, DrawInstructionDrawLayer>)
+                {
+                    Canvas layerCanvas;
+                    layerCanvas.m_drawInstructions = inst.instructions;
+
+                    painter->pushLayer(inst.bounds, inst.alpha, instruction.state);
+                    layerCanvas.paint(painter, fontRenderer);
+                    painter->popLayer();
+                }
             }, instruction.instruction
         );
     }
