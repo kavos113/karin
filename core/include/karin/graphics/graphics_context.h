@@ -104,6 +104,22 @@ public:
     void beginLayer(Rectangle bounds, float alpha = 1.0f);
     void endLayer();
 
+    template<typename Func>
+    void withLayer(Rectangle bounds, float alpha, Func func)
+    {
+        beginLayer(bounds, alpha);
+        try
+        {
+            func();
+        }
+        catch (...)
+        {
+            endLayer();
+            throw;
+        }
+        endLayer();
+    }
+
 private:
     std::unique_ptr<Canvas> m_canvas;
 

@@ -3,6 +3,7 @@
 #include <karin/common.h>
 
 #include <memory>
+#include <numbers>
 
 int main()
 {
@@ -20,9 +21,9 @@ int main()
     renderer.addDrawCommand(
         [&cyanPattern, &magentaPattern, &whitePattern](karin::GraphicsContext& gc)
         {
-            gc.fillRect(karin::Rectangle(50, 100, 200, 200), whitePattern);
-            gc.fillRect(karin::Rectangle(75, 175, 150, 50), cyanPattern);
-            gc.fillEllipse(karin::Point(150, 200), 50, 50, magentaPattern);
+            gc.fillRect(karin::Rectangle(550, 100, 200, 200), whitePattern);
+            gc.fillRect(karin::Rectangle(575, 175, 150, 50), cyanPattern);
+            gc.fillEllipse(karin::Point(650, 200), 50, 50, magentaPattern);
 
             gc.withSave(
                 [&gc, &whitePattern, &cyanPattern, &magentaPattern]
@@ -34,11 +35,15 @@ int main()
                 }
             );
 
-            gc.beginLayer(karin::Rectangle(550, 100, 200, 200), 0.7f);
-            gc.fillRect(karin::Rectangle(550, 100, 200, 200), whitePattern);
-            gc.fillRect(karin::Rectangle(575, 175, 150, 50), cyanPattern);
-            gc.fillEllipse(karin::Point(650, 200), 50, 50, magentaPattern);
-            gc.endLayer();
+            gc.multiplyTransform(karin::Transform2D().rotate(std::numbers::pi / 6));
+            gc.withLayer(karin::Rectangle(50, 100, 200, 200), 0.7f,
+                [&gc, &whitePattern, &cyanPattern, &magentaPattern]
+                {
+                    gc.fillRect(karin::Rectangle(50, 100, 200, 200), whitePattern);
+                    gc.fillRect(karin::Rectangle(75, 175, 150, 50), cyanPattern);
+                    gc.fillEllipse(karin::Point(150, 200), 50, 50, magentaPattern);
+                }
+            );
         }
     );
 
