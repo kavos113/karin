@@ -89,12 +89,19 @@ public:
 
 private:
     std::unique_ptr<Canvas> m_canvas;
-    std::vector<std::unique_ptr<Canvas>> m_layerStack;
 
     State m_currentState;
     std::vector<State> m_stateStack;
 
-    static constexpr size_t MAX_STATE_STACK_SIZE = 128;
+    struct Layer
+    {
+        std::unique_ptr<Canvas> canvas;
+        Rectangle bounds;
+        float alpha;
+    };
+    std::vector<Layer> m_layerStack;
+
+    static constexpr size_t MAX_STACK_SIZE = 128;
 };
 } // karin
 
