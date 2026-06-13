@@ -36,8 +36,7 @@ void OffscreenRenderer::draw() const
         return;
     }
 
-    Canvas canvas;
-    GraphicsContext context(&canvas);
+    GraphicsContext context;
     for (const auto& command : m_drawCommands)
     {
         command(context);
@@ -45,7 +44,7 @@ void OffscreenRenderer::draw() const
 
     auto painter = createPainter(m_impl.get());
     auto fontRenderer = m_impl->fontRenderer();
-    canvas.paint(painter.get(), fontRenderer);
+    context.canvas()->paint(painter.get(), fontRenderer);
 
     m_impl->endDraw();
 }

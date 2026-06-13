@@ -26,13 +26,18 @@ Rectangle intersectRects(const Rectangle& a, const Rectangle& b)
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(Canvas* canvas)
-    : m_canvas(canvas)
+GraphicsContext::GraphicsContext()
 {
+    m_canvas = std::make_unique<Canvas>();
     m_stateStack.reserve(MAX_STATE_STACK_SIZE);
 }
 
 GraphicsContext::~GraphicsContext() = default;
+
+Canvas* GraphicsContext::canvas() const
+{
+    return m_canvas.get();
+}
 
 void GraphicsContext::save()
 {

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <optional>
+#include <memory>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -26,8 +27,10 @@ class Canvas;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(Canvas *canvas);
+    GraphicsContext();
     ~GraphicsContext();
+
+    Canvas *canvas() const;
 
     friend class WindowRenderer;
     friend class OffscreenRenderer;
@@ -85,7 +88,8 @@ public:
     void restoreLayer();
 
 private:
-    Canvas* m_canvas;
+    std::unique_ptr<Canvas> m_canvas;
+    std::vector<std::unique_ptr<Canvas>> m_layerStack;
 
     State m_currentState;
     std::vector<State> m_stateStack;
