@@ -69,8 +69,8 @@ public:
         std::optional<Rectangle> clipRect = std::nullopt
     );
 
-    // void beginOffscreenLayer(const Rectangle& bounds, float alpha);
-    // void endOffscreenLayer();
+    void beginOffscreenLayer(const Rectangle& bounds, float alpha);
+    void endOffscreenLayer();
 
     void startResizing() override
     {

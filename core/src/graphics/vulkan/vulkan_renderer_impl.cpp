@@ -427,6 +427,66 @@ void VulkanRendererImpl::addCommand(
     m_drawBatches.back().commands.push_back(drawCommand);
 }
 
+void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alpha)
+{
+    VkViewport viewport = {
+        .x = 0,
+        .y = 0,
+        .width = bounds.size.width,
+        .height = bounds.size.height,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+    VkRect2D scissor = {
+        .offset = {0, 0},
+        .extent = {
+            static_cast<uint32_t>(bounds.size.width),
+            static_cast<uint32_t>(bounds.size.height)
+        }
+    };
+
+    // TODO: clear colorを指定できるようにしてもいいかも
+    // TODO: alphaを使う
+    DrawBatch batch = {
+        .viewport = viewport,
+        .scissor = scissor,
+        .renderTargetImageView = nullptr, // TODO: 作る
+        .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .clearValue = {
+            .color = {{0.0f, 0.0f, 0.0f, 0.0f}}
+        },
+        .renderTargetArea = {
+            .offset = {0, 0},
+            .extent = {
+                static_cast<uint32_t>(bounds.size.width),
+                static_cast<uint32_t>(bounds.size.height)
+            }
+        },
+        .commands = {},
+    };
+
+    m_drawBatches.push_back(batch);
+}
+
+void VulkanRendererImpl::endOffscreenLayer()
+{
+    DrawBatch mainBatch = {
+        .viewport = m_viewport,
+        .scissor = m_scissor,
+        .renderTargetImageView = m_surface->currentImageView(),
+        .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+        .clearValue = {},
+        .renderTargetArea = {
+            .offset = {0, 0},
+            .extent = m_surface->extent()
+        },
+        .commands = {},
+    };
+    m_drawBatches.push_back(mainBatch);
+}
+
 void VulkanRendererImpl::createCommandBuffers()
 {
     m_commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
