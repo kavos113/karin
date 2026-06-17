@@ -178,6 +178,9 @@ void VulkanRendererImpl::endDraw()
         };
         vkCmdBeginRendering(commandBuffer, &renderingInfo);
 
+        vkCmdSetViewport(commandBuffer, 0, 1, &batch.viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &batch.scissor);
+
         std::ranges::sort(
             batch.commands,
             [](const DrawCommand& a, const DrawCommand& b)
