@@ -39,7 +39,6 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     createViewport();
     createCommandBuffers();
     createSyncObjects();
-    createRenderPass();
     m_surface->createFrameBuffers(m_renderPass);
 
     createVertexBuffer();
@@ -96,7 +95,6 @@ void VulkanRendererImpl::cleanUp()
     {
         pipeline->cleanUp();
     }
-    vkDestroyRenderPass(VulkanContext::instance().device(), m_renderPass, nullptr);
 
     m_surface->cleanUp();
 }
@@ -129,18 +127,25 @@ bool VulkanRendererImpl::beginDraw()
         throw std::runtime_error("failed to begin command buffer");
     }
 
-    VkRenderPassBeginInfo renderPassInfo = {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = m_renderPass,
-        .framebuffer = m_surface->currentFrameBuffer(),
+    VkRenderingAttachmentInfo colorAttachment = {
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+        .imageView = m_surface->currentImageView(),
+        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .clearValue = m_clearColor
+    };
+    VkRenderingInfo renderingInfo = {
+        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
         .renderArea = {
             .offset = {0, 0},
             .extent = m_surface->extent(),
         },
-        .clearValueCount = 1,
-        .pClearValues = &m_clearColor
+        .layerCount = 1,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &colorAttachment
     };
-    vkCmdBeginRenderPass(m_commandBuffers[m_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRendering(m_commandBuffers[m_currentFrame], &renderingInfo);
 
     vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &m_viewport);
     vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &m_scissor);
@@ -295,7 +300,7 @@ void VulkanRendererImpl::endDraw()
         }
     }
 
-    vkCmdEndRenderPass(m_commandBuffers[m_currentFrame]);
+    vkCmdEndRendering(m_commandBuffers[m_currentFrame]);
 
     if (vkEndCommandBuffer(m_commandBuffers[m_currentFrame]) != VK_SUCCESS)
     {
@@ -571,55 +576,6 @@ void VulkanRendererImpl::createMatrixBuffer()
             .pBufferInfo = &bufferInfoDesc,
         };
         vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
-    }
-}
-
-void VulkanRendererImpl::createRenderPass()
-{
-    VkAttachmentDescription colorAttachment = {
-        .format = m_surface->format(),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = m_surface->getRenderPassFinalLayout(),
-    };
-
-    VkAttachmentReference colorAttachmentRef = {
-        .attachment = 0,
-        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    };
-
-    VkSubpassDescription subpass = {
-        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachmentRef
-    };
-
-    VkSubpassDependency dependency = {
-        .srcSubpass = VK_SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-    };
-
-    VkRenderPassCreateInfo renderPassInfo = {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = 1,
-        .pAttachments = &colorAttachment,
-        .subpassCount = 1,
-        .pSubpasses = &subpass,
-        .dependencyCount = 1,
-        .pDependencies = &dependency
-    };
-
-    if (vkCreateRenderPass(VulkanContext::instance().device(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create render pass");
     }
 }
 

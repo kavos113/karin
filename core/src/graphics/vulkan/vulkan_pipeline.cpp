@@ -27,7 +27,6 @@ VkShaderModule loadShader(VkDevice device, const unsigned char* code, unsigned i
 namespace karin
 {
 VulkanPipeline::VulkanPipeline(
-    VkRenderPass renderPass,
     const unsigned char* vertShaderCode, unsigned int vertShaderSize,
     const unsigned char* fragShaderCode, unsigned int fragShaderSize,
     const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
@@ -35,7 +34,7 @@ VulkanPipeline::VulkanPipeline(
 )
 {
     createPipeline(
-        renderPass, vertShaderCode, vertShaderSize, fragShaderCode, fragShaderSize, descriptorSetLayouts,
+        vertShaderCode, vertShaderSize, fragShaderCode, fragShaderSize, descriptorSetLayouts,
         pushConstantRanges
     );
 }
@@ -56,7 +55,6 @@ void VulkanPipeline::cleanUp()
 }
 
 void VulkanPipeline::createPipeline(
-    VkRenderPass renderPass,
     const unsigned char* vertShaderCode, unsigned int vertShaderSize,
     const unsigned char* fragShaderCode, unsigned int fragShaderSize,
     const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
@@ -175,8 +173,16 @@ void VulkanPipeline::createPipeline(
         throw std::runtime_error("failed to create pipeline layout");
     }
 
+    VkPipelineRenderingCreateInfo pipelineRenderingInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+        .colorAttachmentCount = 1,
+        .pColorAttachmentFormats = &VulkanContext::instance().surfaceFormat().format,
+        .depthAttachmentFormat = VK_FORMAT_UNDEFINED,
+        .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+    };
     VkGraphicsPipelineCreateInfo pipelineInfo = {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+        .pNext = &pipelineRenderingInfo,
         .stageCount = 2,
         .pStages = shaderStages.data(),
 
@@ -190,7 +196,7 @@ void VulkanPipeline::createPipeline(
         .pDynamicState = &dynamicState,
 
         .layout = m_pipelineLayout,
-        .renderPass = renderPass,
+        .renderPass = nullptr, // no render pass, using dynamic rendering
         .subpass = 0,
         .basePipelineHandle = VK_NULL_HANDLE,
         .basePipelineIndex = -1
