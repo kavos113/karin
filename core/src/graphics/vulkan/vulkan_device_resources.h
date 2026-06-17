@@ -1,18 +1,20 @@
 #ifndef SRC_GRAPHICS_VULKAN_VULKAN_DEVICE_RESOURCES_H
 #define SRC_GRAPHICS_VULKAN_VULKAN_DEVICE_RESOURCES_H
 
-#include "vulkan_glyph_cache.h"
-#include "vma.h"
-#include <text/text_layouter.h>
-
-#include <karin/graphics/image.h>
-#include <karin/graphics/pattern.h>
-
-#include <vulkan/vulkan.h>
-#include <vector>
 #include <cstddef>
+#include <cstdint>
+
+#include <vector>
 #include <unordered_map>
 #include <array>
+
+#include <vulkan/vulkan.h>
+#include "vma.h"
+
+#include <karin/common/geometry/rectangle.h>
+#include <karin/graphics/image.h>
+#include <karin/graphics/pattern.h>
+#include "vulkan_buffer.h"
 
 namespace karin
 {
@@ -44,6 +46,9 @@ public:
         return m_geometryDescriptorSetLayout;
     }
 
+    VkImageView newOffscreenImage(const Rectangle& rect, VkFormat imageFormat);
+    void clearOffscreenImages();
+
 private:
     struct Texture
     {
@@ -65,6 +70,7 @@ private:
     std::unordered_map<size_t, Texture> m_gradientPointLutMap;
     std::unordered_map<size_t, Texture> m_textureMap;
     Texture m_dummyTexture; // 1 x 1 white pixel
+    std::vector<VulkanImage> m_offscreenImages;
 
     VkSampler m_clampSampler = VK_NULL_HANDLE;
     VkSampler m_repeatSampler = VK_NULL_HANDLE;

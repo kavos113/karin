@@ -1,17 +1,16 @@
 #include "vulkan_device_resources.h"
 
-#include <karin/common/color/color.h>
-#include "vulkan_context.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include <algorithm>
+#include <cstring>
 
 #include <ranges>
-#include <cstring>
 #include <stdexcept>
 #include <functional>
 #include <string_view>
 #include <iostream>
+
+#include <karin/common/color/color.h>
+#include "vulkan_context.h"
 
 namespace karin
 {
@@ -770,5 +769,67 @@ void VulkanDeviceResources::createDummyTexture()
         .imageView = imageView,
         .descriptorSets = std::move(descriptorSets),
     };
+}
+
+VkImageView VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat)
+{
+    VkImageCreateInfo imageInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+        .imageType = VK_IMAGE_TYPE_2D,
+        .format = imageFormat,
+        .extent = {
+            .width = static_cast<uint32_t>(rect.size.width),
+            .height = static_cast<uint32_t>(rect.size.height),
+            .depth = 1,
+        },
+        .mipLevels = 1,
+        .arrayLayers = 1,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .tiling = VK_IMAGE_TILING_OPTIMAL,
+        .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    };
+    VmaAllocationCreateInfo allocationInfo = {
+        .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+        .usage = VMA_MEMORY_USAGE_AUTO,
+    };
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = imageFormat,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+
+    VulkanImage image;
+    if (image.create(imageInfo, allocationInfo, viewInfo) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create offscreen image");
+    }
+
+    m_offscreenImages.push_back(image);
+    return image.imageView;
+}
+
+void VulkanDeviceResources::clearOffscreenImages()
+{
+    for (auto& image : m_offscreenImages)
+    {
+        image.cleanup();
+    }
+
+    m_offscreenImages.clear();
 }
 } // karin

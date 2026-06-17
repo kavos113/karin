@@ -351,6 +351,8 @@ void VulkanRendererImpl::endDraw()
         doResize();
     }
 
+    m_deviceResources->clearOffscreenImages();
+
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
@@ -450,7 +452,7 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     DrawBatch batch = {
         .viewport = viewport,
         .scissor = scissor,
-        .renderTargetImageView = nullptr, // TODO: 作る
+        .renderTargetImageView = m_deviceResources->newOffscreenImage(bounds, m_surface->format()),
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .clearValue = {
