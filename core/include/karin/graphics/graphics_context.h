@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <optional>
+#include <memory>
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
@@ -26,8 +27,10 @@ class Canvas;
 class GraphicsContext
 {
 private:
-    explicit GraphicsContext(Canvas *canvas);
+    GraphicsContext();
     ~GraphicsContext();
+
+    Canvas *canvas() const;
 
     friend class WindowRenderer;
     friend class OffscreenRenderer;
@@ -81,13 +84,57 @@ public:
     void drawImage(Image image, Rectangle destRect, Rectangle srcRect = Rectangle(), float opacity = 1.0f) const;
     void drawText(const TextBlob& text, Point start, const Pattern& pattern) const;
 
+    /**
+     * Begin a new layer. The GraphicsContext will initialize a new offscreen canvas for the layer.
+     *
+     * for example:
+     *   gc.setAlpha(0.5f);
+     *   gc.beginLayer(Rectangle(0, 0, 100, 100), 0.5f);
+     *   gc.fillEllipse(Point(50, 50), 25, 25, Color::Blue);
+     *   gc.fillRect(Rectangle(0, 0, 100, 100), Color::Red);
+     *   gc.endLayer();
+     *
+     * The layer will be rendered with 0.25f alpha (0.5f from GraphicsContext::State and 0.5f from beginLayer's alpha parameter).
+     * A GraphicsContext is created for the layer, so fillRect and fillEllipse will be rendered with alpha = 1.0f in the layer.
+     * So, we cannot see the blue ellipse, but we can see the red rectangle with 0.25f alpha.
+     *
+     * @param bounds
+     * @param alpha multiplied with the alpha of GraphicsContext::State
+     */
+    void beginLayer(Rectangle bounds, float alpha = 1.0f);
+    void endLayer();
+
+    template<typename Func>
+    void withLayer(Rectangle bounds, float alpha, Func func)
+    {
+        beginLayer(bounds, alpha);
+        try
+        {
+            func();
+        }
+        catch (...)
+        {
+            endLayer();
+            throw;
+        }
+        endLayer();
+    }
+
 private:
-    Canvas* m_canvas;
+    std::unique_ptr<Canvas> m_canvas;
 
     State m_currentState;
     std::vector<State> m_stateStack;
 
-    static constexpr size_t MAX_STATE_STACK_SIZE = 128;
+    struct Layer
+    {
+        std::unique_ptr<Canvas> canvas;
+        Rectangle bounds;
+        float alpha;
+    };
+    std::vector<Layer> m_layerStack;
+
+    static constexpr size_t MAX_STACK_SIZE = 128;
 };
 } // karin
 

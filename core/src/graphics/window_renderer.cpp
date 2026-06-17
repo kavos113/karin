@@ -32,8 +32,7 @@ void WindowRenderer::update()
                 return false;
             }
 
-            Canvas canvas;
-            GraphicsContext context(&canvas);
+            GraphicsContext context;
             for (const auto& command : m_drawCommands)
             {
                 command(context);
@@ -41,7 +40,7 @@ void WindowRenderer::update()
 
             auto painter = createPainter(m_impl.get());
             auto fontRenderer = m_impl->fontRenderer();
-            canvas.paint(painter.get(), fontRenderer);
+            context.canvas()->paint(painter.get(), fontRenderer);
 
             m_impl->endDraw();
 

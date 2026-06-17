@@ -26,13 +26,19 @@ Rectangle intersectRects(const Rectangle& a, const Rectangle& b)
 
 namespace karin
 {
-GraphicsContext::GraphicsContext(Canvas* canvas)
-    : m_canvas(canvas)
+GraphicsContext::GraphicsContext()
 {
-    m_stateStack.reserve(MAX_STATE_STACK_SIZE);
+    m_canvas = std::make_unique<Canvas>();
+    m_stateStack.reserve(MAX_STACK_SIZE);
+    m_layerStack.reserve(MAX_STACK_SIZE);
 }
 
 GraphicsContext::~GraphicsContext() = default;
+
+Canvas* GraphicsContext::canvas() const
+{
+    return m_canvas.get();
+}
 
 void GraphicsContext::save()
 {
@@ -95,56 +101,165 @@ void GraphicsContext::multiplyAlpha(float alpha)
 
 void GraphicsContext::fillRect(Rectangle rect, const Pattern& pattern) const
 {
-    m_canvas->fillRect(rect, pattern, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->fillRect(rect, pattern, m_currentState);
+    }
+    else
+    {
+        m_canvas->fillRect(rect, pattern, m_currentState);
+    }
 }
 
 void GraphicsContext::fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const
 {
-    m_canvas->fillEllipse(center, radiusX, radiusY, pattern, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->fillEllipse(center, radiusX, radiusY, pattern, m_currentState);
+    }
+    else
+    {
+        m_canvas->fillEllipse(center, radiusX, radiusY, pattern, m_currentState);
+    }
 }
 
 void GraphicsContext::fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const
 {
-    m_canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, m_currentState);
+    }
+    else
+    {
+        m_canvas->fillRoundedRect(rect, radiusX, radiusY, pattern, m_currentState);
+    }
 }
 
 void GraphicsContext::drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawLine(start, end, pattern, strokeStyle, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawLine(start, end, pattern, strokeStyle, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawLine(start, end, pattern, strokeStyle, m_currentState);
+    }
 }
 
 void GraphicsContext::drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawRect(rect, pattern, strokeStyle, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawRect(rect, pattern, strokeStyle, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawRect(rect, pattern, strokeStyle, m_currentState);
+    }
 }
 
 void GraphicsContext::drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawEllipse(center, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    }
 }
 
 void GraphicsContext::drawRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawRoundedRect(rect, radiusX, radiusY, pattern, strokeStyle, m_currentState);
+    }
 }
 
 void GraphicsContext::fillPath(Path path, const Pattern& pattern) const
 {
-    m_canvas->fillPath(std::move(path), pattern, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->fillPath(std::move(path), pattern, m_currentState);
+    }
+    else
+    {
+        m_canvas->fillPath(std::move(path), pattern, m_currentState);
+    }
 }
 
 void GraphicsContext::drawPath(Path path, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
-    m_canvas->drawPath(std::move(path), pattern, strokeStyle, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawPath(std::move(path), pattern, strokeStyle, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawPath(std::move(path), pattern, strokeStyle, m_currentState);
+    }
 }
 
 void GraphicsContext::drawImage(Image image, Rectangle destRect, Rectangle srcRect, float opacity) const
 {
-    m_canvas->drawImage(image, destRect, srcRect, opacity, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawImage(std::move(image), destRect, srcRect, opacity, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawImage(std::move(image), destRect, srcRect, opacity, m_currentState);
+    }
 }
 
 void GraphicsContext::drawText(const TextBlob& text, Point start, const Pattern& pattern) const
 {
-    m_canvas->drawText(text, start, pattern, m_currentState);
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->drawText(text, start, pattern, m_currentState);
+    }
+    else
+    {
+        m_canvas->drawText(text, start, pattern, m_currentState);
+    }
+}
+
+void GraphicsContext::beginLayer(Rectangle bounds, float alpha)
+{
+    Layer newLayer{
+        .canvas = std::make_unique<Canvas>(),
+        .bounds = bounds,
+        .alpha = alpha
+    };
+    m_layerStack.push_back(std::move(newLayer));
+}
+
+void GraphicsContext::endLayer()
+{
+    if (!m_layerStack.empty())
+    {
+        Layer layer = std::move(m_layerStack.back());
+        m_layerStack.pop_back();
+
+        m_canvas->drawLayer(layer.bounds, layer.alpha, *layer.canvas, m_currentState);
+    }
 }
 } // karin

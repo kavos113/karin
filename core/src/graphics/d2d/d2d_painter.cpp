@@ -35,9 +35,6 @@ void D2DPainter::fillRect(const Rectangle rect, const Pattern& pattern, const Gr
     float centerX = rect.pos.x + rect.size.width / 2;
     float centerY = rect.pos.y + rect.size.height / 2;
 
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -49,7 +46,7 @@ void D2DPainter::fillRect(const Rectangle rect, const Pattern& pattern, const Gr
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -71,19 +68,12 @@ void D2DPainter::fillRect(const Rectangle rect, const Pattern& pattern, const Gr
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::fillEllipse(
     Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state
 )
 {
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -95,7 +85,7 @@ void D2DPainter::fillEllipse(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(center.x, center.y);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -120,10 +110,6 @@ void D2DPainter::fillEllipse(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::fillRoundedRect(
@@ -132,9 +118,6 @@ void D2DPainter::fillRoundedRect(
 {
     float centerX = rect.pos.x + rect.size.width / 2;
     float centerY = rect.pos.y + rect.size.height / 2;
-
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
 
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
@@ -147,7 +130,7 @@ void D2DPainter::fillRoundedRect(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -173,10 +156,6 @@ void D2DPainter::fillRoundedRect(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawLine(
@@ -185,9 +164,6 @@ void D2DPainter::drawLine(
 {
     float centerX = (start.x + end.x) / 2;
     float centerY = (start.y + end.y) / 2;
-
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
 
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
@@ -200,7 +176,7 @@ void D2DPainter::drawLine(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -224,10 +200,6 @@ void D2DPainter::drawLine(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawRect(
@@ -236,9 +208,6 @@ void D2DPainter::drawRect(
 {
     float centerX = rect.pos.x + rect.size.width / 2;
     float centerY = rect.pos.y + rect.size.height / 2;
-
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
 
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
@@ -251,7 +220,7 @@ void D2DPainter::drawRect(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -274,10 +243,6 @@ void D2DPainter::drawRect(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawEllipse(
@@ -288,9 +253,6 @@ void D2DPainter::drawEllipse(
     const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -302,7 +264,7 @@ void D2DPainter::drawEllipse(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(center.x, center.y);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -329,10 +291,6 @@ void D2DPainter::drawEllipse(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawRoundedRect(
@@ -346,9 +304,6 @@ void D2DPainter::drawRoundedRect(
     float centerX = rect.pos.x + rect.size.width / 2;
     float centerY = rect.pos.y + rect.size.height / 2;
 
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -360,7 +315,7 @@ void D2DPainter::drawRoundedRect(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto brush = m_deviceResources->brush(pattern);
     if (!brush)
@@ -388,17 +343,10 @@ void D2DPainter::drawRoundedRect(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    brush->SetTransform(D2D1::Matrix3x2F::Identity());
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state)
 {
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -409,7 +357,7 @@ void D2DPainter::fillPath(const PathImpl& path, const Pattern& pattern, const Gr
         );
     }
 
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform));
 
     auto geometry = m_deviceResources->pathGeometry(path);
     if (!geometry)
@@ -433,17 +381,12 @@ void D2DPainter::fillPath(const PathImpl& path, const Pattern& pattern, const Gr
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawPath(
     const PathImpl& path, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
 {
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
     {
@@ -454,7 +397,7 @@ void D2DPainter::drawPath(
         );
     }
 
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform));
 
     auto geometry = m_deviceResources->pathGeometry(path);
     if (!geometry)
@@ -479,8 +422,6 @@ void D2DPainter::drawPath(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 
 void D2DPainter::drawImage(
@@ -489,9 +430,6 @@ void D2DPainter::drawImage(
 {
     float centerX = destRect.pos.x + destRect.size.width / 2;
     float centerY = destRect.pos.y + destRect.size.height / 2;
-
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
 
     bool hasClip = state.clipRect.has_value();
     if (hasClip)
@@ -504,7 +442,7 @@ void D2DPainter::drawImage(
     }
 
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     auto bitmap = m_deviceResources->bitmap(image);
     if (!bitmap)
@@ -532,7 +470,35 @@ void D2DPainter::drawImage(
     {
         m_deviceContext->PopAxisAlignedClip();
     }
+}
 
-    m_deviceContext->SetTransform(oldTransform);
+void D2DPainter::pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state)
+{
+    D2D1_MATRIX_3X2_F trans = toD2DMatrix(state.transform);
+    trans = trans * D2D1::Matrix3x2F::Translation(bounds.pos.x + bounds.size.width / 2, bounds.pos.y + bounds.size.height / 2);
+
+    Rectangle centerBounds = {
+        Point(-bounds.size.width / 2, -bounds.size.height / 2),
+        bounds.size
+    };
+    D2D1_LAYER_PARAMETERS layerParams = {
+        // .contentBounds = D2D1::InfiniteRect(),
+        .contentBounds = toD2DRect(centerBounds),
+        .geometricMask = nullptr,
+        .maskAntialiasMode = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE,
+        .maskTransform = D2D1::Matrix3x2F::Identity(),
+        .opacity = alpha * state.alpha,
+        .opacityBrush = nullptr,
+        .layerOptions = D2D1_LAYER_OPTIONS_NONE
+    };
+
+    m_deviceContext->SetTransform(trans);
+    m_deviceContext->PushLayer(&layerParams, nullptr);
+}
+
+void D2DPainter::popLayer()
+{
+    m_deviceContext->PopLayer();
+    m_deviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 } // karin
