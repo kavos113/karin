@@ -386,18 +386,27 @@ void VulkanContext::createLogicalDevice()
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures deviceFeatures = {
-        .sampleRateShading = VK_TRUE,
-        .samplerAnisotropy = VK_TRUE,
+    VkPhysicalDeviceVulkan13Features deviceFeatures13 = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+        .pNext = nullptr,
+        .synchronization2 = VK_TRUE,
+        .dynamicRendering = VK_TRUE,
     };
-
+    VkPhysicalDeviceFeatures2 deviceFeatures2 = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        .pNext = &deviceFeatures13,
+        .features = {
+            .sampleRateShading = VK_TRUE,
+            .samplerAnisotropy = VK_TRUE,
+        }
+    };
     VkDeviceCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = &deviceFeatures2,
         .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
         .pQueueCreateInfos = queueCreateInfos.data(),
         .enabledExtensionCount = static_cast<uint32_t>(DEVICE_EXTENSIONS.size()),
         .ppEnabledExtensionNames = DEVICE_EXTENSIONS.data(),
-        .pEnabledFeatures = &deviceFeatures,
     };
 
     if (m_enableValidationLayers)
@@ -435,11 +444,11 @@ void VulkanContext::createDescriptorPool()
     std::array sizes = {
         VkDescriptorPoolSize{
             .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-            .descriptorCount = 2048,
+            .descriptorCount = DESCRIPTOR_POOL_SIZE,
         },
         VkDescriptorPoolSize{
             .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .descriptorCount = 2048,
+            .descriptorCount = DESCRIPTOR_POOL_SIZE,
         }
     };
 

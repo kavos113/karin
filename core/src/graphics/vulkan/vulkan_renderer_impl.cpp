@@ -39,8 +39,6 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     createViewport();
     createCommandBuffers();
     createSyncObjects();
-    createRenderPass();
-    m_surface->createFrameBuffers(m_renderPass);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -54,8 +52,6 @@ void VulkanRendererImpl::cleanUp()
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
     m_fontRenderer->cleanup();
-
-    m_surface->destroyFrameBuffers();
 
     for (const auto& semaphore : m_imageAvailableSemaphores)
     {
@@ -96,7 +92,6 @@ void VulkanRendererImpl::cleanUp()
     {
         pipeline->cleanUp();
     }
-    vkDestroyRenderPass(VulkanContext::instance().device(), m_renderPass, nullptr);
 
     m_surface->cleanUp();
 }
@@ -117,33 +112,44 @@ bool VulkanRendererImpl::beginDraw()
     }
     vkResetFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame]);
 
-    vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
+    VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
+
+    vkResetCommandBuffer(commandBuffer, 0);
 
     VkCommandBufferBeginInfo beginInfo = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = 0,
         .pInheritanceInfo = nullptr,
     };
-    if (vkBeginCommandBuffer(m_commandBuffers[m_currentFrame], &beginInfo) != VK_SUCCESS)
+    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to begin command buffer");
     }
 
-    VkRenderPassBeginInfo renderPassInfo = {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = m_renderPass,
-        .framebuffer = m_surface->currentFrameBuffer(),
+    m_surface->beforeRender(commandBuffer);
+
+    VkRenderingAttachmentInfo colorAttachment = {
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+        .imageView = m_surface->currentImageView(),
+        .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .clearValue = m_clearColor
+    };
+    VkRenderingInfo renderingInfo = {
+        .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
         .renderArea = {
             .offset = {0, 0},
             .extent = m_surface->extent(),
         },
-        .clearValueCount = 1,
-        .pClearValues = &m_clearColor
+        .layerCount = 1,
+        .colorAttachmentCount = 1,
+        .pColorAttachments = &colorAttachment
     };
-    vkCmdBeginRenderPass(m_commandBuffers[m_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRendering(commandBuffer, &renderingInfo);
 
-    vkCmdSetViewport(m_commandBuffers[m_currentFrame], 0, 1, &m_viewport);
-    vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &m_scissor);
+    vkCmdSetViewport(commandBuffer, 0, 1, &m_viewport);
+    vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
 
     return true;
 }
@@ -152,12 +158,14 @@ void VulkanRendererImpl::endDraw()
 {
     m_fontRenderer->flushGlyphUploads();
 
+    VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
+
     std::array vertexBuffers = {m_vertexBuffer.buffer};
     std::array<VkDeviceSize, 1> offsets = {};
     vkCmdBindVertexBuffers(
-        m_commandBuffers[m_currentFrame], 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data()
+        commandBuffer, 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data()
     );
-    vkCmdBindIndexBuffer(m_commandBuffers[m_currentFrame], m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
     std::ranges::sort(
         m_drawCommands,
@@ -187,14 +195,14 @@ void VulkanRendererImpl::endDraw()
     if (!m_geometryCommands.empty())
     {
         vkCmdBindPipeline(
-            m_commandBuffers[m_currentFrame],
+            commandBuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             m_pipelines[PipelineType::Geometry]->pipeline()
         );
 
         auto projectionMatrixDescSet = m_projMatrixDescriptorSets[m_currentFrame];
         vkCmdBindDescriptorSets(
-            m_commandBuffers[m_currentFrame],
+            commandBuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             m_pipelines[PipelineType::Geometry]->pipelineLayout(),
             0, 1, &projectionMatrixDescSet,
@@ -205,7 +213,7 @@ void VulkanRendererImpl::endDraw()
         for (const auto& command : m_geometryCommands)
         {
             vkCmdBindDescriptorSets(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                 m_pipelines[PipelineType::Geometry]->pipelineLayout(),
                 1, command.descriptorSets.size(), command.descriptorSets.data(),
@@ -213,13 +221,13 @@ void VulkanRendererImpl::endDraw()
             );
 
             vkCmdPushConstants(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 m_pipelines[PipelineType::Geometry]->pipelineLayout(),
                 VK_SHADER_STAGE_FRAGMENT_BIT,
                 0, sizeof(FragPushConstants), &command.fragData
             );
             vkCmdPushConstants(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 m_pipelines[PipelineType::Geometry]->pipelineLayout(),
                 VK_SHADER_STAGE_VERTEX_BIT,
                 sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
@@ -227,17 +235,17 @@ void VulkanRendererImpl::endDraw()
 
             if (command.scissor.has_value())
             {
-                vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &command.scissor.value());
+                vkCmdSetScissor(commandBuffer, 0, 1, &command.scissor.value());
             }
 
-            vkCmdDrawIndexed(m_commandBuffers[m_currentFrame], command.indexCount, 1, command.indexOffset, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
         }
     }
 
     if (!m_textCommands.empty())
     {
         vkCmdBindPipeline(
-            m_commandBuffers[m_currentFrame],
+            commandBuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             m_pipelines[PipelineType::Text]->pipeline()
         );
@@ -246,7 +254,7 @@ void VulkanRendererImpl::endDraw()
         {
             auto projectionMatrixDescSet = m_projMatrixDescriptorSets[m_currentFrame];
             vkCmdBindDescriptorSets(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                 m_pipelines[PipelineType::Text]->pipelineLayout(),
                 0, 1, &projectionMatrixDescSet,
@@ -256,7 +264,7 @@ void VulkanRendererImpl::endDraw()
 
         auto glyphAtlasSets = m_fontRenderer->glyphAtlasDescriptorSets();
         vkCmdBindDescriptorSets(
-            m_commandBuffers[m_currentFrame],
+            commandBuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             m_pipelines[PipelineType::Text]->pipelineLayout(),
             2, 1, &glyphAtlasSets[m_currentFrame],
@@ -266,7 +274,7 @@ void VulkanRendererImpl::endDraw()
         for (const auto& command : m_textCommands)
         {
             vkCmdBindDescriptorSets(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                 m_pipelines[PipelineType::Text]->pipelineLayout(),
                 1, command.descriptorSets.size(), command.descriptorSets.data(),
@@ -274,13 +282,13 @@ void VulkanRendererImpl::endDraw()
             );
 
             vkCmdPushConstants(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 m_pipelines[PipelineType::Text]->pipelineLayout(),
                 VK_SHADER_STAGE_FRAGMENT_BIT,
                 0, sizeof(FragPushConstants), &command.fragData
             );
             vkCmdPushConstants(
-                m_commandBuffers[m_currentFrame],
+                commandBuffer,
                 m_pipelines[PipelineType::Text]->pipelineLayout(),
                 VK_SHADER_STAGE_VERTEX_BIT,
                 sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
@@ -288,16 +296,17 @@ void VulkanRendererImpl::endDraw()
 
             if (command.scissor.has_value())
             {
-                vkCmdSetScissor(m_commandBuffers[m_currentFrame], 0, 1, &command.scissor.value());
+                vkCmdSetScissor(commandBuffer, 0, 1, &command.scissor.value());
             }
 
-            vkCmdDrawIndexed(m_commandBuffers[m_currentFrame], command.indexCount, 1, command.indexOffset, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
         }
     }
 
-    vkCmdEndRenderPass(m_commandBuffers[m_currentFrame]);
+    vkCmdEndRendering(commandBuffer);
+    m_surface->endRender(commandBuffer);
 
-    if (vkEndCommandBuffer(m_commandBuffers[m_currentFrame]) != VK_SUCCESS)
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to record command buffer");
     }
@@ -311,7 +320,7 @@ void VulkanRendererImpl::endDraw()
         .pWaitSemaphores = semaphores.data(),
         .pWaitDstStageMask = waitStages.data(),
         .commandBufferCount = 1,
-        .pCommandBuffers = &m_commandBuffers[m_currentFrame],
+        .pCommandBuffers = &commandBuffer,
         .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()),
         .pSignalSemaphores = signalSemaphores.data(),
     };
@@ -574,55 +583,6 @@ void VulkanRendererImpl::createMatrixBuffer()
     }
 }
 
-void VulkanRendererImpl::createRenderPass()
-{
-    VkAttachmentDescription colorAttachment = {
-        .format = m_surface->format(),
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = m_surface->getRenderPassFinalLayout(),
-    };
-
-    VkAttachmentReference colorAttachmentRef = {
-        .attachment = 0,
-        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    };
-
-    VkSubpassDescription subpass = {
-        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachmentRef
-    };
-
-    VkSubpassDependency dependency = {
-        .srcSubpass = VK_SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-    };
-
-    VkRenderPassCreateInfo renderPassInfo = {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = 1,
-        .pAttachments = &colorAttachment,
-        .subpassCount = 1,
-        .pSubpasses = &subpass,
-        .dependencyCount = 1,
-        .pDependencies = &dependency
-    };
-
-    if (vkCreateRenderPass(VulkanContext::instance().device(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create render pass");
-    }
-}
-
 void VulkanRendererImpl::createPipeline()
 {
     std::vector descriptorSetLayouts = {
@@ -642,7 +602,7 @@ void VulkanRendererImpl::createPipeline()
         }
     };
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
-        m_renderPass,
+        m_surface->format(),
         geometry_vert_spv, geometry_vert_spv_len,
         geometry_frag_spv, geometry_frag_spv_len,
         descriptorSetLayouts, pushConstantRanges
@@ -654,7 +614,7 @@ void VulkanRendererImpl::createPipeline()
         m_fontRenderer->atlasDescriptorSetLayout(),
     };
     m_pipelines[PipelineType::Text] = std::make_unique<VulkanPipeline>(
-        m_renderPass,
+        m_surface->format(),
         geometry_vert_spv, geometry_vert_spv_len,
         text_frag_spv, text_frag_spv_len,
         textDescriptorSetLayouts, pushConstantRanges
@@ -682,7 +642,7 @@ void VulkanRendererImpl::doResize()
 {
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
-    m_surface->resize(m_renderPass);
+    m_surface->resize();
     m_extent = m_surface->extent();
 
     m_projMatrixData.proj[0][0] = 2.0f / static_cast<float>(m_extent.width);

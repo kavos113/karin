@@ -119,7 +119,6 @@ private:
     void createVertexBuffer();
     void createIndexBuffer();
     void createMatrixBuffer();
-    void createRenderPass();
     void createPipeline();
     void createViewport();
 
@@ -137,8 +136,6 @@ private:
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
     std::vector<VkFence> m_inflightFences;
-
-    VkRenderPass m_renderPass = VK_NULL_HANDLE;
 
     VkExtent2D m_extent = {};
     VkViewport m_viewport = {};

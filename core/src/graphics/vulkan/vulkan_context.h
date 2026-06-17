@@ -1,13 +1,16 @@
 #ifndef SRC_GRAPHICS_RESOURCES_VULKAN_VK_GRAPHICS_DEVICE_H
 #define SRC_GRAPHICS_RESOURCES_VULKAN_VK_GRAPHICS_DEVICE_H
 
-#include "vma.h"
-#include "vulkan_debug_manager.h"
+#include <cstdint>
 
-#include <vulkan/vulkan.h>
-#include <glm/glm.hpp>
 #include <map>
 #include <memory>
+
+#include <vulkan/vulkan.h>
+#include "vma.h"
+#include <glm/glm.hpp>
+
+#include "vulkan_debug_manager.h"
 
 namespace karin
 {
@@ -105,7 +108,8 @@ private:
 
     const bool m_enableValidationLayers = true;
 
-    static constexpr uint32_t VK_API_VERSION = VK_API_VERSION_1_0;
+    static constexpr uint32_t VK_API_VERSION = VK_API_VERSION_1_3;
+    static constexpr uint32_t DESCRIPTOR_POOL_SIZE = 2048;
 };
 } // karin
 

@@ -660,4 +660,14 @@ void VulkanPainter::drawImage(
         state.clipRect
     );
 }
+
+void VulkanPainter::pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state)
+{
+    // TODO
+}
+
+void VulkanPainter::popLayer()
+{
+    // TODO
+}
 } // karin

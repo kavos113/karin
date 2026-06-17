@@ -17,6 +17,8 @@
 #include <vulkan/vulkan_xlib.h>
 #endif
 
+#include "vulkan_context.h"
+
 namespace
 {
 VkSurfaceFormatKHR getBestSwapSurfaceFormat(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -115,42 +117,6 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     createImageView();
 }
 
-void VulkanWindowSurface::createFrameBuffers(VkRenderPass renderPass)
-{
-    m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
-
-    for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
-    {
-        VkImageView attachments[] = {
-            m_swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = renderPass,
-            .attachmentCount = 1,
-            .pAttachments = attachments,
-            .width = m_swapChainExtent.width,
-            .height = m_swapChainExtent.height,
-            .layers = 1
-        };
-
-        if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer");
-        }
-    }
-}
-
-void VulkanWindowSurface::destroyFrameBuffers()
-{
-    for (auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-    m_swapChainFramebuffers.clear();
-}
-
 void VulkanWindowSurface::cleanUp()
 {
     for (auto& imageView : m_swapChainImageViews)
@@ -172,10 +138,8 @@ void VulkanWindowSurface::cleanUp()
     }
 }
 
-void VulkanWindowSurface::resize(VkRenderPass renderPass)
+void VulkanWindowSurface::resize()
 {
-    destroyFrameBuffers();
-
     for (auto& imageView : m_swapChainImageViews)
     {
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
@@ -183,8 +147,6 @@ void VulkanWindowSurface::resize(VkRenderPass renderPass)
 
     createSwapChain(true);
     createImageView();
-
-    createFrameBuffers(renderPass);
 }
 
 bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
@@ -211,6 +173,32 @@ bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
     m_imageIndex = imageIndex;
 
     return true;
+}
+
+void VulkanWindowSurface::beforeRender(VkCommandBuffer commandBuffer)
+{
+    transitionImageLayout(
+        commandBuffer,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        0,
+        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+    );
+}
+
+void VulkanWindowSurface::endRender(VkCommandBuffer commandBuffer)
+{
+    transitionImageLayout(
+        commandBuffer,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        0,
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+    );
 }
 
 bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
@@ -397,5 +385,43 @@ void VulkanWindowSurface::createImageView()
             throw std::runtime_error("failed to create image views");
         }
     }
+}
+
+void VulkanWindowSurface::transitionImageLayout(
+    VkCommandBuffer  commandBuffer,
+    VkImageLayout oldLayout,
+    VkImageLayout newLayout,
+    VkAccessFlags2 srcAccessMask,
+    VkAccessFlags2 dstAccessMask,
+    VkPipelineStageFlags2 srcStageMask,
+    VkPipelineStageFlags2 dstStageMask
+) const
+{
+    VkImageMemoryBarrier2 barrier = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+        .srcStageMask = srcStageMask,
+        .srcAccessMask = srcAccessMask,
+        .dstStageMask = dstStageMask,
+        .dstAccessMask = dstAccessMask,
+        .oldLayout = oldLayout,
+        .newLayout = newLayout,
+        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+        .image = m_swapChainImages[m_imageIndex],
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1
+        }
+    };
+
+    VkDependencyInfo dependencyInfo = {
+        .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+        .imageMemoryBarrierCount = 1,
+        .pImageMemoryBarriers = &barrier,
+    };
+    vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 } // karin
