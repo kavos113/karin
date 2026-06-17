@@ -120,6 +120,7 @@ private:
         VkImageView renderTargetImageView;
         VkImageLayout renderTargetImageLayout;
         VkAttachmentLoadOp loadOp;
+        VkClearValue clearValue;
         VkRect2D renderTargetArea;
 
         std::vector<DrawCommand> commands;
