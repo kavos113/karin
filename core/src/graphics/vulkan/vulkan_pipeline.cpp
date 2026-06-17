@@ -27,6 +27,7 @@ VkShaderModule loadShader(VkDevice device, const unsigned char* code, unsigned i
 namespace karin
 {
 VulkanPipeline::VulkanPipeline(
+    VkFormat targetFormat,
     const unsigned char* vertShaderCode, unsigned int vertShaderSize,
     const unsigned char* fragShaderCode, unsigned int fragShaderSize,
     const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
@@ -34,6 +35,7 @@ VulkanPipeline::VulkanPipeline(
 )
 {
     createPipeline(
+        targetFormat,
         vertShaderCode, vertShaderSize, fragShaderCode, fragShaderSize, descriptorSetLayouts,
         pushConstantRanges
     );
@@ -55,6 +57,7 @@ void VulkanPipeline::cleanUp()
 }
 
 void VulkanPipeline::createPipeline(
+    VkFormat targetFormat,
     const unsigned char* vertShaderCode, unsigned int vertShaderSize,
     const unsigned char* fragShaderCode, unsigned int fragShaderSize,
     const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
@@ -176,7 +179,7 @@ void VulkanPipeline::createPipeline(
     VkPipelineRenderingCreateInfo pipelineRenderingInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
         .colorAttachmentCount = 1,
-        .pColorAttachmentFormats = &VulkanContext::instance().surfaceFormat().format,
+        .pColorAttachmentFormats = &targetFormat,
         .depthAttachmentFormat = VK_FORMAT_UNDEFINED,
         .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
     };

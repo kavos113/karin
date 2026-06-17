@@ -595,6 +595,7 @@ void VulkanRendererImpl::createPipeline()
         }
     };
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
+        m_surface->format(),
         geometry_vert_spv, geometry_vert_spv_len,
         geometry_frag_spv, geometry_frag_spv_len,
         descriptorSetLayouts, pushConstantRanges
@@ -606,6 +607,7 @@ void VulkanRendererImpl::createPipeline()
         m_fontRenderer->atlasDescriptorSetLayout(),
     };
     m_pipelines[PipelineType::Text] = std::make_unique<VulkanPipeline>(
+        m_surface->format(),
         geometry_vert_spv, geometry_vert_spv_len,
         text_frag_spv, text_frag_spv_len,
         textDescriptorSetLayouts, pushConstantRanges

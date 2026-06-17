@@ -12,6 +12,7 @@ class VulkanPipeline
 {
 public:
     VulkanPipeline(
+        VkFormat targetFormat,
         const unsigned char* vertShaderCode, unsigned int vertShaderSize,
         const unsigned char* fragShaderCode, unsigned int fragShaderSize,
         const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
@@ -75,6 +76,7 @@ public:
 
 private:
     void createPipeline(
+        VkFormat targetFormat,
         const unsigned char* vertShaderCode, unsigned int vertShaderSize,
         const unsigned char* fragShaderCode, unsigned int fragShaderSize,
         const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,

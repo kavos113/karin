@@ -39,7 +39,6 @@ private:
     uint32_t m_width;
     uint32_t m_height;
 
-    VkFramebuffer m_framebuffer = VK_NULL_HANDLE;
     VulkanImage m_image;
     VulkanBuffer<std::byte> m_stagingBuffer;
 };
