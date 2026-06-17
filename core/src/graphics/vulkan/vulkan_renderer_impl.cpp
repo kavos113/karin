@@ -39,7 +39,6 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     createViewport();
     createCommandBuffers();
     createSyncObjects();
-    m_surface->createFrameBuffers(m_renderPass);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -53,8 +52,6 @@ void VulkanRendererImpl::cleanUp()
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
     m_fontRenderer->cleanup();
-
-    m_surface->destroyFrameBuffers();
 
     for (const auto& semaphore : m_imageAvailableSemaphores)
     {
@@ -598,7 +595,6 @@ void VulkanRendererImpl::createPipeline()
         }
     };
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
-        m_renderPass,
         geometry_vert_spv, geometry_vert_spv_len,
         geometry_frag_spv, geometry_frag_spv_len,
         descriptorSetLayouts, pushConstantRanges
@@ -610,7 +606,6 @@ void VulkanRendererImpl::createPipeline()
         m_fontRenderer->atlasDescriptorSetLayout(),
     };
     m_pipelines[PipelineType::Text] = std::make_unique<VulkanPipeline>(
-        m_renderPass,
         geometry_vert_spv, geometry_vert_spv_len,
         text_frag_spv, text_frag_spv_len,
         textDescriptorSetLayouts, pushConstantRanges
@@ -638,7 +633,7 @@ void VulkanRendererImpl::doResize()
 {
     vkDeviceWaitIdle(VulkanContext::instance().device());
 
-    m_surface->resize(m_renderPass);
+    m_surface->resize();
     m_extent = m_surface->extent();
 
     m_projMatrixData.proj[0][0] = 2.0f / static_cast<float>(m_extent.width);

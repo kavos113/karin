@@ -8,7 +8,6 @@
 #include <vulkan/vulkan.h>
 
 #include <karin/system/window.h>
-#include "vulkan_context.h"
 #include "vulkan_surface.h"
 
 namespace karin
@@ -19,10 +18,8 @@ public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
     ~VulkanWindowSurface() override = default;
 
-    void createFrameBuffers(VkRenderPass renderPass) override;
-    void destroyFrameBuffers() override;
     void cleanUp() override;
-    void resize(VkRenderPass renderPass) override;
+    void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
 
@@ -38,9 +35,9 @@ public:
         return m_swapChainImageFormat;
     }
 
-    VkFramebuffer currentFrameBuffer() const override
+    VkImageView currentImageView() const override
     {
-        return m_swapChainFramebuffers[m_imageIndex];
+        return m_swapChainImageViews[m_imageIndex];
     }
 
     void startResizing() override
@@ -51,11 +48,6 @@ public:
     void finishResizing() override
     {
         m_isResizing = false;
-    }
-
-    VkImageLayout getRenderPassFinalLayout() const override
-    {
-        return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     }
 
 private:
@@ -71,7 +63,6 @@ private:
     std::vector<VkImageView> m_swapChainImageViews;
     VkFormat m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
     VkExtent2D m_swapChainExtent = {};
-    std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
     std::vector<VkSwapchainKHR> m_oldSwapChains;
     bool m_isResizing = false;

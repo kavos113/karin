@@ -20,18 +20,15 @@ public:
     VulkanOffscreenSurface(Size size);
     ~VulkanOffscreenSurface() override = default;
 
-    void createFrameBuffers(VkRenderPass renderPass) override;
-    void destroyFrameBuffers() override;
     void cleanUp() override;
-    void resize(VkRenderPass renderPass) override;
+    void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
     bool present(VkSemaphore waitSemaphore) const override;
 
     VkExtent2D extent() const override;
     VkFormat format() const override;
-    VkFramebuffer currentFrameBuffer() const override;
-    VkImageLayout getRenderPassFinalLayout() const override;
+    VkImageView currentImageView() const override;
 
     std::vector<std::byte> getImageData() const;
 

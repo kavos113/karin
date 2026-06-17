@@ -17,46 +17,17 @@ VulkanOffscreenSurface::VulkanOffscreenSurface(Size size)
     createBuffers(static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height));
 }
 
-void VulkanOffscreenSurface::createFrameBuffers(VkRenderPass renderPass)
-{
-    VkFramebufferCreateInfo framebufferInfo = {
-        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .renderPass = renderPass,
-        .attachmentCount = 1,
-        .pAttachments = &m_image.imageView,
-        .width = m_width,
-        .height = m_height,
-        .layers = 1
-    };
-    if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_framebuffer) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create framebuffer for offscreen surface");
-    }
-}
-
-void VulkanOffscreenSurface::destroyFrameBuffers()
-{
-    if (m_framebuffer != VK_NULL_HANDLE)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), m_framebuffer, nullptr);
-        m_framebuffer = VK_NULL_HANDLE;
-    }
-}
-
 void VulkanOffscreenSurface::cleanUp()
 {
-    destroyFrameBuffers();
-
     m_image.cleanup();
     m_stagingBuffer.cleanup();
 }
 
-void VulkanOffscreenSurface::resize(VkRenderPass renderPass)
+void VulkanOffscreenSurface::resize()
 {
     cleanUp();
 
     createBuffers(m_width, m_height);
-    createFrameBuffers(renderPass);
 }
 
 bool VulkanOffscreenSurface::prepareNextImage(VkSemaphore semaphore)
@@ -107,14 +78,9 @@ VkFormat VulkanOffscreenSurface::format() const
     return VK_FORMAT_B8G8R8A8_UNORM;
 }
 
-VkFramebuffer VulkanOffscreenSurface::currentFrameBuffer() const
+VkImageView VulkanOffscreenSurface::currentImageView() const
 {
-    return m_framebuffer;
-}
-
-VkImageLayout VulkanOffscreenSurface::getRenderPassFinalLayout() const
-{
-    return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    return m_image.imageView;
 }
 
 std::vector<std::byte> VulkanOffscreenSurface::getImageData() const

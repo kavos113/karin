@@ -17,6 +17,8 @@
 #include <vulkan/vulkan_xlib.h>
 #endif
 
+#include "vulkan_context.h"
+
 namespace
 {
 VkSurfaceFormatKHR getBestSwapSurfaceFormat(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -115,42 +117,6 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     createImageView();
 }
 
-void VulkanWindowSurface::createFrameBuffers(VkRenderPass renderPass)
-{
-    m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
-
-    for (size_t i = 0; i < m_swapChainImageViews.size(); i++)
-    {
-        VkImageView attachments[] = {
-            m_swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = renderPass,
-            .attachmentCount = 1,
-            .pAttachments = attachments,
-            .width = m_swapChainExtent.width,
-            .height = m_swapChainExtent.height,
-            .layers = 1
-        };
-
-        if (vkCreateFramebuffer(VulkanContext::instance().device(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer");
-        }
-    }
-}
-
-void VulkanWindowSurface::destroyFrameBuffers()
-{
-    for (auto& framebuffer : m_swapChainFramebuffers)
-    {
-        vkDestroyFramebuffer(VulkanContext::instance().device(), framebuffer, nullptr);
-    }
-    m_swapChainFramebuffers.clear();
-}
-
 void VulkanWindowSurface::cleanUp()
 {
     for (auto& imageView : m_swapChainImageViews)
@@ -172,10 +138,8 @@ void VulkanWindowSurface::cleanUp()
     }
 }
 
-void VulkanWindowSurface::resize(VkRenderPass renderPass)
+void VulkanWindowSurface::resize()
 {
-    destroyFrameBuffers();
-
     for (auto& imageView : m_swapChainImageViews)
     {
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
@@ -183,8 +147,6 @@ void VulkanWindowSurface::resize(VkRenderPass renderPass)
 
     createSwapChain(true);
     createImageView();
-
-    createFrameBuffers(renderPass);
 }
 
 bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
