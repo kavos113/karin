@@ -389,6 +389,7 @@ void VulkanContext::createLogicalDevice()
     VkPhysicalDeviceVulkan13Features deviceFeatures13 = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
         .pNext = nullptr,
+        .synchronization2 = VK_TRUE,
         .dynamicRendering = VK_TRUE,
     };
     VkPhysicalDeviceFeatures2 deviceFeatures2 = {
