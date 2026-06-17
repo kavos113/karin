@@ -22,7 +22,8 @@ public:
     void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
-
+    void beforeRender(VkCommandBuffer commandBuffer) override;
+    void endRender(VkCommandBuffer commandBuffer) override;
     bool present(VkSemaphore waitSemaphore) const override;
 
     VkExtent2D extent() const override
@@ -54,6 +55,16 @@ private:
     void createSurface();
     void createSwapChain(bool isRecreating);
     void createImageView();
+
+    void transitionImageLayout(
+        VkCommandBuffer commandBuffer,
+        VkImageLayout oldLayout,
+        VkImageLayout newLayout,
+        VkAccessFlags2 srcAccessMask,
+        VkAccessFlags2 dstAccessMask,
+        VkPipelineStageFlags2 srcStageMask,
+        VkPipelineStageFlags2 dstStageMask
+    ) const;
 
     Window::NativeHandle m_window;
 

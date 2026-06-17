@@ -126,6 +126,8 @@ bool VulkanRendererImpl::beginDraw()
         throw std::runtime_error("failed to begin command buffer");
     }
 
+    m_surface->beforeRender(commandBuffer);
+
     VkRenderingAttachmentInfo colorAttachment = {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
         .imageView = m_surface->currentImageView(),
@@ -302,6 +304,7 @@ void VulkanRendererImpl::endDraw()
     }
 
     vkCmdEndRendering(commandBuffer);
+    m_surface->endRender(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
     {

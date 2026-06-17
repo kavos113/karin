@@ -14,6 +14,8 @@ public:
     virtual void resize() = 0;
 
     virtual bool prepareNextImage(VkSemaphore semaphore) = 0;
+    virtual void beforeRender(VkCommandBuffer commandBuffer) = 0;
+    virtual void endRender(VkCommandBuffer commandBuffer) = 0;
     virtual bool present(VkSemaphore waitSemaphore) const = 0;
 
     virtual VkExtent2D extent() const = 0;

@@ -48,6 +48,14 @@ bool VulkanOffscreenSurface::prepareNextImage(VkSemaphore semaphore)
     return true;
 }
 
+void VulkanOffscreenSurface::beforeRender(VkCommandBuffer commandBuffer)
+{
+}
+
+void VulkanOffscreenSurface::endRender(VkCommandBuffer commandBuffer)
+{
+}
+
 bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
 {
     // just for send signal

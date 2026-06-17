@@ -24,6 +24,8 @@ public:
     void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
+    void beforeRender(VkCommandBuffer commandBuffer) override;
+    void endRender(VkCommandBuffer commandBuffer) override;
     bool present(VkSemaphore waitSemaphore) const override;
 
     VkExtent2D extent() const override;
