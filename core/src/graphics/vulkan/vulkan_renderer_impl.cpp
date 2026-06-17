@@ -102,7 +102,6 @@ bool VulkanRendererImpl::beginDraw()
     m_indexBuffer.mappedData = m_indexStartPoint;
     m_vertexOffset = 0;
     m_indexCount = 0;
-    m_drawCommands.clear();
     m_drawBatches.clear();
 
     vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
@@ -422,7 +421,7 @@ void VulkanRendererImpl::addCommand(
         }, pattern
     );
 
-    m_drawCommands.push_back(drawCommand);
+    m_drawBatches.back().commands.push_back(drawCommand);
 }
 
 void VulkanRendererImpl::createCommandBuffers()

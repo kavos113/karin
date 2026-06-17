@@ -145,7 +145,6 @@ private:
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
 
-    std::vector<DrawCommand> m_drawCommands;
     std::vector<DrawBatch> m_drawBatches;
 
     uint8_t m_currentFrame = 0;
