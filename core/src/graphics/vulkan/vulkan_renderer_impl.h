@@ -69,6 +69,9 @@ public:
         std::optional<Rectangle> clipRect = std::nullopt
     );
 
+    // void beginOffscreenLayer(const Rectangle& bounds, float alpha);
+    // void endOffscreenLayer();
+
     void startResizing() override
     {
         m_surface->startResizing();
@@ -109,6 +112,19 @@ private:
         std::vector<VkDescriptorSet> descriptorSets;
     };
 
+    struct DrawBatch
+    {
+        VkViewport viewport;
+        VkRect2D scissor;
+
+        VkImageView renderTargetImageView;
+        VkImageLayout renderTargetImageLayout;
+        VkAttachmentLoadOp loadOp;
+        VkRect2D renderTargetArea;
+
+        std::vector<DrawCommand> commands;
+    };
+
     struct MatrixBufferObject
     {
         glm::mat4 proj;
@@ -129,6 +145,7 @@ private:
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
 
     std::vector<DrawCommand> m_drawCommands;
+    std::vector<DrawBatch> m_drawBatches;
 
     uint8_t m_currentFrame = 0;
 
