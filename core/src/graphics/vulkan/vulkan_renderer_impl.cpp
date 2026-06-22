@@ -181,14 +181,6 @@ void VulkanRendererImpl::endDraw()
         vkCmdSetViewport(commandBuffer, 0, 1, &batch.viewport);
         vkCmdSetScissor(commandBuffer, 0, 1, &batch.scissor);
 
-        std::ranges::sort(
-            batch.commands,
-            [](const DrawCommand& a, const DrawCommand& b)
-            {
-                return a.pipelineType < b.pipelineType;
-            }
-        );
-
         std::vector<DrawCommand> m_geometryCommands;
         std::vector<DrawCommand> m_textCommands;
         for (const auto& command : batch.commands)
