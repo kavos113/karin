@@ -114,6 +114,8 @@ private:
 
     struct DrawBatch
     {
+        bool isOffscreenLayer = false;
+
         VkViewport viewport;
         VkRect2D scissor;
 
@@ -145,6 +147,7 @@ private:
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
 
+    // TODO: これはスタックにすべき
     std::vector<DrawBatch> m_drawBatches;
 
     uint8_t m_currentFrame = 0;

@@ -832,4 +832,37 @@ void VulkanDeviceResources::clearOffscreenImages()
 
     m_offscreenImages.clear();
 }
+
+VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)
+{
+    VkDescriptorSet descriptorSet;
+    VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .descriptorPool = VulkanContext::instance().descriptorPool(),
+        .descriptorSetCount = 1,
+        .pSetLayouts = &m_geometryDescriptorSetLayout,
+    };
+    if (vkAllocateDescriptorSets(VulkanContext::instance().device(), &allocInfo, &descriptorSet) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to allocate descriptor set for offscreen image");
+    }
+
+    VkDescriptorImageInfo descriptorImageInfo = {
+        .sampler = m_clampSampler,
+        .imageView = imageView,
+        .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+    };
+    VkWriteDescriptorSet descriptorWrite = {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = descriptorSet,
+        .dstBinding = 0,
+        .dstArrayElement = 0,
+        .descriptorCount = 1,
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .pImageInfo = &descriptorImageInfo,
+    };
+    vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+    return descriptorSet;
+}
 } // karin

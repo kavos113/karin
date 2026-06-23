@@ -40,6 +40,7 @@ public:
     std::vector<VkDescriptorSet> gradientPointLutDescriptorSet(const GradientPoints& points);
     std::vector<VkDescriptorSet> textureDescriptorSet(Image image);
     std::vector<VkDescriptorSet> dummyTextureDescriptorSet() const;
+    VkDescriptorSet offscreenImageDescriptorSet(VkImageView imageView);
 
     VkDescriptorSetLayout geometryDescriptorSetLayout() const
     {
