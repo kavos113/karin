@@ -47,7 +47,7 @@ public:
         return m_geometryDescriptorSetLayout;
     }
 
-    VkImageView newOffscreenImage(const Rectangle& rect, VkFormat imageFormat);
+    VulkanImage newOffscreenImage(const Rectangle& rect, VkFormat imageFormat);
     void clearOffscreenImages();
 
 private:

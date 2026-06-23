@@ -119,6 +119,8 @@ private:
         VkViewport viewport;
         VkRect2D scissor;
 
+        // Required only for offscreen layers
+        VkImage renderTargetImage;
         VkImageView renderTargetImageView;
         VkImageLayout renderTargetImageLayout;
         VkAttachmentLoadOp loadOp;

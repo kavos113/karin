@@ -771,7 +771,7 @@ void VulkanDeviceResources::createDummyTexture()
     };
 }
 
-VkImageView VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat)
+VulkanImage VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat)
 {
     VkImageCreateInfo imageInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -820,7 +820,7 @@ VkImageView VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFo
     }
 
     m_offscreenImages.push_back(image);
-    return image.imageView;
+    return image;
 }
 
 void VulkanDeviceResources::clearOffscreenImages()

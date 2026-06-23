@@ -1,14 +1,17 @@
 #include "vulkan_renderer_impl.h"
 
-#include "shaders/push_constants.h"
-#include "shaders/shaders.h"
-#include "vulkan_context.h"
+#include <cstring>
 
 #include <algorithm>
 #include <iostream>
-#include <cstring>
 #include <ranges>
+
 #include <glm/gtc/type_ptr.hpp>
+
+#include "shaders/push_constants.h"
+#include "shaders/shaders.h"
+#include "vulkan_context.h"
+#include "vulkan_helpers.h"
 
 namespace
 {
@@ -161,6 +164,20 @@ void VulkanRendererImpl::endDraw()
 
     for (auto& batch : m_drawBatches)
     {
+        if (batch.isOffscreenLayer)
+        {
+            transitionImageLayout(
+                commandBuffer,
+                batch.renderTargetImage,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                0,
+                VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+            );
+        }
+
         VkRenderingAttachmentInfo colorAttachment = {
             .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
             .imageView = batch.renderTargetImageView,
@@ -313,6 +330,17 @@ void VulkanRendererImpl::endDraw()
 
         if (batch.isOffscreenLayer)
         {
+            transitionImageLayout(
+                commandBuffer,
+                batch.renderTargetImage,
+                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                VK_ACCESS_SHADER_READ_BIT,
+                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            );
+
             VkRenderingAttachmentInfo attachmentInfo = {
                 .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
                 .imageView = m_surface->currentImageView(),
@@ -543,11 +571,13 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
 
     // TODO: clear colorを指定できるようにしてもいいかも
     // TODO: alphaを使う
+    VulkanImage offscreenImage = m_deviceResources->newOffscreenImage(bounds, m_surface->format());
     DrawBatch batch = {
         .isOffscreenLayer = true,
         .viewport = viewport,
         .scissor = scissor,
-        .renderTargetImageView = m_deviceResources->newOffscreenImage(bounds, m_surface->format()),
+        .renderTargetImage = offscreenImage.image,
+        .renderTargetImageView = offscreenImage.imageView,
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .clearValue = {
@@ -571,6 +601,7 @@ void VulkanRendererImpl::endOffscreenLayer()
     DrawBatch mainBatch = {
         .viewport = m_viewport,
         .scissor = m_scissor,
+        .renderTargetImage = VK_NULL_HANDLE,
         .renderTargetImageView = m_surface->currentImageView(),
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
