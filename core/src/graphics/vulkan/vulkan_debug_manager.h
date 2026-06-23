@@ -15,7 +15,6 @@ public:
     void addDebugSupportToInstance(
         VkInstanceCreateInfo& createInfo, VkDebugUtilsMessengerCreateInfoEXT& debugCreateInfo
     ) const;
-    void addDebugSupportToDevice(VkDeviceCreateInfo& createInfo) const;
 
 private:
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;

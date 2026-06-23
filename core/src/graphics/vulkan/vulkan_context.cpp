@@ -409,16 +409,6 @@ void VulkanContext::createLogicalDevice()
         .ppEnabledExtensionNames = DEVICE_EXTENSIONS.data(),
     };
 
-    if (m_enableValidationLayers)
-    {
-        m_debugManager->addDebugSupportToDevice(createInfo);
-    }
-    else
-    {
-        createInfo.enabledLayerCount = 0;
-        createInfo.pNext = nullptr;
-    }
-
     if (vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create logical device");
