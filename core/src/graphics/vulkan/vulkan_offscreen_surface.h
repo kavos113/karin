@@ -36,15 +36,6 @@ public:
 
 private:
     void createBuffers(uint32_t width, uint32_t height);
-    void transitionImageLayout(
-        VkCommandBuffer commandBuffer,
-        VkImageLayout oldLayout,
-        VkImageLayout newLayout,
-        VkAccessFlags2 srcAccessMask,
-        VkAccessFlags2 dstAccessMask,
-        VkPipelineStageFlags2 srcStageMask,
-        VkPipelineStageFlags2 dstStageMask
-    ) const;
 
     uint32_t m_width;
     uint32_t m_height;

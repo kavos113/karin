@@ -101,6 +101,7 @@ elseif (VULKAN)
             vulkan/vulakn_functions.h
             vulkan/vulkan_buffer.h
             vulkan/vulkan_surface.h
+            vulkan/vulkan_helpers.h
             vulkan/glm_geometry.h
             vulkan/vma.h
             vulkan/shaders/shaders.h

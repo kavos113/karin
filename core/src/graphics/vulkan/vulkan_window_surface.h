@@ -56,16 +56,6 @@ private:
     void createSwapChain(bool isRecreating);
     void createImageView();
 
-    void transitionImageLayout(
-        VkCommandBuffer commandBuffer,
-        VkImageLayout oldLayout,
-        VkImageLayout newLayout,
-        VkAccessFlags2 srcAccessMask,
-        VkAccessFlags2 dstAccessMask,
-        VkPipelineStageFlags2 srcStageMask,
-        VkPipelineStageFlags2 dstStageMask
-    ) const;
-
     Window::NativeHandle m_window;
 
     VkSurfaceKHR m_surface = VK_NULL_HANDLE;
