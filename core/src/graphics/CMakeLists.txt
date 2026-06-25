@@ -81,6 +81,7 @@ elseif (VULKAN)
             vulkan/vulkan_device_resources.cpp
             vulkan/vulkan_glyph_cache.cpp
             vulkan/vulkan_font_renderer.cpp
+            vulkan/vulkan_view_context.cpp
             vulkan/vma_impl.cpp
             text/freetype/freetype_font_face.cpp
     )
@@ -102,6 +103,7 @@ elseif (VULKAN)
             vulkan/vulkan_buffer.h
             vulkan/vulkan_surface.h
             vulkan/vulkan_helpers.h
+            vulkan/vulkan_view_context.h
             vulkan/glm_geometry.h
             vulkan/vma.h
             vulkan/shaders/shaders.h

@@ -20,6 +20,7 @@
 #include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
 #include "vulkan_buffer.h"
+#include "vulkan_view_context.h"
 #include "shaders/push_constants.h"
 
 namespace karin
@@ -130,16 +131,10 @@ private:
         std::vector<DrawCommand> commands;
     };
 
-    struct MatrixBufferObject
-    {
-        glm::mat4 proj;
-    };
-
     void createCommandBuffers();
     void createSyncObjects();
     void createVertexBuffer();
     void createIndexBuffer();
-    void createMatrixBuffer();
     void createPipeline();
     void createViewport();
 
@@ -148,6 +143,8 @@ private:
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
+
+    std::unique_ptr<VulkanViewContext> m_viewContext;
 
     // TODO: これはスタックにすべき
     std::vector<DrawBatch> m_drawBatches;
@@ -169,11 +166,6 @@ private:
     uint16_t* m_indexStartPoint = nullptr;
     uint16_t m_vertexOffset = 0;
     size_t m_indexCount = 0;
-
-    MatrixBufferObject m_projMatrixData = {};
-    VkDescriptorSetLayout m_projMatrixDescriptorSetLayout = VK_NULL_HANDLE;
-    std::vector<VkDescriptorSet> m_projMatrixDescriptorSets;
-    std::vector<VulkanBuffer<MatrixBufferObject>> m_projMatrixBuffers;
 
     static constexpr VkDeviceSize vertexBufferSize = 1024 * 128; // 2MB
     static constexpr VkDeviceSize indexBufferSize = 1024 * 512; // 2MB
