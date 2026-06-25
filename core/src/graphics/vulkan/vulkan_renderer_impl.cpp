@@ -43,9 +43,7 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     createCommandBuffers();
     createSyncObjects();
 
-    createVertexBuffer();
-    createIndexBuffer();
-
+    m_geometryBuffer = std::make_unique<VulkanGeometryBuffer>();
     m_viewContext = std::make_unique<VulkanViewContext>(m_extent.width, m_extent.height);
 
     createPipeline();
@@ -81,9 +79,7 @@ void VulkanRendererImpl::cleanUp()
     }
     m_commandBuffers.clear();
 
-    m_vertexBuffer.cleanup();
-    m_indexBuffer.cleanup();
-
+    m_geometryBuffer->cleanup();
     m_viewContext->cleanup();
 
     m_deviceResources->cleanup();
@@ -98,10 +94,7 @@ void VulkanRendererImpl::cleanUp()
 
 bool VulkanRendererImpl::beginDraw()
 {
-    m_vertexBuffer.mappedData = m_vertexStartPoint;
-    m_indexBuffer.mappedData = m_indexStartPoint;
-    m_vertexOffset = 0;
-    m_indexCount = 0;
+    m_geometryBuffer->reset();
     m_drawBatches.clear();
 
     vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
@@ -152,12 +145,7 @@ void VulkanRendererImpl::endDraw()
 
     VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
 
-    std::array vertexBuffers = {m_vertexBuffer.buffer};
-    std::array<VkDeviceSize, 1> offsets = {};
-    vkCmdBindVertexBuffers(
-        commandBuffer, 0, vertexBuffers.size(), vertexBuffers.data(), offsets.data()
-    );
-    vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+    m_geometryBuffer->bind(commandBuffer);
 
     for (auto& batch : m_drawBatches)
     {
@@ -388,15 +376,7 @@ void VulkanRendererImpl::endDraw()
             std::vector<uint16_t> indices = {
                 0, 1, 2, 2, 3, 0
             };
-
-            memcpy(m_vertexBuffer.mappedData, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
-            m_vertexBuffer.mappedData += vertices.size();
-            for (uint16_t& index : indices)
-            {
-                index += m_vertexOffset;
-            }
-            memcpy(m_indexBuffer.mappedData, indices.data(), indices.size() * sizeof(uint16_t));
-            m_indexBuffer.mappedData += indices.size();
+            uint32_t indexOffset = m_geometryBuffer->append(vertices, indices);
 
             VertexPushConstants vertData = {
                 .model = glm::mat4(1.0f)
@@ -428,11 +408,8 @@ void VulkanRendererImpl::endDraw()
                 sizeof(FragPushConstants), sizeof(VertexPushConstants), &vertData
             );
 
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, m_indexCount, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, indexOffset, 0, 0);
             vkCmdEndRendering(commandBuffer);
-
-            m_indexCount += indices.size();
-            m_vertexOffset += static_cast<uint16_t>(vertices.size());
         }
     }
 
@@ -487,24 +464,11 @@ void VulkanRendererImpl::addCommand(
     std::optional<Rectangle> clipRect
 )
 {
-    memcpy(m_vertexBuffer.mappedData, vertices.data(), vertices.size() * sizeof(VulkanPipeline::Vertex));
-    m_vertexBuffer.mappedData += vertices.size();
-
-    for (uint16_t& index : indices)
-    {
-        index += m_vertexOffset;
-    }
-
-    memcpy(m_indexBuffer.mappedData, indices.data(), indices.size() * sizeof(uint16_t));
-    m_indexBuffer.mappedData += indices.size();
-    m_indexCount += indices.size();
-
-    // TODO: オフセットのオーバーフロー
-    m_vertexOffset += static_cast<uint16_t>(vertices.size());
+    uint32_t indexOffset = m_geometryBuffer->append(vertices, indices);
 
     DrawCommand drawCommand = {
         .indexCount = static_cast<uint32_t>(indices.size()),
-        .indexOffset = static_cast<uint32_t>(m_indexCount - indices.size()),
+        .indexOffset = indexOffset,
         .fragData = fragData,
         .vertData = vertData,
         .pipelineType = pipelineType,
@@ -652,48 +616,6 @@ void VulkanRendererImpl::createSyncObjects()
             throw std::runtime_error("failed to create swap chain sync objects");
         }
     }
-}
-
-void VulkanRendererImpl::createVertexBuffer()
-{
-    VmaAllocationCreateInfo allocInfo = {
-        .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-        .usage = VMA_MEMORY_USAGE_AUTO,
-    };
-
-    VkBufferCreateInfo bufferInfo = {
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = vertexBufferSize,
-        .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-    };
-
-    if (m_vertexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create vertex buffer");
-    }
-    m_vertexStartPoint = m_vertexBuffer.mappedData;
-}
-
-void VulkanRendererImpl::createIndexBuffer()
-{
-    VmaAllocationCreateInfo allocInfo = {
-        .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-        .usage = VMA_MEMORY_USAGE_AUTO,
-    };
-
-    VkBufferCreateInfo bufferInfo = {
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = indexBufferSize,
-        .usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-    };
-
-    if (m_indexBuffer.create(bufferInfo, allocInfo) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create index buffer");
-    }
-    m_indexStartPoint = m_indexBuffer.mappedData;
 }
 
 void VulkanRendererImpl::createPipeline()

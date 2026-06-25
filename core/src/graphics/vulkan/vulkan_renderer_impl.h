@@ -19,7 +19,7 @@
 #include "vulkan_pipeline.h"
 #include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
-#include "vulkan_buffer.h"
+#include "vulkan_geometry_buffer.h"
 #include "vulkan_view_context.h"
 #include "shaders/push_constants.h"
 
@@ -133,8 +133,6 @@ private:
 
     void createCommandBuffers();
     void createSyncObjects();
-    void createVertexBuffer();
-    void createIndexBuffer();
     void createPipeline();
     void createViewport();
 
@@ -144,6 +142,7 @@ private:
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
 
+    std::unique_ptr<VulkanGeometryBuffer> m_geometryBuffer;
     std::unique_ptr<VulkanViewContext> m_viewContext;
 
     // TODO: これはスタックにすべき
@@ -159,16 +158,6 @@ private:
     VkExtent2D m_extent = {};
     VkViewport m_viewport = {};
     VkRect2D m_scissor = {};
-
-    VulkanBuffer<VulkanPipeline::Vertex> m_vertexBuffer;
-    VulkanPipeline::Vertex* m_vertexStartPoint = nullptr;
-    VulkanBuffer<uint16_t> m_indexBuffer;
-    uint16_t* m_indexStartPoint = nullptr;
-    uint16_t m_vertexOffset = 0;
-    size_t m_indexCount = 0;
-
-    static constexpr VkDeviceSize vertexBufferSize = 1024 * 128; // 2MB
-    static constexpr VkDeviceSize indexBufferSize = 1024 * 512; // 2MB
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 
