@@ -144,8 +144,6 @@ private:
     // TODO: これはスタックにすべき
     std::vector<DrawBatch> m_drawBatches;
 
-    VkExtent2D m_extent;
-
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 
     VkClearValue m_clearColor = {{1.0f, 1.0f, 1.0f, 1.0f}};

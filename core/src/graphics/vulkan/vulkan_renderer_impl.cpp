@@ -35,11 +35,13 @@ namespace karin
 VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frameContext)
     : m_frameContext(std::move(frameContext))
 {
+    VkExtent2D extent = m_frameContext->extent();
+
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
 
     m_geometryBuffer = std::make_unique<VulkanGeometryBuffer>();
-    m_viewContext = std::make_unique<VulkanViewContext>(m_extent.width, m_extent.height);
+    m_viewContext = std::make_unique<VulkanViewContext>(extent.width, extent.height);
 
     createPipeline();
 }
@@ -390,7 +392,9 @@ void VulkanRendererImpl::endDraw()
 void VulkanRendererImpl::resize(Size size)
 {
     m_frameContext->resize();
-    m_viewContext->resize(m_extent.width, m_extent.height);
+
+    VkExtent2D extent = m_frameContext->extent();
+    m_viewContext->resize(extent.width, extent.height);
 }
 
 void VulkanRendererImpl::addCommand(

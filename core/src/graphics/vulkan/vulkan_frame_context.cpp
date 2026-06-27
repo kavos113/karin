@@ -77,7 +77,11 @@ VulkanFrameContext::FrameState VulkanFrameContext::beginFrame()
     return {
         .needFinish = false,
         .frameIndex = m_currentFrame,
-        .commandBuffer = commandBuffer
+        .commandBuffer = commandBuffer,
+        .viewport = m_viewport,
+        .scissor = m_scissor,
+        .targetImageView = m_surface->currentImageView(),
+        .targetExtent = m_extent
     };
 }
 
