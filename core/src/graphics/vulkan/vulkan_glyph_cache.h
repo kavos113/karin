@@ -8,14 +8,12 @@
 #include <vector>
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vma.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
 #include "vulkan_buffer.h"
-#include "vulkan_context.h"
 
 namespace karin
 {
@@ -78,7 +76,7 @@ private:
     std::vector<GlyphUploadInfo> m_uploadQueue;
 
     VulkanImage m_atlas;
-    bool m_initializeAtlasLayout;
+    bool m_initializeAtlasLayout = false;
     std::vector<VkDescriptorSet> m_atlasDescriptorSets; // One per frame in flight
     VkSampler m_atlasSampler = VK_NULL_HANDLE;
     VkDescriptorSetLayout m_atlasDescriptorSetLayout = VK_NULL_HANDLE;

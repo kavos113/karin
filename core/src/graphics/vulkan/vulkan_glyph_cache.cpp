@@ -7,6 +7,7 @@
 
 #include <utils/hash.h>
 #include "vulkan_helpers.h"
+#include "vulkan_context.h"
 
 namespace karin
 {
@@ -86,6 +87,8 @@ void VulkanGlyphCache::flushUploadQueue()
         totalSize += upload.bitmapData.size();
     }
 
+    VkBuffer stagingBuffer;
+    VmaAllocation stagingBufferMemory;
     VmaAllocationCreateInfo stagingBufferAllocationInfo = {
         .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
         .usage = VMA_MEMORY_USAGE_AUTO,
@@ -96,18 +99,25 @@ void VulkanGlyphCache::flushUploadQueue()
         .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
-    VulkanBuffer<void> stagingBuffer;
-    if (stagingBuffer.create(bufferInfo, stagingBufferAllocationInfo) != VK_SUCCESS)
+    if (vmaCreateBuffer(
+        VulkanContext::instance().allocator(), &bufferInfo, &stagingBufferAllocationInfo, &stagingBuffer, &stagingBufferMemory, nullptr
+    ) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create staging buffer for glyph upload");
     }
 
-    void* mappedData = stagingBuffer.mappedData;
+    void* mappedData;
+    if (vmaMapMemory(VulkanContext::instance().allocator(), stagingBufferMemory, &mappedData) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to map memory for glyph upload staging buffer");
+    }
+
     for (const auto& upload : m_uploadQueue)
     {
         std::memcpy(mappedData, upload.bitmapData.data(), upload.bitmapData.size());
         mappedData = static_cast<std::byte*>(mappedData) + upload.bitmapData.size();
     }
+    vmaUnmapMemory(VulkanContext::instance().allocator(), stagingBufferMemory);
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
     if (!m_initializeAtlasLayout)
@@ -170,7 +180,7 @@ void VulkanGlyphCache::flushUploadQueue()
         }
 
         vkCmdCopyBufferToImage(
-            commandBuffer, stagingBuffer.buffer, m_atlas.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+            commandBuffer, stagingBuffer, m_atlas.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
         );
         offset += upload.bitmapData.size();
     }
@@ -187,7 +197,7 @@ void VulkanGlyphCache::flushUploadQueue()
     );
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
-    stagingBuffer.cleanup();
+    vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
 
     m_uploadQueue.clear();
 }
