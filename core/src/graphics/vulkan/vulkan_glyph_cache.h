@@ -14,6 +14,7 @@
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
+#include "vulkan_buffer.h"
 #include "vulkan_context.h"
 
 namespace karin
@@ -77,9 +78,7 @@ private:
     std::unordered_map<size_t, GlyphInfo> m_glyphMap;
     std::vector<GlyphUploadInfo> m_uploadQueue;
 
-    VkImage m_atlasImage = VK_NULL_HANDLE;
-    VmaAllocation m_atlasImageAllocation = VK_NULL_HANDLE;
-    VkImageView m_atlasImageView = VK_NULL_HANDLE;
+    VulkanImage m_atlas;
     VkImageLayout m_atlasImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     std::vector<VkDescriptorSet> m_atlasDescriptorSets; // One per frame in flight
     VkSampler m_atlasSampler = VK_NULL_HANDLE;

@@ -8,6 +8,10 @@
 
 namespace karin
 {
+/**
+ * buffer to write by host (using map)
+ * @tparam T mappedDate: T*
+ */
 template <typename T>
 struct VulkanBuffer
 {
