@@ -7,10 +7,14 @@
 
 namespace karin
 {
-VulkanFrameContext::VulkanFrameContext()
+VulkanFrameContext::VulkanFrameContext(std::unique_ptr<IVulkanSurface> surface)
+    : m_surface(std::move(surface))
 {
+    m_extent = m_surface->extent();
+
     createCommandBuffers();
     createSyncObjects();
+    createViewport();
 }
 
 void VulkanFrameContext::cleanup()
@@ -38,6 +42,8 @@ void VulkanFrameContext::cleanup()
         vkFreeCommandBuffers(VulkanContext::instance().device(), VulkanContext::instance().commandPool(), 1, &commandBuffer);
     }
     m_commandBuffers.clear();
+
+    m_surface->cleanup();
 }
 
 VulkanFrameContext::FrameState VulkanFrameContext::beginFrame()
@@ -45,7 +51,7 @@ VulkanFrameContext::FrameState VulkanFrameContext::beginFrame()
     vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
     if (!m_surface->prepareNextImage(m_imageAvailableSemaphores[m_currentFrame]))
     {
-        doResize();
+        resize();
         return {
             .needFinish = true
         };
@@ -66,6 +72,8 @@ VulkanFrameContext::FrameState VulkanFrameContext::beginFrame()
         throw std::runtime_error("failed to begin command buffer");
     }
 
+    m_surface->beforeRender(commandBuffer);
+
     return {
         .needFinish = false,
         .frameIndex = m_currentFrame,
@@ -76,6 +84,8 @@ VulkanFrameContext::FrameState VulkanFrameContext::beginFrame()
 void VulkanFrameContext::endFrame()
 {
     VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
+
+    m_surface->endRender(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
     {
@@ -103,10 +113,40 @@ void VulkanFrameContext::endFrame()
     bool ret = m_surface->present(m_renderFinishedSemaphores[m_currentFrame]);
     if (!ret)
     {
-        doResize();
+        resize();
     }
 
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+void VulkanFrameContext::resize()
+{
+    vkDeviceWaitIdle(VulkanContext::instance().device());
+
+    m_surface->resize();
+    m_extent = m_surface->extent();
+
+    createViewport();
+}
+
+VkExtent2D VulkanFrameContext::extent() const
+{
+    return m_extent;
+}
+
+VkFormat VulkanFrameContext::surfaceFormat() const
+{
+    return m_surface->format();
+}
+
+void VulkanFrameContext::startResizing() const
+{
+    m_surface->startResizing();
+}
+
+void VulkanFrameContext::finishResizing() const
+{
+    m_surface->finishResizing();
 }
 
 void VulkanFrameContext::createCommandBuffers()
@@ -149,5 +189,22 @@ void VulkanFrameContext::createSyncObjects()
             throw std::runtime_error("failed to create swap chain sync objects");
         }
     }
+}
+
+void VulkanFrameContext::createViewport()
+{
+    m_viewport = {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<float>(m_extent.width),
+        .height = static_cast<float>(m_extent.height),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    m_scissor = {
+        .offset = {0, 0},
+        .extent = m_extent
+    };
 }
 } // karin

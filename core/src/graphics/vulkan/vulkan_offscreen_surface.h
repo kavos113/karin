@@ -20,7 +20,7 @@ public:
     VulkanOffscreenSurface(Size size);
     ~VulkanOffscreenSurface() override = default;
 
-    void cleanUp() override;
+    void cleanup() override;
     void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;

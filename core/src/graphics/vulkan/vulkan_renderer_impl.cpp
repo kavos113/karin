@@ -32,14 +32,11 @@ VkRect2D toVkRect(const karin::Rectangle& rect)
 
 namespace karin
 {
-VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
-    : m_surface(std::move(surface))
+VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frameContext)
+    : m_frameContext(std::move(frameContext))
 {
-    m_extent = m_surface->extent();
     m_deviceResources = std::make_unique<VulkanDeviceResources>(MAX_FRAMES_IN_FLIGHT);
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
-
-    createViewport();
 
     m_geometryBuffer = std::make_unique<VulkanGeometryBuffer>();
     m_viewContext = std::make_unique<VulkanViewContext>(m_extent.width, m_extent.height);
@@ -63,8 +60,6 @@ void VulkanRendererImpl::cleanUp()
     {
         pipeline->cleanUp();
     }
-
-    m_surface->cleanUp();
 }
 
 bool VulkanRendererImpl::beginDraw()
@@ -74,16 +69,9 @@ bool VulkanRendererImpl::beginDraw()
 
 
     DrawBatch primaryBatch = {
-        .viewport = m_viewport,
-        .scissor = m_scissor,
-        .renderTargetImageView = m_surface->currentImageView(),
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .clearValue = m_clearColor,
-        .renderTargetArea = {
-            .offset = {0, 0},
-            .extent = m_surface->extent(),
-        },
         .commands = {},
     };
     m_drawBatches.push_back(primaryBatch);
@@ -100,7 +88,6 @@ void VulkanRendererImpl::endDraw()
     VkCommandBuffer commandBuffer = state.commandBuffer;
     uint8_t currentFrame = state.frameIndex;
 
-    m_surface->beforeRender(commandBuffer);
     m_geometryBuffer->bind(commandBuffer);
 
     for (auto& batch : m_drawBatches)
@@ -117,6 +104,16 @@ void VulkanRendererImpl::endDraw()
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             );
+        }
+        else
+        {
+            batch.viewport = state.viewport;
+            batch.scissor = state.scissor;
+            batch.renderTargetImageView = state.targetImageView;
+            batch.renderTargetArea = {
+                .offset = {0, 0},
+                .extent = state.targetExtent
+            };
         }
 
         VkRenderingAttachmentInfo colorAttachment = {
@@ -300,7 +297,7 @@ void VulkanRendererImpl::endDraw()
 
             VkRenderingAttachmentInfo attachmentInfo = {
                 .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-                .imageView = m_surface->currentImageView(),
+                .imageView = state.targetImageView,
                 .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                 .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
                 .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -310,7 +307,7 @@ void VulkanRendererImpl::endDraw()
                 .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
                 .renderArea = {
                     .offset = {0, 0},
-                    .extent = m_surface->extent()
+                    .extent = state.targetExtent
                 },
                 .layerCount = 1,
                 .colorAttachmentCount = 1,
@@ -318,8 +315,8 @@ void VulkanRendererImpl::endDraw()
             };
             vkCmdBeginRendering(commandBuffer, &rInfo);
 
-            vkCmdSetViewport(commandBuffer, 0, 1, &m_viewport);
-            vkCmdSetScissor(commandBuffer, 0, 1, &m_scissor);
+            vkCmdSetViewport(commandBuffer, 0, 1, &state.viewport);
+            vkCmdSetScissor(commandBuffer, 0, 1, &state.scissor);
 
             vkCmdBindPipeline(
                 commandBuffer,
@@ -385,14 +382,15 @@ void VulkanRendererImpl::endDraw()
         }
     }
 
-    m_surface->endRender(commandBuffer);
+    m_frameContext->endFrame();
 
     m_deviceResources->clearOffscreenImages();
 }
 
 void VulkanRendererImpl::resize(Size size)
 {
-    doResize();
+    m_frameContext->resize();
+    m_viewContext->resize(m_extent.width, m_extent.height);
 }
 
 void VulkanRendererImpl::addCommand(
@@ -473,7 +471,7 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
 
     // TODO: clear colorを指定できるようにしてもいいかも
     // TODO: alphaを使う
-    VulkanImage offscreenImage = m_deviceResources->newOffscreenImage(bounds, m_surface->format());
+    VulkanImage offscreenImage = m_deviceResources->newOffscreenImage(bounds, m_frameContext->surfaceFormat());
     DrawBatch batch = {
         .isOffscreenLayer = true,
         .viewport = viewport,
@@ -501,17 +499,11 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
 void VulkanRendererImpl::endOffscreenLayer()
 {
     DrawBatch mainBatch = {
-        .viewport = m_viewport,
-        .scissor = m_scissor,
+        .isOffscreenLayer = false,
         .renderTargetImage = VK_NULL_HANDLE,
-        .renderTargetImageView = m_surface->currentImageView(),
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
         .clearValue = {},
-        .renderTargetArea = {
-            .offset = {0, 0},
-            .extent = m_surface->extent()
-        },
         .commands = {},
     };
     m_drawBatches.push_back(mainBatch);
@@ -536,7 +528,7 @@ void VulkanRendererImpl::createPipeline()
         }
     };
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
-        m_surface->format(),
+        m_frameContext->surfaceFormat(),
         geometry_vert_spv, geometry_vert_spv_len,
         geometry_frag_spv, geometry_frag_spv_len,
         descriptorSetLayouts, pushConstantRanges
@@ -548,39 +540,10 @@ void VulkanRendererImpl::createPipeline()
         m_fontRenderer->atlasDescriptorSetLayout(),
     };
     m_pipelines[PipelineType::Text] = std::make_unique<VulkanPipeline>(
-        m_surface->format(),
+        m_frameContext->surfaceFormat(),
         geometry_vert_spv, geometry_vert_spv_len,
         text_frag_spv, text_frag_spv_len,
         textDescriptorSetLayouts, pushConstantRanges
     );
-}
-
-void VulkanRendererImpl::createViewport()
-{
-    m_viewport = {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(m_extent.width),
-        .height = static_cast<float>(m_extent.height),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    m_scissor = {
-        .offset = {0, 0},
-        .extent = m_extent
-    };
-}
-
-void VulkanRendererImpl::doResize()
-{
-    vkDeviceWaitIdle(VulkanContext::instance().device());
-
-    m_surface->resize();
-    m_extent = m_surface->extent();
-
-    m_viewContext->resize(m_extent.width, m_extent.height);
-
-    createViewport();
 }
 } // karin

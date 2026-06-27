@@ -19,21 +19,34 @@ public:
         uint8_t frameIndex;
 
         VkCommandBuffer commandBuffer;
+        VkViewport viewport;
+        VkRect2D scissor;
+        VkImageView targetImageView;
+        VkExtent2D targetExtent;
     };
 
-    VulkanFrameContext();
-    ~VulkanFrameContext() = default;
+    VulkanFrameContext(std::unique_ptr<IVulkanSurface> surface);
+    virtual ~VulkanFrameContext() = default;
 
-    void cleanup();
+    virtual void cleanup();
 
     FrameState beginFrame();
     void endFrame();
+    void resize();
+
+    VkExtent2D extent() const;
+    VkFormat surfaceFormat() const;
+
+    void startResizing() const;
+    void finishResizing() const;
+
+protected:
+    std::unique_ptr<IVulkanSurface> m_surface;
 
 private:
     void createCommandBuffers();
     void createSyncObjects();
-
-    std::unique_ptr<IVulkanSurface> m_surface;
+    void createViewport();
 
     uint8_t m_currentFrame = 0;
 
@@ -41,6 +54,10 @@ private:
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
     std::vector<VkFence> m_inflightFences;
+
+    VkViewport m_viewport = {};
+    VkRect2D m_scissor = {};
+    VkExtent2D m_extent = {};
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 };

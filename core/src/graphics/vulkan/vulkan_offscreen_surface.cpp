@@ -18,7 +18,7 @@ VulkanOffscreenSurface::VulkanOffscreenSurface(Size size)
     createBuffers(static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height));
 }
 
-void VulkanOffscreenSurface::cleanUp()
+void VulkanOffscreenSurface::cleanup()
 {
     m_image.cleanup();
     m_stagingBuffer.cleanup();
@@ -26,7 +26,7 @@ void VulkanOffscreenSurface::cleanUp()
 
 void VulkanOffscreenSurface::resize()
 {
-    cleanUp();
+    cleanup();
 
     createBuffers(m_width, m_height);
 }

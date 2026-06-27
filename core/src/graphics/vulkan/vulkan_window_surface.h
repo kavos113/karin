@@ -18,7 +18,7 @@ public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
     ~VulkanWindowSurface() override = default;
 
-    void cleanUp() override;
+    void cleanup() override;
     void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;

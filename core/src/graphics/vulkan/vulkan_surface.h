@@ -10,7 +10,7 @@ class IVulkanSurface
 public:
     virtual ~IVulkanSurface() = default;
 
-    virtual void cleanUp() = 0;
+    virtual void cleanup() = 0;
     virtual void resize() = 0;
 
     virtual bool prepareNextImage(VkSemaphore semaphore) = 0;

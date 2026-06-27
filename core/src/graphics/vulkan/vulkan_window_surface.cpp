@@ -118,7 +118,7 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     createImageView();
 }
 
-void VulkanWindowSurface::cleanUp()
+void VulkanWindowSurface::cleanup()
 {
     for (auto& imageView : m_swapChainImageViews)
     {

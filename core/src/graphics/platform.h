@@ -20,6 +20,8 @@
 #include "vulkan/vulkan_offscreen_surface.h"
 #include "vulkan/vulkan_offscreen_renderer_impl.h"
 #include "vulkan/vulkan_painter.h"
+#include "vulkan/vulkan_frame_context.h"
+#include "vulkan/vulkan_offscreen_frame_context.h"
 #endif
 
 namespace karin
@@ -34,7 +36,8 @@ inline std::unique_ptr<IRendererImpl> createRendererImpl(
     return std::make_unique<D2DRendererImpl>(std::move(surface));
 #elifdef KARIN_PLATFORM_VULKAN
     auto surface = std::make_unique<VulkanWindowSurface>(handle);
-    return std::make_unique<VulkanRendererImpl>(std::move(surface));
+    auto frameContext = std::make_unique<VulkanFrameContext>(std::move(surface));
+    return std::make_unique<VulkanRendererImpl>(std::move(frameContext));
 #endif
     return nullptr;
 }
@@ -58,7 +61,8 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
     };
 #elifdef KARIN_PLATFORM_VULKAN
     auto surface = std::make_unique<VulkanOffscreenSurface>(size);
-    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(surface));
+    auto frameContext = std::make_unique<VulkanOffscreenFrameContext>(std::move(surface));
+    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(frameContext));
 
     IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
     return {

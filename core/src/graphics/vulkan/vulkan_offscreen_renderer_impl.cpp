@@ -2,9 +2,9 @@
 
 namespace karin
 {
-VulkanOffscreenRendererImpl::VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenSurface> surface)
+VulkanOffscreenRendererImpl::VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenFrameContext> surface)
     : VulkanRendererImpl(std::move(surface))
-    , m_offscreenSurface(static_cast<VulkanOffscreenSurface*>(m_surface.get())) // Safe to static_cast
+    , m_offscreenContext(static_cast<VulkanOffscreenFrameContext*>(m_frameContext.get())) // safe to static cast
 {
 }
 
@@ -12,11 +12,11 @@ void VulkanOffscreenRendererImpl::cleanUp()
 {
     VulkanRendererImpl::cleanUp();
 
-    m_offscreenSurface = nullptr;
+    m_offscreenContext = nullptr;
 }
 
 std::vector<std::byte> VulkanOffscreenRendererImpl::getImageData() const
 {
-    return m_offscreenSurface->getImageData();
+    return m_offscreenContext->getImageData();
 }
 } // karin

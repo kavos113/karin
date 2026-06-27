@@ -84,6 +84,7 @@ elseif (VULKAN)
             vulkan/vulkan_view_context.cpp
             vulkan/vulkan_geometry_buffer.cpp
             vulkan/vulkan_frame_context.cpp
+            vulkan/vulkan_offscreen_frame_context.cpp
             vulkan/vma_impl.cpp
             text/freetype/freetype_font_face.cpp
     )
@@ -108,6 +109,7 @@ elseif (VULKAN)
             vulkan/vulkan_view_context.h
             vulkan/vulkan_geometry_buffer.h
             vulkan/vulkan_frame_context.h
+            vulkan/vulkan_offscreen_frame_context.h
             vulkan/glm_geometry.h
             vulkan/vma.h
             vulkan/shaders/shaders.h

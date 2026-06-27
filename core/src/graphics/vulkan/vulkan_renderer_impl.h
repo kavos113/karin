@@ -17,7 +17,6 @@
 #include <karin/graphics/image.h>
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
-#include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
 #include "vulkan_geometry_buffer.h"
 #include "vulkan_view_context.h"
@@ -43,7 +42,7 @@ public:
         Text,
     };
 
-    VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface);
+    VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frameContext);
     ~VulkanRendererImpl() override = default;
 
     void cleanUp() override;
@@ -76,12 +75,12 @@ public:
 
     void startResizing() override
     {
-        m_surface->startResizing();
+        m_frameContext->startResizing();
     }
 
     void finishResizing() override
     {
-        m_surface->finishResizing();
+        m_frameContext->finishResizing();
     }
 
     Image createImage(const std::vector<std::byte>& data, uint32_t width, uint32_t height) override
@@ -100,7 +99,7 @@ public:
     }
 
 protected:
-    std::unique_ptr<IVulkanSurface> m_surface;
+    std::unique_ptr<VulkanFrameContext> m_frameContext;
 
 private:
     struct DrawCommand
@@ -114,6 +113,7 @@ private:
         std::vector<const VulkanTextureResourceDescriptor *> textureResources;
     };
 
+    // viewport, scissor, renderTargetImageView, renderTargetArea: if primary batch, fill after begin command buffer
     struct DrawBatch
     {
         bool isOffscreenLayer = false;
@@ -133,9 +133,6 @@ private:
     };
 
     void createPipeline();
-    void createViewport();
-
-    void doResize();
 
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
@@ -143,14 +140,11 @@ private:
 
     std::unique_ptr<VulkanGeometryBuffer> m_geometryBuffer;
     std::unique_ptr<VulkanViewContext> m_viewContext;
-    std::unique_ptr<VulkanFrameContext> m_frameContext;
 
     // TODO: これはスタックにすべき
     std::vector<DrawBatch> m_drawBatches;
 
-    VkExtent2D m_extent = {};
-    VkViewport m_viewport = {};
-    VkRect2D m_scissor = {};
+    VkExtent2D m_extent;
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 

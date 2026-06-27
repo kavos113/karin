@@ -21,6 +21,11 @@ namespace karin
 class VulkanTextureResourceDescriptor
 {
 public:
+    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&&) noexcept = default;
+    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&&) noexcept = default;
+    VulkanTextureResourceDescriptor(const VulkanTextureResourceDescriptor&) = delete;
+    VulkanTextureResourceDescriptor& operator=(const VulkanTextureResourceDescriptor&) = delete;
+
     VkDescriptorSet descriptorSet(uint32_t currentFrame) const
     {
         return descriptorSets[currentFrame];

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <offscreen_renderer_impl.h>
-#include "vulkan_offscreen_surface.h"
+#include "vulkan_offscreen_frame_context.h"
 #include "vulkan_renderer_impl.h"
 
 namespace karin
@@ -15,7 +15,7 @@ namespace karin
 class VulkanOffscreenRendererImpl : public VulkanRendererImpl, public IOffscreenRendererImpl
 {
 public:
-    VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenSurface> surface);
+    VulkanOffscreenRendererImpl(std::unique_ptr<VulkanOffscreenFrameContext> surface);
     ~VulkanOffscreenRendererImpl() override = default;
 
     void cleanUp() override;
@@ -23,7 +23,7 @@ public:
     std::vector<std::byte> getImageData() const override;
 
 private:
-    VulkanOffscreenSurface *m_offscreenSurface;
+    VulkanOffscreenFrameContext *m_offscreenContext;
 };
 } // karin
 

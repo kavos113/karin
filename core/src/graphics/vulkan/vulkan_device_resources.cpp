@@ -251,15 +251,15 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
     }
 
-    VulkanTextureResourceDescriptor lutTexture = {
-        .image = gradientPointLutImage,
-        .allocation = gradientPointLutImageAllocation,
-        .imageView = gradientPointLutImageView,
-        .descriptorSets = std::move(descriptorSets),
-    };
-    m_gradientPointLutMap[points.hash()] = lutTexture;
+    VulkanTextureResourceDescriptor lutTexture(
+        gradientPointLutImage,
+        gradientPointLutImageAllocation,
+        gradientPointLutImageView,
+        descriptorSets
+    );
+    auto inserted = m_gradientPointLutMap.insert({points.hash(), std::move(lutTexture)});
 
-    return &lutTexture;
+    return &inserted.first->second;
 }
 
 std::array<uint8_t, VulkanDeviceResources::LUT_WIDTH * 4> VulkanDeviceResources::generateGradientPointLut(
@@ -540,17 +540,17 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     }
 
 
-    VulkanTextureResourceDescriptor texture = {
-        .image = image,
-        .allocation = imageAllocation,
-        .imageView = imageView,
-        .descriptorSets = std::move(descriptorSets),
-    };
+    VulkanTextureResourceDescriptor texture(
+        image,
+        imageAllocation,
+        imageView,
+        descriptorSets
+    );
 
     std::string_view dataView(reinterpret_cast<const char*>(data.data()), data.size());
     size_t hash = std::hash<std::string_view>{}(dataView);
 
-    m_textureMap[hash] = texture;
+    m_textureMap.insert({hash, std::move(texture)});
     return Image(hash, width, height);
 }
 
