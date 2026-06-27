@@ -66,7 +66,6 @@ private:
     void createAtlas();
     void createDescriptorSetLayout();
     void createSampler();
-    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     static constexpr int ATLAS_WIDTH = 2048;
     static constexpr int ATLAS_HEIGHT = 2048;
@@ -79,7 +78,7 @@ private:
     std::vector<GlyphUploadInfo> m_uploadQueue;
 
     VulkanImage m_atlas;
-    VkImageLayout m_atlasImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    bool m_initializeAtlasLayout;
     std::vector<VkDescriptorSet> m_atlasDescriptorSets; // One per frame in flight
     VkSampler m_atlasSampler = VK_NULL_HANDLE;
     VkDescriptorSetLayout m_atlasDescriptorSetLayout = VK_NULL_HANDLE;

@@ -1,10 +1,12 @@
 #include "vulkan_glyph_cache.h"
 
-#include <utils/hash.h>
-
-#include <stdexcept>
 #include <cmath>
 #include <cstring>
+
+#include <stdexcept>
+
+#include <utils/hash.h>
+#include "vulkan_helpers.h"
 
 namespace karin
 {
@@ -108,7 +110,33 @@ void VulkanGlyphCache::flushUploadQueue()
     }
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
-    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    if (!m_initializeAtlasLayout)
+    {
+        transitionImageLayout(
+            commandBuffer,
+            m_atlas.image,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            0,
+            VK_ACCESS_2_TRANSFER_WRITE_BIT,
+            VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_2_TRANSFER_BIT
+        );
+        m_initializeAtlasLayout = true;
+    }
+    else
+    {
+        transitionImageLayout(
+            commandBuffer,
+            m_atlas.image,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_ACCESS_2_SHADER_READ_BIT,
+            VK_ACCESS_2_TRANSFER_WRITE_BIT,
+            VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+            VK_PIPELINE_STAGE_2_TRANSFER_BIT
+        );
+    }
 
     size_t offset = 0;
     for (const auto& upload : m_uploadQueue)
@@ -147,7 +175,16 @@ void VulkanGlyphCache::flushUploadQueue()
         offset += upload.bitmapData.size();
     }
 
-    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    transitionImageLayout(
+        commandBuffer,
+        m_atlas.image,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        VK_ACCESS_2_TRANSFER_WRITE_BIT,
+        VK_ACCESS_2_SHADER_READ_BIT,
+        VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+        VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
+    );
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
     stagingBuffer.cleanup();
@@ -310,71 +347,5 @@ void VulkanGlyphCache::createSampler()
     {
         throw std::runtime_error("failed to create glyph atlas sampler");
     }
-}
-
-void VulkanGlyphCache::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
-{
-    if (m_atlasImageLayout == newLayout)
-    {
-        return;
-    }
-
-    VkImageMemoryBarrier barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .srcAccessMask = 0,
-        .dstAccessMask = 0,
-        .oldLayout = m_atlasImageLayout,
-        .newLayout = newLayout,
-        .image = m_atlas.image,
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-
-    VkPipelineStageFlags sourceStage;
-    VkPipelineStageFlags destinationStage;
-    if (m_atlasImageLayout == VK_IMAGE_LAYOUT_UNDEFINED
-        && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-    {
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else if (m_atlasImageLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-        && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-    {
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    }
-    else if (m_atlasImageLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-    {
-        barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else
-    {
-        throw std::invalid_argument("unsupported layout transition");
-    }
-
-    vkCmdPipelineBarrier(
-        commandBuffer,
-        sourceStage, destinationStage,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &barrier
-    );
-
-    m_atlasImageLayout = newLayout;
 }
 } // karin
