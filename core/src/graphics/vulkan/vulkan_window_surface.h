@@ -24,7 +24,8 @@ public:
     bool prepareNextImage(VkSemaphore semaphore) override;
     void beforeRender(VkCommandBuffer commandBuffer) override;
     void endRender(VkCommandBuffer commandBuffer) override;
-    bool present(VkSemaphore waitSemaphore) const override;
+    bool present() const override;
+    std::vector<VkSemaphore> renderFinishSemaphore() const override;
 
     VkExtent2D extent() const override
     {
@@ -55,6 +56,7 @@ private:
     void createSurface();
     void createSwapChain(bool isRecreating);
     void createImageView();
+    void createSemaphore();
 
     Window::NativeHandle m_window;
 
@@ -68,6 +70,8 @@ private:
     std::vector<VkSwapchainKHR> m_oldSwapChains;
     bool m_isResizing = false;
     uint32_t m_imageIndex = 0;
+
+    std::vector<VkSemaphore> m_renderFinishedSemaphores;
 };
 } // karin
 

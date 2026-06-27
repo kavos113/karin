@@ -26,7 +26,8 @@ public:
     bool prepareNextImage(VkSemaphore semaphore) override;
     void beforeRender(VkCommandBuffer commandBuffer) override;
     void endRender(VkCommandBuffer commandBuffer) override;
-    bool present(VkSemaphore waitSemaphore) const override;
+    bool present() const override;
+    std::vector<VkSemaphore> renderFinishSemaphore() const override;
 
     VkExtent2D extent() const override;
     VkFormat format() const override;

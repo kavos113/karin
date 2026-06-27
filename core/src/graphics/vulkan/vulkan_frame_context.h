@@ -51,7 +51,6 @@ private:
     uint8_t m_currentFrame = 0;
 
     std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkSemaphore> m_renderFinishedSemaphores;
     std::vector<VkSemaphore> m_imageAvailableSemaphores;
     std::vector<VkFence> m_inflightFences;
 

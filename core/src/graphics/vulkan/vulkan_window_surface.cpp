@@ -114,8 +114,8 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     VulkanContext::instance().initDevices(m_surface);
 
     createSwapChain(false);
-
     createImageView();
+    createSemaphore();
 }
 
 void VulkanWindowSurface::cleanup()
@@ -125,6 +125,12 @@ void VulkanWindowSurface::cleanup()
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
     }
     m_swapChainImageViews.clear();
+
+    for (const auto& semaphore : m_renderFinishedSemaphores)
+    {
+        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
+    }
+    m_renderFinishedSemaphores.clear();
 
     if (m_swapChain != VK_NULL_HANDLE)
     {
@@ -204,9 +210,9 @@ void VulkanWindowSurface::endRender(VkCommandBuffer commandBuffer)
     );
 }
 
-bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
+bool VulkanWindowSurface::present() const
 {
-    std::array semaphores = {waitSemaphore};
+    std::array semaphores = {m_renderFinishedSemaphores[m_imageIndex]};
 
     std::array swapChains = {m_swapChain};
     VkPresentInfoKHR presentInfo = {
@@ -230,6 +236,11 @@ bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
     }
 
     return true;
+}
+
+std::vector<VkSemaphore> VulkanWindowSurface::renderFinishSemaphore() const
+{
+    return std::vector(1, m_renderFinishedSemaphores[m_imageIndex]);
 }
 
 void VulkanWindowSurface::createSurface()
@@ -386,6 +397,22 @@ void VulkanWindowSurface::createImageView()
         if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &m_swapChainImageViews[i]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create image views");
+        }
+    }
+}
+
+void VulkanWindowSurface::createSemaphore()
+{
+    m_renderFinishedSemaphores.resize(m_swapChainImages.size());
+
+    VkSemaphoreCreateInfo info = {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+    };
+    for (size_t i = 0; i < m_swapChainImages.size(); i++)
+    {
+        if (vkCreateSemaphore(VulkanContext::instance().device(), &info, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create semaphore");
         }
     }
 }

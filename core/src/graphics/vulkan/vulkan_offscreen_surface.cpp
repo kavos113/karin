@@ -67,24 +67,14 @@ void VulkanOffscreenSurface::endRender(VkCommandBuffer commandBuffer)
 {
 }
 
-bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
+bool VulkanOffscreenSurface::present() const
 {
-    // just for send signal
-    VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-    VkSubmitInfo submitInfo = {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &waitSemaphore,
-        .pWaitDstStageMask = &waitStage,
-        .commandBufferCount = 0,
-        .pCommandBuffers = nullptr,
-    };
-    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to submit offscreen surface presentation command buffer");
-    }
-
     return true;
+}
+
+std::vector<VkSemaphore> VulkanOffscreenSurface::renderFinishSemaphore() const
+{
+    return {};
 }
 
 VkExtent2D VulkanOffscreenSurface::extent() const

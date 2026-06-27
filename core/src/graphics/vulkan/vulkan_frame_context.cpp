@@ -25,12 +25,6 @@ void VulkanFrameContext::cleanup()
     }
     m_imageAvailableSemaphores.clear();
 
-    for (const auto& semaphore : m_renderFinishedSemaphores)
-    {
-        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
-    }
-    m_renderFinishedSemaphores.clear();
-
     for (const auto& fence : m_inflightFences)
     {
         vkDestroyFence(VulkanContext::instance().device(), fence, nullptr);
@@ -97,7 +91,7 @@ void VulkanFrameContext::endFrame()
     }
 
     std::array semaphores = {m_imageAvailableSemaphores[m_currentFrame]};
-    std::array signalSemaphores = {m_renderFinishedSemaphores[m_currentFrame]};
+    std::vector<VkSemaphore> signalSemaphores = m_surface->renderFinishSemaphore();
     std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     VkSubmitInfo submitInfo = {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -114,7 +108,7 @@ void VulkanFrameContext::endFrame()
         throw std::runtime_error("failed to submit draw command buffer");
     }
 
-    bool ret = m_surface->present(m_renderFinishedSemaphores[m_currentFrame]);
+    bool ret = m_surface->present();
     if (!ret)
     {
         resize();
@@ -173,7 +167,6 @@ void VulkanFrameContext::createCommandBuffers()
 void VulkanFrameContext::createSyncObjects()
 {
     m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     m_inflightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo = {
@@ -187,7 +180,6 @@ void VulkanFrameContext::createSyncObjects()
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
         if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
             vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_inflightFences[i]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create swap chain sync objects");
