@@ -41,13 +41,13 @@ void VulkanDeviceResources::cleanup()
     vkDestroySampler(VulkanContext::instance().device(), m_mirrorSampler, nullptr);
 }
 
-std::vector<VkDescriptorSet> VulkanDeviceResources::gradientPointLutDescriptorSet(
+const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     const GradientPoints& points
 )
 {
     if (auto it = m_gradientPointLutMap.find(points.hash()); it != m_gradientPointLutMap.end())
     {
-        return it->second.descriptorSets;
+        return &it->second;
     }
 
     auto data = generateGradientPointLut(points.points);
@@ -251,7 +251,7 @@ std::vector<VkDescriptorSet> VulkanDeviceResources::gradientPointLutDescriptorSe
         vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
     }
 
-    Texture lutTexture = {
+    VulkanTextureResourceDescriptor lutTexture = {
         .image = gradientPointLutImage,
         .allocation = gradientPointLutImageAllocation,
         .imageView = gradientPointLutImageView,
@@ -259,7 +259,7 @@ std::vector<VkDescriptorSet> VulkanDeviceResources::gradientPointLutDescriptorSe
     };
     m_gradientPointLutMap[points.hash()] = lutTexture;
 
-    return lutTexture.descriptorSets;
+    return &lutTexture;
 }
 
 std::array<uint8_t, VulkanDeviceResources::LUT_WIDTH * 4> VulkanDeviceResources::generateGradientPointLut(
@@ -348,11 +348,11 @@ void VulkanDeviceResources::createSamplers()
     }
 }
 
-std::vector<VkDescriptorSet> VulkanDeviceResources::textureDescriptorSet(Image image)
+const VulkanTextureResourceDescriptor *VulkanDeviceResources::texture(Image image)
 {
     if (auto it = m_textureMap.find(image.hash()); it != m_textureMap.end())
     {
-        return it->second.descriptorSets;
+        return &it->second;
     }
 
     throw std::runtime_error("texture not found in VulkanDeviceResources");
@@ -540,7 +540,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     }
 
 
-    Texture texture = {
+    VulkanTextureResourceDescriptor texture = {
         .image = image,
         .allocation = imageAllocation,
         .imageView = imageView,
@@ -576,9 +576,9 @@ void VulkanDeviceResources::createDescriptorSetLayouts()
     }
 }
 
-std::vector<VkDescriptorSet> VulkanDeviceResources::dummyTextureDescriptorSet() const
+const VulkanTextureResourceDescriptor *VulkanDeviceResources::dummyTexture() const
 {
-    return m_dummyTexture.descriptorSets;
+    return &m_dummyTexture;
 }
 
 void VulkanDeviceResources::createDummyTexture()
@@ -763,12 +763,12 @@ void VulkanDeviceResources::createDummyTexture()
         vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
     }
 
-    m_dummyTexture = {
-        .image = image,
-        .allocation = imageAllocation,
-        .imageView = imageView,
-        .descriptorSets = std::move(descriptorSets),
-    };
+    m_dummyTexture = VulkanTextureResourceDescriptor(
+        image,
+        imageAllocation,
+        imageView,
+        descriptorSets
+    );
 }
 
 VulkanImage VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat)

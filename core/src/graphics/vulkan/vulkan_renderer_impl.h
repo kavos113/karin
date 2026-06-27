@@ -21,6 +21,7 @@
 #include "vulkan_font_renderer.h"
 #include "vulkan_geometry_buffer.h"
 #include "vulkan_view_context.h"
+#include "vulkan_frame_context.h"
 #include "shaders/push_constants.h"
 
 namespace karin
@@ -110,7 +111,7 @@ private:
         VertexPushConstants vertData;
         PipelineType pipelineType;
         std::optional<VkRect2D> scissor;
-        std::vector<VkDescriptorSet> descriptorSets;
+        std::vector<const VulkanTextureResourceDescriptor *> textureResources;
     };
 
     struct DrawBatch
@@ -131,8 +132,6 @@ private:
         std::vector<DrawCommand> commands;
     };
 
-    void createCommandBuffers();
-    void createSyncObjects();
     void createPipeline();
     void createViewport();
 
@@ -144,16 +143,10 @@ private:
 
     std::unique_ptr<VulkanGeometryBuffer> m_geometryBuffer;
     std::unique_ptr<VulkanViewContext> m_viewContext;
+    std::unique_ptr<VulkanFrameContext> m_frameContext;
 
     // TODO: これはスタックにすべき
     std::vector<DrawBatch> m_drawBatches;
-
-    uint8_t m_currentFrame = 0;
-
-    std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkSemaphore> m_renderFinishedSemaphores;
-    std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    std::vector<VkFence> m_inflightFences;
 
     VkExtent2D m_extent = {};
     VkViewport m_viewport = {};

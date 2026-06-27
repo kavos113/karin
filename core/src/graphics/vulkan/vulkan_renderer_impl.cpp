@@ -40,8 +40,6 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface)
     m_fontRenderer = std::make_unique<VulkanFontRenderer>(this, MAX_FRAMES_IN_FLIGHT);
 
     createViewport();
-    createCommandBuffers();
-    createSyncObjects();
 
     m_geometryBuffer = std::make_unique<VulkanGeometryBuffer>();
     m_viewContext = std::make_unique<VulkanViewContext>(m_extent.width, m_extent.height);
@@ -55,30 +53,7 @@ void VulkanRendererImpl::cleanUp()
 
     m_fontRenderer->cleanup();
 
-    for (const auto& semaphore : m_imageAvailableSemaphores)
-    {
-        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
-    }
-    m_imageAvailableSemaphores.clear();
-
-    for (const auto& semaphore : m_renderFinishedSemaphores)
-    {
-        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
-    }
-    m_renderFinishedSemaphores.clear();
-
-    for (const auto& fence : m_inflightFences)
-    {
-        vkDestroyFence(VulkanContext::instance().device(), fence, nullptr);
-    }
-    m_inflightFences.clear();
-
-    for (auto& commandBuffer : m_commandBuffers)
-    {
-        vkFreeCommandBuffers(VulkanContext::instance().device(), VulkanContext::instance().commandPool(), 1, &commandBuffer);
-    }
-    m_commandBuffers.clear();
-
+    m_frameContext->cleanup();
     m_geometryBuffer->cleanup();
     m_viewContext->cleanup();
 
@@ -97,29 +72,6 @@ bool VulkanRendererImpl::beginDraw()
     m_geometryBuffer->reset();
     m_drawBatches.clear();
 
-    vkWaitForFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
-    if (!m_surface->prepareNextImage(m_imageAvailableSemaphores[m_currentFrame]))
-    {
-        doResize();
-        return false;
-    }
-    vkResetFences(VulkanContext::instance().device(), 1, &m_inflightFences[m_currentFrame]);
-
-    VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
-
-    vkResetCommandBuffer(commandBuffer, 0);
-
-    VkCommandBufferBeginInfo beginInfo = {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = 0,
-        .pInheritanceInfo = nullptr,
-    };
-    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to begin command buffer");
-    }
-
-    m_surface->beforeRender(commandBuffer);
 
     DrawBatch primaryBatch = {
         .viewport = m_viewport,
@@ -143,8 +95,12 @@ void VulkanRendererImpl::endDraw()
 {
     m_fontRenderer->flushGlyphUploads();
 
-    VkCommandBuffer commandBuffer = m_commandBuffers[m_currentFrame];
+    VulkanFrameContext::FrameState state = m_frameContext->beginFrame();
 
+    VkCommandBuffer commandBuffer = state.commandBuffer;
+    uint8_t currentFrame = state.frameIndex;
+
+    m_surface->beforeRender(commandBuffer);
     m_geometryBuffer->bind(commandBuffer);
 
     for (auto& batch : m_drawBatches)
@@ -208,7 +164,7 @@ void VulkanRendererImpl::endDraw()
                 m_pipelines[PipelineType::Geometry]->pipeline()
             );
 
-            auto projMatrixDescSet = m_viewContext->descriptorSet(m_currentFrame);
+            auto projMatrixDescSet = m_viewContext->descriptorSet(currentFrame);
             vkCmdBindDescriptorSets(
                 commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -220,11 +176,19 @@ void VulkanRendererImpl::endDraw()
 
             for (const auto& command : m_geometryCommands)
             {
+                auto descriptorSets = command.textureResources
+                    | std::views::transform(
+                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
+                        {
+                            return resource->descriptorSet(currentFrame);
+                        })
+                    | std::ranges::to<std::vector>();
+
                 vkCmdBindDescriptorSets(
                     commandBuffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                    1, command.descriptorSets.size(), command.descriptorSets.data(),
+                    1, descriptorSets.size(), descriptorSets.data(),
                     0, nullptr
                 );
 
@@ -260,7 +224,7 @@ void VulkanRendererImpl::endDraw()
 
             if (!isBindProjMatrix)
             {
-                auto projMatrixDescSet = m_viewContext->descriptorSet(m_currentFrame);
+                auto projMatrixDescSet = m_viewContext->descriptorSet(currentFrame);
                 vkCmdBindDescriptorSets(
                     commandBuffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -275,17 +239,25 @@ void VulkanRendererImpl::endDraw()
                 commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                 m_pipelines[PipelineType::Text]->pipelineLayout(),
-                2, 1, &glyphAtlasSets[m_currentFrame],
+                2, 1, &glyphAtlasSets[currentFrame],
                 0, nullptr
             );
 
             for (const auto& command : m_textCommands)
             {
+                auto descriptorSets = command.textureResources
+                    | std::views::transform(
+                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
+                        {
+                            return resource->descriptorSet(currentFrame);
+                        })
+                    | std::ranges::to<std::vector>();
+
                 vkCmdBindDescriptorSets(
                     commandBuffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     m_pipelines[PipelineType::Text]->pipelineLayout(),
-                    1, command.descriptorSets.size(), command.descriptorSets.data(),
+                    1, descriptorSets.size(), descriptorSets.data(),
                     0, nullptr
                 );
 
@@ -415,38 +387,7 @@ void VulkanRendererImpl::endDraw()
 
     m_surface->endRender(commandBuffer);
 
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to record command buffer");
-    }
-
-    std::array semaphores = {m_imageAvailableSemaphores[m_currentFrame]};
-    std::array signalSemaphores = {m_renderFinishedSemaphores[m_currentFrame]};
-    std::array<VkPipelineStageFlags, 1> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    VkSubmitInfo submitInfo = {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .waitSemaphoreCount = static_cast<uint32_t>(semaphores.size()),
-        .pWaitSemaphores = semaphores.data(),
-        .pWaitDstStageMask = waitStages.data(),
-        .commandBufferCount = 1,
-        .pCommandBuffers = &commandBuffer,
-        .signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size()),
-        .pSignalSemaphores = signalSemaphores.data(),
-    };
-    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, m_inflightFences[m_currentFrame]) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to submit draw command buffer");
-    }
-
-    bool ret = m_surface->present(m_renderFinishedSemaphores[m_currentFrame]);
-    if (!ret)
-    {
-        doResize();
-    }
-
     m_deviceResources->clearOffscreenImages();
-
-    m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanRendererImpl::resize(Size size)
@@ -481,23 +422,23 @@ void VulkanRendererImpl::addCommand(
             using T = std::decay_t<T0>;
             if constexpr (std::is_same_v<T, LinearGradientPattern>)
             {
-                auto descriptorSets = m_deviceResources->gradientPointLutDescriptorSet(p.gradientPoints);
-                drawCommand.descriptorSets.push_back(descriptorSets[m_currentFrame]);
+                auto texture = m_deviceResources->gradientPointLut(p.gradientPoints);
+                drawCommand.textureResources.push_back(texture);
             }
             else if constexpr (std::is_same_v<T, RadialGradientPattern>)
             {
-                auto descriptorSets = m_deviceResources->gradientPointLutDescriptorSet(p.gradientPoints);
-                drawCommand.descriptorSets.push_back(descriptorSets[m_currentFrame]);
+                auto texture = m_deviceResources->gradientPointLut(p.gradientPoints);
+                drawCommand.textureResources.push_back(texture);
             }
             else if constexpr (std::is_same_v<T, ImagePattern>)
             {
-                auto descriptorSets = m_deviceResources->textureDescriptorSet(p.image);
-                drawCommand.descriptorSets.push_back(descriptorSets[m_currentFrame]);
+                auto texture = m_deviceResources->texture(p.image);
+                drawCommand.textureResources.push_back(texture);
             }
             else if constexpr (std::is_same_v<T, SolidColorPattern>)
             {
-                auto descriptorSets = m_deviceResources->dummyTextureDescriptorSet();
-                drawCommand.descriptorSets.push_back(descriptorSets[m_currentFrame]);
+                auto texture = m_deviceResources->dummyTexture();
+                drawCommand.textureResources.push_back(texture);
             }
             else
             {
@@ -574,48 +515,6 @@ void VulkanRendererImpl::endOffscreenLayer()
         .commands = {},
     };
     m_drawBatches.push_back(mainBatch);
-}
-
-void VulkanRendererImpl::createCommandBuffers()
-{
-    m_commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
-    VkCommandBufferAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = VulkanContext::instance().commandPool(),
-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size()),
-    };
-
-    if (vkAllocateCommandBuffers(VulkanContext::instance().device(), &allocInfo, m_commandBuffers.data()) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to allocate command buffers");
-    }
-}
-
-void VulkanRendererImpl::createSyncObjects()
-{
-    m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    m_inflightFences.resize(MAX_FRAMES_IN_FLIGHT);
-
-    VkSemaphoreCreateInfo semaphoreInfo = {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-    };
-    VkFenceCreateInfo fenceInfo = {
-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
-    };
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-    {
-        if (vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(VulkanContext::instance().device(), &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(VulkanContext::instance().device(), &fenceInfo, nullptr, &m_inflightFences[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create swap chain sync objects");
-        }
-    }
 }
 
 void VulkanRendererImpl::createPipeline()
