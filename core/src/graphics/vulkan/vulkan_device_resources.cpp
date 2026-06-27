@@ -264,7 +264,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
 
 std::array<uint8_t, VulkanDeviceResources::LUT_WIDTH * 4> VulkanDeviceResources::generateGradientPointLut(
     const std::vector<GradientPoints::GradientPoint>& gradientPoints
-) const
+)
 {
     std::array<uint8_t, LUT_WIDTH * 4> lut = {};
 

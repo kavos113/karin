@@ -88,9 +88,10 @@ private:
     void createSamplers();
     void createDescriptorSetLayouts();
     void createDummyTexture();
-    std::array<uint8_t, LUT_WIDTH * 4> generateGradientPointLut(
+
+    static std::array<uint8_t, LUT_WIDTH * 4> generateGradientPointLut(
         const std::vector<GradientPoints::GradientPoint>& gradientPoints
-    ) const;
+    );
 
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;
