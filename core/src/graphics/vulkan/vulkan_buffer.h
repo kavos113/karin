@@ -78,6 +78,34 @@ struct VulkanBuffer
 
 struct VulkanImage
 {
+    VulkanImage() = default;
+    VulkanImage(const VulkanImage&) = delete;
+    VulkanImage& operator=(const VulkanImage&) = delete;
+
+    VulkanImage(VulkanImage&& other) noexcept
+        : image(other.image), allocation(other.allocation), imageView(other.imageView)
+    {
+        other.image = VK_NULL_HANDLE;
+        other.allocation = VK_NULL_HANDLE;
+        other.imageView = VK_NULL_HANDLE;
+    }
+    VulkanImage& operator=(VulkanImage&& other) noexcept
+    {
+        if (this != &other)
+        {
+            cleanup();
+
+            image = other.image;
+            allocation = other.allocation;
+            imageView = other.imageView;
+
+            other.image = VK_NULL_HANDLE;
+            other.allocation = VK_NULL_HANDLE;
+            other.imageView = VK_NULL_HANDLE;
+        }
+        return *this;
+    }
+
     VkImage image = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
     VkImageView imageView = VK_NULL_HANDLE;
@@ -86,7 +114,6 @@ struct VulkanImage
     VkResult create(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocInfo, VkImageViewCreateInfo& viewInfo)
     {
         VmaAllocationInfo memoryInfo;
-        auto t = VulkanContext::instance().allocator();
         VkResult result = vmaCreateImage(
             VulkanContext::instance().allocator(), &imageInfo, &allocInfo, &image, &allocation, &memoryInfo
         );
