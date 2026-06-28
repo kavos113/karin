@@ -132,6 +132,13 @@ private:
         std::vector<DrawCommand> commands;
     };
 
+    struct RenderState
+    {
+        bool isOffscreenLayer = false;
+        Rectangle targetRect;
+        uint16_t layerID;
+    };
+
     void createPipeline();
 
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;

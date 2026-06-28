@@ -4,12 +4,13 @@
 #include <memory>
 #include <vector>
 
+#include <offscreen_renderer_target.h>
 #include "vulkan_frame_context.h"
 #include "vulkan_offscreen_surface.h"
 
 namespace karin
 {
-class VulkanOffscreenFrameContext : public VulkanFrameContext
+class VulkanOffscreenFrameContext : public VulkanFrameContext, public IOffscreenRendererTarget
 {
 public:
     VulkanOffscreenFrameContext(std::unique_ptr<VulkanOffscreenSurface> surface);
@@ -17,7 +18,7 @@ public:
 
     void cleanup() override;
 
-    std::vector<std::byte> getImageData() const;
+    std::vector<std::byte> getImageData() const override;
 
 private:
     VulkanOffscreenSurface *m_offscreenSurface;

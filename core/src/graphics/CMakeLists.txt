@@ -18,7 +18,7 @@ set(GRAPHICS_SOURCE
 )
 set(GRAPHICS_HEADERS
         font_renderer_impl.h
-        offscreen_renderer_impl.h
+        offscreen_renderer_target.h
         path_impl.h
         platform.h
         renderer_impl.h
@@ -74,7 +74,6 @@ elseif (VULKAN)
             vulkan/vulkan_window_surface.cpp
             vulkan/vulkan_offscreen_surface.cpp
             vulkan/vulkan_renderer_impl.cpp
-            vulkan/vulkan_offscreen_renderer_impl.cpp
             vulkan/vulkan_painter.cpp
             vulkan/vulkan_pipeline.cpp
             vulkan/vulkan_tessellator.cpp
@@ -95,7 +94,6 @@ elseif (VULKAN)
             vulkan/vulkan_offscreen_surface.h
             vulkan/vulkan_surface.h
             vulkan/vulkan_renderer_impl.h
-            vulkan/vulkan_offscreen_renderer_impl.h
             vulkan/vulkan_painter.h
             vulkan/vulkan_pipeline.h
             vulkan/vulkan_tessellator.h

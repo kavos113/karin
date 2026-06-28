@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <karin/system/window.h>
-#include "offscreen_renderer_impl.h"
+#include "offscreen_renderer_target.h"
 #include "renderer_impl.h"
 #include "painter.h"
 
@@ -18,7 +18,6 @@
 #include "vulkan/vulkan_renderer_impl.h"
 #include "vulkan/vulkan_window_surface.h"
 #include "vulkan/vulkan_offscreen_surface.h"
-#include "vulkan/vulkan_offscreen_renderer_impl.h"
 #include "vulkan/vulkan_painter.h"
 #include "vulkan/vulkan_frame_context.h"
 #include "vulkan/vulkan_offscreen_frame_context.h"
@@ -45,7 +44,7 @@ inline std::unique_ptr<IRendererImpl> createRendererImpl(
 struct OffscreenRendererComponents
 {
     std::unique_ptr<IRendererImpl> rendererImpl;
-    IOffscreenRendererImpl *offscreenRendererImpl;
+    IOffscreenRendererTarget *offscreenRendererTarget;
 };
 
 inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
@@ -54,20 +53,21 @@ inline OffscreenRendererComponents createOffscreenRendererImpl(Size size)
     auto surface = std::make_unique<D2DOffscreenSurface>(size);
     auto renderer = std::make_unique<D2DOffscreenRendererImpl>(std::move(surface));
 
-    IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
+    IOffscreenRendererTarget *offscreenRendererImpl = renderer.get();
     return {
         .rendererImpl = std::move(renderer),
-        .offscreenRendererImpl = offscreenRendererImpl
+        .offscreenRendererTarget = offscreenRendererImpl
     };
 #elifdef KARIN_PLATFORM_VULKAN
     auto surface = std::make_unique<VulkanOffscreenSurface>(size);
     auto frameContext = std::make_unique<VulkanOffscreenFrameContext>(std::move(surface));
-    auto renderer = std::make_unique<VulkanOffscreenRendererImpl>(std::move(frameContext));
+    IOffscreenRendererTarget *offscreenTarget = frameContext.get();
 
-    IOffscreenRendererImpl *offscreenRendererImpl = renderer.get();
+    auto renderer = std::make_unique<VulkanRendererImpl>(std::move(frameContext));
+
     return {
         .rendererImpl = std::move(renderer),
-        .offscreenRendererImpl = offscreenRendererImpl
+        .offscreenRendererTarget = offscreenTarget
     };
 #endif
 }

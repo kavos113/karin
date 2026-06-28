@@ -6,13 +6,13 @@
 #include <memory>
 #include <vector>
 
-#include <offscreen_renderer_impl.h>
+#include <offscreen_renderer_target.h>
 #include "d2d_offscreen_surface.h"
 #include "d2d_renderer_impl.h"
 
 namespace karin
 {
-class D2DOffscreenRendererImpl : public D2DRendererImpl, public IOffscreenRendererImpl
+class D2DOffscreenRendererImpl : public D2DRendererImpl, public IOffscreenRendererTarget
 {
 public:
     D2DOffscreenRendererImpl(std::unique_ptr<D2DOffscreenSurface> surface);
