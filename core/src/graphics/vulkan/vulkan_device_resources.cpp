@@ -771,7 +771,7 @@ void VulkanDeviceResources::createDummyTexture()
     );
 }
 
-VulkanImage VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat)
+void VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat, uint16_t layerID)
 {
     VkImageCreateInfo imageInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -819,18 +819,22 @@ VulkanImage VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFo
         throw std::runtime_error("failed to create offscreen image");
     }
 
-    m_offscreenImages.push_back(image);
-    return image;
+    m_offscreenImages[layerID] = std::move(image);
 }
 
 void VulkanDeviceResources::clearOffscreenImages()
 {
-    for (auto& image : m_offscreenImages)
+    for (auto& image : m_offscreenImages | std::views::values)
     {
         image.cleanup();
     }
 
     m_offscreenImages.clear();
+}
+
+VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID)
+{
+    return &m_offscreenImages[layerID];
 }
 
 VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)

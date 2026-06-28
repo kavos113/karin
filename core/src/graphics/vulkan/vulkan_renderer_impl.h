@@ -113,7 +113,7 @@ private:
         std::vector<const VulkanTextureResourceDescriptor *> textureResources;
     };
 
-    // viewport, scissor, renderTargetImageView, renderTargetArea: if primary batch, fill after begin command buffer
+    // viewport, scissor, layerID: if primary batch, fill after begin command buffer
     struct DrawBatch
     {
         bool isOffscreenLayer = false;
@@ -121,9 +121,7 @@ private:
         VkViewport viewport;
         VkRect2D scissor;
 
-        // Required only for offscreen layers
-        VkImage renderTargetImage;
-        VkImageView renderTargetImageView;
+        uint16_t layerID = 0;
         VkImageLayout renderTargetImageLayout;
         VkAttachmentLoadOp loadOp;
         VkClearValue clearValue;
@@ -138,6 +136,7 @@ private:
         Rectangle targetRect;
         uint16_t layerID;
     };
+    uint16_t m_lastLayerID = 0;
 
     void createPipeline();
 
@@ -148,10 +147,11 @@ private:
     std::unique_ptr<VulkanGeometryBuffer> m_geometryBuffer;
     std::unique_ptr<VulkanViewContext> m_viewContext;
 
-    // TODO: これはスタックにすべき
+    std::vector<RenderState> m_renderCommandStack;
     std::vector<DrawBatch> m_drawBatches;
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+    static constexpr size_t RENDER_COMMAND_STACK_SIZE = 16;
 
     VkClearValue m_clearColor = {{1.0f, 1.0f, 1.0f, 1.0f}};
 };

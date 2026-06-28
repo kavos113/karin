@@ -15,7 +15,9 @@
 
 namespace
 {
-VkRect2D toVkRect(const karin::Rectangle& rect)
+using namespace karin;
+
+VkRect2D toVkRect(const Rectangle& rect)
 {
     return VkRect2D{
         .offset = {
@@ -26,6 +28,14 @@ VkRect2D toVkRect(const karin::Rectangle& rect)
             static_cast<uint32_t>(rect.size.width),
             static_cast<uint32_t>(rect.size.height)
         }
+    };
+}
+
+Size toKarinSize(const VkExtent2D& extent)
+{
+    return {
+        .width = static_cast<float>(extent.width),
+        .height = static_cast<float>(extent.height)
     };
 }
 }
@@ -44,6 +54,8 @@ VulkanRendererImpl::VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frame
     m_viewContext = std::make_unique<VulkanViewContext>(extent.width, extent.height);
 
     createPipeline();
+
+    m_renderCommandStack.reserve(RENDER_COMMAND_STACK_SIZE);
 }
 
 void VulkanRendererImpl::cleanUp()
@@ -68,7 +80,15 @@ bool VulkanRendererImpl::beginDraw()
 {
     m_geometryBuffer->reset();
     m_drawBatches.clear();
+    m_renderCommandStack.clear();
 
+    Rectangle targetRect(Point(0, 0), toKarinSize(m_frameContext->extent()));
+    RenderState state = {
+        .isOffscreenLayer = false,
+        .targetRect = targetRect,
+        .layerID = m_lastLayerID++
+    };
+    m_renderCommandStack.push_back(state);
 
     DrawBatch primaryBatch = {
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -94,11 +114,17 @@ void VulkanRendererImpl::endDraw()
 
     for (auto& batch : m_drawBatches)
     {
+        VkImageView renderTargetImageView;
+        // use only offscreen layer
+        VkImage renderTargetImage = VK_NULL_HANDLE;
+
         if (batch.isOffscreenLayer)
         {
+            VulkanImage *image = m_deviceResources->offscreenImage(batch.layerID);
+
             transitionImageLayout(
                 commandBuffer,
-                batch.renderTargetImage,
+                image->image,
                 VK_IMAGE_LAYOUT_UNDEFINED,
                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                 0,
@@ -106,21 +132,24 @@ void VulkanRendererImpl::endDraw()
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             );
+
+            renderTargetImage = image->image;
+            renderTargetImageView = image->imageView;
         }
         else
         {
             batch.viewport = state.viewport;
             batch.scissor = state.scissor;
-            batch.renderTargetImageView = state.targetImageView;
             batch.renderTargetArea = {
                 .offset = {0, 0},
                 .extent = state.targetExtent
             };
+            renderTargetImageView = state.targetImageView;
         }
 
         VkRenderingAttachmentInfo colorAttachment = {
             .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-            .imageView = batch.renderTargetImageView,
+            .imageView = renderTargetImageView,
             .imageLayout = batch.renderTargetImageLayout,
             .loadOp = batch.loadOp,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -288,7 +317,7 @@ void VulkanRendererImpl::endDraw()
         {
             transitionImageLayout(
                 commandBuffer,
-                batch.renderTargetImage,
+                renderTargetImage,
                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -357,7 +386,7 @@ void VulkanRendererImpl::endDraw()
                 .patternType = static_cast<uint32_t>(PatternType::Image),
                 .patternParams = {1.0f, 0.0f, 0.0f, 0.0f}
             };
-            VkDescriptorSet descriptorSet = m_deviceResources->offscreenImageDescriptorSet(batch.renderTargetImageView);
+            VkDescriptorSet descriptorSet = m_deviceResources->offscreenImageDescriptorSet(renderTargetImageView);
             vkCmdBindDescriptorSets(
                 commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -473,15 +502,21 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
         }
     };
 
+    RenderState state = {
+        .isOffscreenLayer = true,
+        .targetRect = bounds,
+        .layerID = m_lastLayerID
+    };
+    m_renderCommandStack.push_back(state);
+
     // TODO: clear colorを指定できるようにしてもいいかも
     // TODO: alphaを使う
-    VulkanImage offscreenImage = m_deviceResources->newOffscreenImage(bounds, m_frameContext->surfaceFormat());
+    m_deviceResources->newOffscreenImage(bounds, m_frameContext->surfaceFormat(), m_lastLayerID);
     DrawBatch batch = {
         .isOffscreenLayer = true,
         .viewport = viewport,
         .scissor = scissor,
-        .renderTargetImage = offscreenImage.image,
-        .renderTargetImageView = offscreenImage.imageView,
+        .layerID = m_lastLayerID,
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
         .clearValue = {
@@ -498,19 +533,69 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     };
 
     m_drawBatches.push_back(batch);
+
+    m_lastLayerID++;
 }
 
 void VulkanRendererImpl::endOffscreenLayer()
 {
-    DrawBatch mainBatch = {
-        .isOffscreenLayer = false,
-        .renderTargetImage = VK_NULL_HANDLE,
-        .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
-        .clearValue = {},
-        .commands = {},
-    };
-    m_drawBatches.push_back(mainBatch);
+    RenderState state = m_renderCommandStack.back();
+    m_renderCommandStack.pop_back();
+
+    DrawBatch batch;
+    if (state.layerID == 0)
+    {
+        batch = DrawBatch{
+            .isOffscreenLayer = false,
+            .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .clearValue = m_clearColor,
+            .commands = {},
+        };
+    }
+    else
+    {
+        VkViewport viewport = {
+            .x = state.targetRect.pos.x,
+            .y = state.targetRect.pos.y,
+            .width = state.targetRect.size.width,
+            .height = state.targetRect.size.height,
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f
+        };
+        VkRect2D scissor = {
+            .offset = {
+                static_cast<int32_t>(state.targetRect.pos.x),
+                static_cast<int32_t>(state.targetRect.pos.y)
+            },
+            .extent = {
+                static_cast<uint32_t>(state.targetRect.size.width),
+                static_cast<uint32_t>(state.targetRect.size.height)
+            }
+        };
+
+        batch = DrawBatch{
+            .isOffscreenLayer = true,
+            .viewport = viewport,
+            .scissor = scissor,
+            .layerID = state.layerID,
+            .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .clearValue = {
+                .color = {{0.0f, 0.0f, 0.0f, 0.0f}}
+            },
+            .renderTargetArea = {
+                .offset = {0, 0},
+                .extent = {
+                    static_cast<uint32_t>(state.targetRect.size.width),
+                    static_cast<uint32_t>(state.targetRect.size.height)
+                }
+            },
+            .commands = {},
+        };
+    }
+
+    m_drawBatches.push_back(batch);
 }
 
 void VulkanRendererImpl::createPipeline()

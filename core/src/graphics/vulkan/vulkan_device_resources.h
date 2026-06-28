@@ -79,8 +79,9 @@ public:
         return m_geometryDescriptorSetLayout;
     }
 
-    VulkanImage newOffscreenImage(const Rectangle& rect, VkFormat imageFormat);
+    void newOffscreenImage(const Rectangle& rect, VkFormat imageFormat, uint16_t layerID);
     void clearOffscreenImages();
+    VulkanImage* offscreenImage(uint16_t layerID);
 
 private:
     static constexpr size_t LUT_WIDTH = 256;
@@ -96,7 +97,7 @@ private:
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;
     VulkanTextureResourceDescriptor m_dummyTexture; // 1 x 1 white pixel
-    std::vector<VulkanImage> m_offscreenImages;
+    std::unordered_map<uint16_t, VulkanImage> m_offscreenImages;
 
     VkSampler m_clampSampler = VK_NULL_HANDLE;
     VkSampler m_repeatSampler = VK_NULL_HANDLE;
