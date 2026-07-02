@@ -155,6 +155,7 @@ private:
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
     static constexpr size_t RENDER_COMMAND_STACK_SIZE = 16;
+    static constexpr size_t MAX_OFFSCREEN_LAYER_SIZE = 16;
 
     VkClearValue m_clearColor = {{1.0f, 1.0f, 1.0f, 1.0f}};
 };

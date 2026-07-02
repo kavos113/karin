@@ -496,6 +496,11 @@ void VulkanRendererImpl::addCommand(
 
 void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alpha)
 {
+    if (m_lastLayerID >= MAX_OFFSCREEN_LAYER_SIZE)
+    {
+        throw std::invalid_argument("too many offscreen layer");
+    }
+
     VkViewport viewport = {
         .x = 0,
         .y = 0,
