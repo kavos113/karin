@@ -114,6 +114,11 @@ void VulkanRendererImpl::endDraw()
 
     for (auto& batch : m_drawBatches)
     {
+        if (batch.commands.empty())
+        {
+            continue;
+        }
+
         VkImageView renderTargetImageView;
         // use only offscreen layer
         VkImage renderTargetImage = VK_NULL_HANDLE;
@@ -140,7 +145,7 @@ void VulkanRendererImpl::endDraw()
         {
             batch.viewport = state.viewport;
             batch.scissor = state.scissor;
-            batch.renderTargetArea = {
+            batch.targetRect = {
                 .offset = {0, 0},
                 .extent = state.targetExtent
             };
@@ -157,7 +162,10 @@ void VulkanRendererImpl::endDraw()
         };
         VkRenderingInfo renderingInfo = {
             .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-            .renderArea = batch.renderTargetArea,
+            .renderArea = {
+                .offset = {0, 0},
+                .extent = batch.targetRect.extent
+            },
             .layerCount = 1,
             .colorAttachmentCount = 1,
             .pColorAttachments = &colorAttachment
@@ -354,19 +362,19 @@ void VulkanRendererImpl::endDraw()
 
             std::vector<VulkanPipeline::Vertex> vertices = {
                 {
-                    .pos = {batch.viewport.x, batch.viewport.y},
+                    .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y},
                     .uv = {0.0f, 0.0f},
                 },
                 {
-                    .pos = {batch.viewport.x + batch.viewport.width, batch.viewport.y},
+                    .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y},
                     .uv = {1.0f, 0.0f},
                 },
                 {
-                    .pos = {batch.viewport.x + batch.viewport.width, batch.viewport.y + batch.viewport.height},
+                    .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y + batch.targetRect.extent.height},
                     .uv = {1.0f, 1.0f},
                 },
                 {
-                    .pos = {batch.viewport.x, batch.viewport.y + batch.viewport.height},
+                    .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y + batch.targetRect.extent.height},
                     .uv = {0.0f, 1.0f},
                 }
             };
@@ -390,6 +398,12 @@ void VulkanRendererImpl::endDraw()
                 m_pipelines[PipelineType::Geometry]->pipelineLayout(),
                 1, 1, &descriptorSet,
                 0, nullptr
+            );
+
+            m_viewContext->bind(
+                commandBuffer,
+                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
+                0, currentFrame
             );
 
             vkCmdPushConstants(
@@ -481,8 +495,8 @@ void VulkanRendererImpl::addCommand(
 void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alpha)
 {
     VkViewport viewport = {
-        .x = bounds.pos.x,
-        .y = bounds.pos.y,
+        .x = 0,
+        .y = 0,
         .width = bounds.size.width,
         .height = bounds.size.height,
         .minDepth = 0.0f,
@@ -490,8 +504,7 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     };
     VkRect2D scissor = {
         .offset = {
-            static_cast<int32_t>(bounds.pos.x),
-            static_cast<int32_t>(bounds.pos.y)
+            0, 0
         },
         .extent = {
             static_cast<uint32_t>(bounds.size.width),
@@ -519,8 +532,11 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
         .clearValue = {
             .color = {{0.0f, 0.0f, 0.0f, 0.0f}}
         },
-        .renderTargetArea = {
-            .offset = {0, 0},
+        .targetRect = {
+            .offset = {
+                static_cast<int32_t>(bounds.pos.x),
+                static_cast<int32_t>(bounds.pos.y),
+            },
             .extent = {
                 static_cast<uint32_t>(bounds.size.width),
                 static_cast<uint32_t>(bounds.size.height)
@@ -538,8 +554,8 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
 
 void VulkanRendererImpl::endOffscreenLayer()
 {
-    RenderState state = m_renderCommandStack.back();
     m_renderCommandStack.pop_back();
+    RenderState state = m_renderCommandStack.back();
 
     DrawBatch batch;
     if (state.layerID == 0)
@@ -555,18 +571,15 @@ void VulkanRendererImpl::endOffscreenLayer()
     else
     {
         VkViewport viewport = {
-            .x = state.targetRect.pos.x,
-            .y = state.targetRect.pos.y,
+            .x = 0,
+            .y = 0,
             .width = state.targetRect.size.width,
             .height = state.targetRect.size.height,
             .minDepth = 0.0f,
             .maxDepth = 1.0f
         };
         VkRect2D scissor = {
-            .offset = {
-                static_cast<int32_t>(state.targetRect.pos.x),
-                static_cast<int32_t>(state.targetRect.pos.y)
-            },
+            .offset = {0, 0},
             .extent = {
                 static_cast<uint32_t>(state.targetRect.size.width),
                 static_cast<uint32_t>(state.targetRect.size.height)
@@ -583,8 +596,11 @@ void VulkanRendererImpl::endOffscreenLayer()
             .clearValue = {
                 .color = {{0.0f, 0.0f, 0.0f, 0.0f}}
             },
-            .renderTargetArea = {
-                .offset = {0, 0},
+            .targetRect = {
+                .offset = {
+                    static_cast<int32_t>(state.targetRect.pos.x),
+                    static_cast<int32_t>(state.targetRect.pos.y),
+                },
                 .extent = {
                     static_cast<uint32_t>(state.targetRect.size.width),
                     static_cast<uint32_t>(state.targetRect.size.height)
