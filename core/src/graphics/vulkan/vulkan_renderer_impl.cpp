@@ -244,10 +244,8 @@ void VulkanRendererImpl::endDraw()
                     sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
                 );
 
-                if (command.scissor.has_value())
-                {
-                    vkCmdSetScissor(commandBuffer, 0, 1, &command.scissor.value());
-                }
+                VkRect2D scissor = command.scissor.value_or(batch.scissor);
+                vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
                 vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
             }
@@ -312,10 +310,9 @@ void VulkanRendererImpl::endDraw()
                     sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
                 );
 
-                if (command.scissor.has_value())
-                {
-                    vkCmdSetScissor(commandBuffer, 0, 1, &command.scissor.value());
-                }
+
+                VkRect2D scissor = command.scissor.value_or(batch.scissor);
+                vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
                 vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
             }
