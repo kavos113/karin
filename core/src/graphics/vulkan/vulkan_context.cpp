@@ -433,7 +433,7 @@ void VulkanContext::createDescriptorPool()
 {
     std::array sizes = {
         VkDescriptorPoolSize{
-            .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
             .descriptorCount = DESCRIPTOR_POOL_SIZE,
         },
         VkDescriptorPoolSize{

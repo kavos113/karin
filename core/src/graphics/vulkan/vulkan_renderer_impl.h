@@ -113,7 +113,7 @@ private:
         std::vector<const VulkanTextureResourceDescriptor *> textureResources;
     };
 
-    // viewport, scissor, layerID: if primary batch, fill after begin command buffer
+    // viewport, scissor: if primary batch, fill after begin command buffer
     struct DrawBatch
     {
         bool isOffscreenLayer = false;
@@ -121,6 +121,7 @@ private:
         VkViewport viewport;
         VkRect2D scissor;
 
+        // layerID: primary target is 0
         uint16_t layerID = 0;
         VkImageLayout renderTargetImageLayout;
         VkAttachmentLoadOp loadOp;

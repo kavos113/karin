@@ -192,13 +192,11 @@ void VulkanRendererImpl::endDraw()
                 m_pipelines[PipelineType::Geometry]->pipeline()
             );
 
-            auto projMatrixDescSet = m_viewContext->descriptorSet(currentFrame);
-            vkCmdBindDescriptorSets(
+            m_viewContext->bind(
                 commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
                 m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                0, 1, &projMatrixDescSet,
-                0, nullptr
+                batch.layerID,
+                currentFrame
             );
             isBindProjMatrix = true;
 
@@ -252,14 +250,13 @@ void VulkanRendererImpl::endDraw()
 
             if (!isBindProjMatrix)
             {
-                auto projMatrixDescSet = m_viewContext->descriptorSet(currentFrame);
-                vkCmdBindDescriptorSets(
+                m_viewContext->bind(
                     commandBuffer,
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
                     m_pipelines[PipelineType::Text]->pipelineLayout(),
-                    0, 1, &projMatrixDescSet,
-                    0, nullptr
+                    batch.layerID,
+                    currentFrame
                 );
+                isBindProjMatrix = true;
             }
 
             auto glyphAtlasSets = m_fontRenderer->glyphAtlasDescriptorSets();
@@ -533,6 +530,8 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     };
 
     m_drawBatches.push_back(batch);
+
+    m_viewContext->setProjMatrix(bounds, m_lastLayerID);
 
     m_lastLayerID++;
 }

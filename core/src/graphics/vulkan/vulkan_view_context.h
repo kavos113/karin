@@ -1,11 +1,13 @@
 #ifndef CORE_SRC_GRAPHICS_VULKAN_VULKAN_VIEW_CONTEXT_H
 #define CORE_SRC_GRAPHICS_VULKAN_VULKAN_VIEW_CONTEXT_H
 
+#include <array>
 #include <vector>
 
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.h>
 
+#include <karin/common/geometry/rectangle.h>
 #include "vulkan_buffer.h"
 
 namespace karin
@@ -19,8 +21,10 @@ public:
     void cleanup();
     void resize(float width, float height);
 
+    void setProjMatrix(Rectangle rect, uint16_t layerID);
+    void bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, uint16_t layerID, uint32_t currentFrame) const;
+
     VkDescriptorSetLayout descriptorSetLayout() const;
-    VkDescriptorSet descriptorSet(uint32_t currentFrame) const;
 
 private:
     struct MatrixBufferObject
@@ -28,12 +32,14 @@ private:
         glm::mat4 proj;
     };
 
-    MatrixBufferObject m_projMatrixData = {};
+    static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+    static constexpr uint32_t MAX_PROJECTION_MATRIX_COUNT = 16;
+    VkDeviceSize minUniformBufferOffsetAlignment;
+
+    std::array<MatrixBufferObject, MAX_PROJECTION_MATRIX_COUNT> m_projMatrixData;
     VkDescriptorSetLayout m_projMatrixDescriptorSetLayout = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> m_projMatrixDescriptorSets;
     std::vector<VulkanBuffer<MatrixBufferObject>> m_projMatrixBuffers;
-
-    static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 };
 } // karin
 
