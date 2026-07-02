@@ -152,8 +152,14 @@ void VulkanWindowSurface::resize()
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
     }
 
+    for (auto& semaphore : m_renderFinishedSemaphores)
+    {
+        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
+    }
+
     createSwapChain(true);
     createImageView();
+    createSemaphore();
 }
 
 bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
