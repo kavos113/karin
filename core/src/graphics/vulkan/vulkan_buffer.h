@@ -151,6 +151,11 @@ struct VulkanImage
             allocation = VK_NULL_HANDLE;
         }
     }
+
+    bool valid() const
+    {
+        return image != VK_NULL_HANDLE && allocation != VK_NULL_HANDLE && imageView != VK_NULL_HANDLE;
+    }
 };
 } // karin
 

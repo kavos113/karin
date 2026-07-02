@@ -834,6 +834,11 @@ void VulkanDeviceResources::clearOffscreenImages()
 
 VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID)
 {
+    if (!m_offscreenImages.contains(layerID))
+    {
+        return nullptr;
+    }
+
     return &m_offscreenImages[layerID];
 }
 
