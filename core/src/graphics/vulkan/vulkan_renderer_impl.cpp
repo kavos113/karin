@@ -81,6 +81,7 @@ bool VulkanRendererImpl::beginDraw()
     m_geometryBuffer->reset();
     m_drawBatches.clear();
     m_renderCommandStack.clear();
+    m_lastLayerID = 0;
 
     Rectangle targetRect(Point(0, 0), toKarinSize(m_frameContext->extent()));
     RenderState state = {
