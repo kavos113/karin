@@ -1,5 +1,7 @@
 #include "vulkan_geometry_buffer.h"
 
+#include <cstring>
+
 #include <stdexcept>
 
 namespace karin
