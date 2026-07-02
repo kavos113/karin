@@ -1,5 +1,7 @@
 #include "vulkan_view_context.h"
 
+#include <cstring>
+
 #include <stdexcept>
 
 #define AlignmentSize(size, alignment) ((size + alignment - 1) & ~(alignment - 1))
