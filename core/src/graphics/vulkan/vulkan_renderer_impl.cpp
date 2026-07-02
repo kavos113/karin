@@ -112,9 +112,10 @@ void VulkanRendererImpl::endDraw()
 
     m_geometryBuffer->bind(commandBuffer);
 
+
     for (auto& batch : m_drawBatches)
     {
-        if (batch.commands.empty())
+        if (batch.commands.empty() && m_drawBatches.size() > 1)
         {
             continue;
         }
