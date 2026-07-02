@@ -257,7 +257,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         gradientPointLutImageView,
         descriptorSets
     );
-    auto inserted = m_gradientPointLutMap.insert({points.hash(), std::move(lutTexture)});
+    auto inserted = m_gradientPointLutMap.insert_or_assign(points.hash(), std::move(lutTexture));
 
     return &inserted.first->second;
 }
@@ -550,7 +550,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     std::string_view dataView(reinterpret_cast<const char*>(data.data()), data.size());
     size_t hash = std::hash<std::string_view>{}(dataView);
 
-    m_textureMap.insert({hash, std::move(texture)});
+    m_textureMap.insert_or_assign(hash, std::move(texture));
     return Image(hash, width, height);
 }
 

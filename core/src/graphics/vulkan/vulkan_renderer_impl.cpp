@@ -132,6 +132,7 @@ void VulkanRendererImpl::endDraw()
         {
             VulkanImage *image = m_deviceResources->offscreenImage(batch.layerID);
 
+            // TODO: poplayerのあとはUNDEFINEDではない
             transitionImageLayout(
                 commandBuffer,
                 image->image,
