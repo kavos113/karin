@@ -10,7 +10,7 @@
 
 namespace karin
 {
-class IOffscreenRendererImpl;
+class IOffscreenRendererTarget;
 
 class OffscreenRenderer : public RendererBase
 {
@@ -28,7 +28,7 @@ public:
     void draw() const;
 
 private:
-    IOffscreenRendererImpl *m_offscreenImpl;
+    IOffscreenRendererTarget *m_offscreenTarget;
 };
 } // karin
 

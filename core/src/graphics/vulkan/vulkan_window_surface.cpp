@@ -18,6 +18,7 @@
 #endif
 
 #include "vulkan_context.h"
+#include "vulkan_helpers.h"
 
 namespace
 {
@@ -113,17 +114,23 @@ VulkanWindowSurface::VulkanWindowSurface(Window::NativeHandle nativeHandle)
     VulkanContext::instance().initDevices(m_surface);
 
     createSwapChain(false);
-
     createImageView();
+    createSemaphore();
 }
 
-void VulkanWindowSurface::cleanUp()
+void VulkanWindowSurface::cleanup()
 {
     for (auto& imageView : m_swapChainImageViews)
     {
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
     }
     m_swapChainImageViews.clear();
+
+    for (const auto& semaphore : m_renderFinishedSemaphores)
+    {
+        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
+    }
+    m_renderFinishedSemaphores.clear();
 
     if (m_swapChain != VK_NULL_HANDLE)
     {
@@ -145,8 +152,14 @@ void VulkanWindowSurface::resize()
         vkDestroyImageView(VulkanContext::instance().device(), imageView, nullptr);
     }
 
+    for (auto& semaphore : m_renderFinishedSemaphores)
+    {
+        vkDestroySemaphore(VulkanContext::instance().device(), semaphore, nullptr);
+    }
+
     createSwapChain(true);
     createImageView();
+    createSemaphore();
 }
 
 bool VulkanWindowSurface::prepareNextImage(VkSemaphore semaphore)
@@ -179,6 +192,7 @@ void VulkanWindowSurface::beforeRender(VkCommandBuffer commandBuffer)
 {
     transitionImageLayout(
         commandBuffer,
+        m_swapChainImages[m_imageIndex],
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         0,
@@ -192,6 +206,7 @@ void VulkanWindowSurface::endRender(VkCommandBuffer commandBuffer)
 {
     transitionImageLayout(
         commandBuffer,
+        m_swapChainImages[m_imageIndex],
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -201,9 +216,9 @@ void VulkanWindowSurface::endRender(VkCommandBuffer commandBuffer)
     );
 }
 
-bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
+bool VulkanWindowSurface::present() const
 {
-    std::array semaphores = {waitSemaphore};
+    std::array semaphores = {m_renderFinishedSemaphores[m_imageIndex]};
 
     std::array swapChains = {m_swapChain};
     VkPresentInfoKHR presentInfo = {
@@ -227,6 +242,11 @@ bool VulkanWindowSurface::present(VkSemaphore waitSemaphore) const
     }
 
     return true;
+}
+
+std::vector<VkSemaphore> VulkanWindowSurface::renderFinishSemaphore() const
+{
+    return std::vector(1, m_renderFinishedSemaphores[m_imageIndex]);
 }
 
 void VulkanWindowSurface::createSurface()
@@ -387,41 +407,19 @@ void VulkanWindowSurface::createImageView()
     }
 }
 
-void VulkanWindowSurface::transitionImageLayout(
-    VkCommandBuffer  commandBuffer,
-    VkImageLayout oldLayout,
-    VkImageLayout newLayout,
-    VkAccessFlags2 srcAccessMask,
-    VkAccessFlags2 dstAccessMask,
-    VkPipelineStageFlags2 srcStageMask,
-    VkPipelineStageFlags2 dstStageMask
-) const
+void VulkanWindowSurface::createSemaphore()
 {
-    VkImageMemoryBarrier2 barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-        .srcStageMask = srcStageMask,
-        .srcAccessMask = srcAccessMask,
-        .dstStageMask = dstStageMask,
-        .dstAccessMask = dstAccessMask,
-        .oldLayout = oldLayout,
-        .newLayout = newLayout,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = m_swapChainImages[m_imageIndex],
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1
-        }
-    };
+    m_renderFinishedSemaphores.resize(m_swapChainImages.size());
 
-    VkDependencyInfo dependencyInfo = {
-        .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-        .imageMemoryBarrierCount = 1,
-        .pImageMemoryBarriers = &barrier,
+    VkSemaphoreCreateInfo info = {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
-    vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
+    for (size_t i = 0; i < m_swapChainImages.size(); i++)
+    {
+        if (vkCreateSemaphore(VulkanContext::instance().device(), &info, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create semaphore");
+        }
+    }
 }
 } // karin

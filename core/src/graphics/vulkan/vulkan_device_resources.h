@@ -1,21 +1,55 @@
 #ifndef SRC_GRAPHICS_VULKAN_VULKAN_DEVICE_RESOURCES_H
 #define SRC_GRAPHICS_VULKAN_VULKAN_DEVICE_RESOURCES_H
 
-#include "vulkan_glyph_cache.h"
-#include "vma.h"
-#include <text/text_layouter.h>
-
-#include <karin/graphics/image.h>
-#include <karin/graphics/pattern.h>
-
-#include <vulkan/vulkan.h>
-#include <vector>
 #include <cstddef>
+#include <cstdint>
+
+#include <vector>
 #include <unordered_map>
 #include <array>
 
+#include <vulkan/vulkan.h>
+#include "vma.h"
+
+#include <karin/common/geometry/rectangle.h>
+#include <karin/graphics/image.h>
+#include <karin/graphics/pattern.h>
+#include "vulkan_buffer.h"
+
 namespace karin
 {
+class VulkanTextureResourceDescriptor
+{
+public:
+    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&&) noexcept = default;
+    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&&) noexcept = default;
+    VulkanTextureResourceDescriptor(const VulkanTextureResourceDescriptor&) = delete;
+    VulkanTextureResourceDescriptor& operator=(const VulkanTextureResourceDescriptor&) = delete;
+
+    VkDescriptorSet descriptorSet(uint32_t currentFrame) const
+    {
+        return descriptorSets[currentFrame];
+    }
+
+private:
+    friend class VulkanDeviceResources;
+
+    VulkanTextureResourceDescriptor() = default;
+    explicit VulkanTextureResourceDescriptor(
+        VkImage i,
+        VmaAllocation a,
+        VkImageView iv,
+        const std::vector<VkDescriptorSet>& ds
+    ) : image(i), allocation(a), imageView(iv), descriptorSets(ds)
+    {
+    }
+
+    VkImage image = VK_NULL_HANDLE;
+    VmaAllocation allocation = VK_NULL_HANDLE;
+    VkImageView imageView = VK_NULL_HANDLE;
+    std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
+};
+
 class VulkanDeviceResources
 {
 public:
@@ -35,36 +69,35 @@ public:
 
     void cleanup();
 
-    std::vector<VkDescriptorSet> gradientPointLutDescriptorSet(const GradientPoints& points);
-    std::vector<VkDescriptorSet> textureDescriptorSet(Image image);
-    std::vector<VkDescriptorSet> dummyTextureDescriptorSet() const;
+    const VulkanTextureResourceDescriptor *gradientPointLut(const GradientPoints& points);
+    const VulkanTextureResourceDescriptor *texture(Image image);
+    const VulkanTextureResourceDescriptor *dummyTexture() const;
+    VkDescriptorSet offscreenImageDescriptorSet(VkImageView imageView);
 
     VkDescriptorSetLayout geometryDescriptorSetLayout() const
     {
         return m_geometryDescriptorSetLayout;
     }
 
-private:
-    struct Texture
-    {
-        VkImage image = VK_NULL_HANDLE;
-        VmaAllocation allocation = VK_NULL_HANDLE;
-        VkImageView imageView = VK_NULL_HANDLE;
-        std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
-    };
+    void newOffscreenImage(const Rectangle& rect, VkFormat imageFormat, uint16_t layerID);
+    void clearOffscreenImages();
+    VulkanImage* offscreenImage(uint16_t layerID);
 
+private:
     static constexpr size_t LUT_WIDTH = 256;
 
     void createSamplers();
     void createDescriptorSetLayouts();
     void createDummyTexture();
-    std::array<uint8_t, LUT_WIDTH * 4> generateGradientPointLut(
-        const std::vector<GradientPoints::GradientPoint>& gradientPoints
-    ) const;
 
-    std::unordered_map<size_t, Texture> m_gradientPointLutMap;
-    std::unordered_map<size_t, Texture> m_textureMap;
-    Texture m_dummyTexture; // 1 x 1 white pixel
+    static std::array<uint8_t, LUT_WIDTH * 4> generateGradientPointLut(
+        const std::vector<GradientPoints::GradientPoint>& gradientPoints
+    );
+
+    std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
+    std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;
+    VulkanTextureResourceDescriptor m_dummyTexture; // 1 x 1 white pixel
+    std::unordered_map<uint16_t, VulkanImage> m_offscreenImages;
 
     VkSampler m_clampSampler = VK_NULL_HANDLE;
     VkSampler m_repeatSampler = VK_NULL_HANDLE;

@@ -1,10 +1,13 @@
 #include "vulkan_glyph_cache.h"
 
-#include <utils/hash.h>
-
-#include <stdexcept>
 #include <cmath>
 #include <cstring>
+
+#include <stdexcept>
+
+#include <utils/hash.h>
+#include "vulkan_helpers.h"
+#include "vulkan_context.h"
 
 namespace karin
 {
@@ -18,8 +21,7 @@ VulkanGlyphCache::VulkanGlyphCache(size_t maxFramesInFlight)
 
 void VulkanGlyphCache::cleanup()
 {
-    vmaDestroyImage(VulkanContext::instance().allocator(), m_atlasImage, m_atlasImageAllocation);
-    vkDestroyImageView(VulkanContext::instance().device(), m_atlasImageView, nullptr);
+    m_atlas.cleanup();
     vkDestroySampler(VulkanContext::instance().device(), m_atlasSampler, nullptr);
     vkDestroyDescriptorSetLayout(VulkanContext::instance().device(), m_atlasDescriptorSetLayout, nullptr);
 }
@@ -118,7 +120,33 @@ void VulkanGlyphCache::flushUploadQueue()
     vmaUnmapMemory(VulkanContext::instance().allocator(), stagingBufferMemory);
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
-    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    if (!m_initializeAtlasLayout)
+    {
+        transitionImageLayout(
+            commandBuffer,
+            m_atlas.image,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            0,
+            VK_ACCESS_2_TRANSFER_WRITE_BIT,
+            VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_2_TRANSFER_BIT
+        );
+        m_initializeAtlasLayout = true;
+    }
+    else
+    {
+        transitionImageLayout(
+            commandBuffer,
+            m_atlas.image,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_ACCESS_2_SHADER_READ_BIT,
+            VK_ACCESS_2_TRANSFER_WRITE_BIT,
+            VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT,
+            VK_PIPELINE_STAGE_2_TRANSFER_BIT
+        );
+    }
 
     size_t offset = 0;
     for (const auto& upload : m_uploadQueue)
@@ -152,12 +180,21 @@ void VulkanGlyphCache::flushUploadQueue()
         }
 
         vkCmdCopyBufferToImage(
-            commandBuffer, stagingBuffer, m_atlasImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+            commandBuffer, stagingBuffer, m_atlas.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
         );
         offset += upload.bitmapData.size();
     }
 
-    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    transitionImageLayout(
+        commandBuffer,
+        m_atlas.image,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        VK_ACCESS_2_TRANSFER_WRITE_BIT,
+        VK_ACCESS_2_SHADER_READ_BIT,
+        VK_PIPELINE_STAGE_2_TRANSFER_BIT,
+        VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT
+    );
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
@@ -217,16 +254,8 @@ void VulkanGlyphCache::createAtlas()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageCreateInfo, &imageAllocInfo, &m_atlasImage, &m_atlasImageAllocation, nullptr
-    ) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create glyph atlas image");
-    }
-
     VkImageViewCreateInfo viewInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = m_atlasImage,
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = VK_FORMAT_R8_UNORM,
         .components = {
@@ -243,9 +272,9 @@ void VulkanGlyphCache::createAtlas()
             .layerCount = 1,
         },
     };
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &m_atlasImageView) != VK_SUCCESS)
+    if (m_atlas.create(imageCreateInfo, imageAllocInfo, viewInfo) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create glyph atlas image view");
+        throw std::runtime_error("failed to create glyph atlas");
     }
 
     std::vector layouts(m_maxFramesInFlight, m_atlasDescriptorSetLayout);
@@ -265,7 +294,7 @@ void VulkanGlyphCache::createAtlas()
     {
         VkDescriptorImageInfo imageInfo = {
             .sampler = m_atlasSampler,
-            .imageView = m_atlasImageView,
+            .imageView = m_atlas.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
         VkWriteDescriptorSet descriptorWrite = {
@@ -331,71 +360,5 @@ void VulkanGlyphCache::createSampler()
     {
         throw std::runtime_error("failed to create glyph atlas sampler");
     }
-}
-
-void VulkanGlyphCache::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
-{
-    if (m_atlasImageLayout == newLayout)
-    {
-        return;
-    }
-
-    VkImageMemoryBarrier barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .srcAccessMask = 0,
-        .dstAccessMask = 0,
-        .oldLayout = m_atlasImageLayout,
-        .newLayout = newLayout,
-        .image = m_atlasImage,
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-
-    VkPipelineStageFlags sourceStage;
-    VkPipelineStageFlags destinationStage;
-    if (m_atlasImageLayout == VK_IMAGE_LAYOUT_UNDEFINED
-        && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-    {
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else if (m_atlasImageLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-        && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-    {
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    }
-    else if (m_atlasImageLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-    {
-        barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else
-    {
-        throw std::invalid_argument("unsupported layout transition");
-    }
-
-    vkCmdPipelineBarrier(
-        commandBuffer,
-        sourceStage, destinationStage,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &barrier
-    );
-
-    m_atlasImageLayout = newLayout;
 }
 } // karin

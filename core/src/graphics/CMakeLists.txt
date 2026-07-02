@@ -18,7 +18,7 @@ set(GRAPHICS_SOURCE
 )
 set(GRAPHICS_HEADERS
         font_renderer_impl.h
-        offscreen_renderer_impl.h
+        offscreen_renderer_target.h
         path_impl.h
         platform.h
         renderer_impl.h
@@ -74,13 +74,16 @@ elseif (VULKAN)
             vulkan/vulkan_window_surface.cpp
             vulkan/vulkan_offscreen_surface.cpp
             vulkan/vulkan_renderer_impl.cpp
-            vulkan/vulkan_offscreen_renderer_impl.cpp
             vulkan/vulkan_painter.cpp
             vulkan/vulkan_pipeline.cpp
             vulkan/vulkan_tessellator.cpp
             vulkan/vulkan_device_resources.cpp
             vulkan/vulkan_glyph_cache.cpp
             vulkan/vulkan_font_renderer.cpp
+            vulkan/vulkan_view_context.cpp
+            vulkan/vulkan_geometry_buffer.cpp
+            vulkan/vulkan_frame_context.cpp
+            vulkan/vulkan_offscreen_frame_context.cpp
             vulkan/vma_impl.cpp
             text/freetype/freetype_font_face.cpp
     )
@@ -91,7 +94,6 @@ elseif (VULKAN)
             vulkan/vulkan_offscreen_surface.h
             vulkan/vulkan_surface.h
             vulkan/vulkan_renderer_impl.h
-            vulkan/vulkan_offscreen_renderer_impl.h
             vulkan/vulkan_painter.h
             vulkan/vulkan_pipeline.h
             vulkan/vulkan_tessellator.h
@@ -101,6 +103,11 @@ elseif (VULKAN)
             vulkan/vulakn_functions.h
             vulkan/vulkan_buffer.h
             vulkan/vulkan_surface.h
+            vulkan/vulkan_helpers.h
+            vulkan/vulkan_view_context.h
+            vulkan/vulkan_geometry_buffer.h
+            vulkan/vulkan_frame_context.h
+            vulkan/vulkan_offscreen_frame_context.h
             vulkan/glm_geometry.h
             vulkan/vma.h
             vulkan/shaders/shaders.h

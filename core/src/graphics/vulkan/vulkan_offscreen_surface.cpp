@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "vulkan_context.h"
+#include "vulkan_helpers.h"
 
 namespace karin
 {
@@ -17,7 +18,7 @@ VulkanOffscreenSurface::VulkanOffscreenSurface(Size size)
     createBuffers(static_cast<uint32_t>(size.width), static_cast<uint32_t>(size.height));
 }
 
-void VulkanOffscreenSurface::cleanUp()
+void VulkanOffscreenSurface::cleanup()
 {
     m_image.cleanup();
     m_stagingBuffer.cleanup();
@@ -25,7 +26,7 @@ void VulkanOffscreenSurface::cleanUp()
 
 void VulkanOffscreenSurface::resize()
 {
-    cleanUp();
+    cleanup();
 
     createBuffers(m_width, m_height);
 }
@@ -52,6 +53,7 @@ void VulkanOffscreenSurface::beforeRender(VkCommandBuffer commandBuffer)
 {
     transitionImageLayout(
         commandBuffer,
+        m_image.image,
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         0,
@@ -65,24 +67,14 @@ void VulkanOffscreenSurface::endRender(VkCommandBuffer commandBuffer)
 {
 }
 
-bool VulkanOffscreenSurface::present(VkSemaphore waitSemaphore) const
+bool VulkanOffscreenSurface::present() const
 {
-    // just for send signal
-    VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-    VkSubmitInfo submitInfo = {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &waitSemaphore,
-        .pWaitDstStageMask = &waitStage,
-        .commandBufferCount = 0,
-        .pCommandBuffers = nullptr,
-    };
-    if (vkQueueSubmit(VulkanContext::instance().graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to submit offscreen surface presentation command buffer");
-    }
-
     return true;
+}
+
+std::vector<VkSemaphore> VulkanOffscreenSurface::renderFinishSemaphore() const
+{
+    return {};
 }
 
 VkExtent2D VulkanOffscreenSurface::extent() const
@@ -105,6 +97,7 @@ std::vector<std::byte> VulkanOffscreenSurface::getImageData() const
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
     transitionImageLayout(
         commandBuffer,
+        m_image.image,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
         VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -133,6 +126,7 @@ std::vector<std::byte> VulkanOffscreenSurface::getImageData() const
 
     transitionImageLayout(
         commandBuffer,
+        m_image.image,
         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         VK_ACCESS_TRANSFER_READ_BIT,
@@ -218,43 +212,5 @@ void VulkanOffscreenSurface::createBuffers(uint32_t width, uint32_t height)
     {
         throw std::runtime_error("failed to create staging buffer for offscreen surface");
     }
-}
-
-void VulkanOffscreenSurface::transitionImageLayout(
-    VkCommandBuffer  commandBuffer,
-    VkImageLayout oldLayout,
-    VkImageLayout newLayout,
-    VkAccessFlags2 srcAccessMask,
-    VkAccessFlags2 dstAccessMask,
-    VkPipelineStageFlags2 srcStageMask,
-    VkPipelineStageFlags2 dstStageMask
-) const
-{
-    VkImageMemoryBarrier2 barrier = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-        .srcStageMask = srcStageMask,
-        .srcAccessMask = srcAccessMask,
-        .dstStageMask = dstStageMask,
-        .dstAccessMask = dstAccessMask,
-        .oldLayout = oldLayout,
-        .newLayout = newLayout,
-        .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-        .image = m_image.image,
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1
-        }
-    };
-
-    VkDependencyInfo dependencyInfo = {
-        .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-        .imageMemoryBarrierCount = 1,
-        .pImageMemoryBarriers = &barrier,
-    };
-    vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
 }
 } // karin

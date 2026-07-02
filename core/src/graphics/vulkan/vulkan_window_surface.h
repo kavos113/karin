@@ -18,13 +18,14 @@ public:
     VulkanWindowSurface(Window::NativeHandle nativeHandle);
     ~VulkanWindowSurface() override = default;
 
-    void cleanUp() override;
+    void cleanup() override;
     void resize() override;
 
     bool prepareNextImage(VkSemaphore semaphore) override;
     void beforeRender(VkCommandBuffer commandBuffer) override;
     void endRender(VkCommandBuffer commandBuffer) override;
-    bool present(VkSemaphore waitSemaphore) const override;
+    bool present() const override;
+    std::vector<VkSemaphore> renderFinishSemaphore() const override;
 
     VkExtent2D extent() const override
     {
@@ -55,16 +56,7 @@ private:
     void createSurface();
     void createSwapChain(bool isRecreating);
     void createImageView();
-
-    void transitionImageLayout(
-        VkCommandBuffer commandBuffer,
-        VkImageLayout oldLayout,
-        VkImageLayout newLayout,
-        VkAccessFlags2 srcAccessMask,
-        VkAccessFlags2 dstAccessMask,
-        VkPipelineStageFlags2 srcStageMask,
-        VkPipelineStageFlags2 dstStageMask
-    ) const;
+    void createSemaphore();
 
     Window::NativeHandle m_window;
 
@@ -78,6 +70,8 @@ private:
     std::vector<VkSwapchainKHR> m_oldSwapChains;
     bool m_isResizing = false;
     uint32_t m_imageIndex = 0;
+
+    std::vector<VkSemaphore> m_renderFinishedSemaphores;
 };
 } // karin
 

@@ -7,10 +7,10 @@
 
 namespace karin
 {
-class IOffscreenRendererImpl
+class IOffscreenRendererTarget
 {
 public:
-    virtual ~IOffscreenRendererImpl() = default;
+    virtual ~IOffscreenRendererTarget() = default;
 
     virtual std::vector<std::byte> getImageData() const = 0;
 };

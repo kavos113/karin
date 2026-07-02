@@ -17,9 +17,10 @@
 #include <karin/graphics/image.h>
 #include "vulkan_device_resources.h"
 #include "vulkan_pipeline.h"
-#include "vulkan_surface.h"
 #include "vulkan_font_renderer.h"
-#include "vulkan_buffer.h"
+#include "vulkan_geometry_buffer.h"
+#include "vulkan_view_context.h"
+#include "vulkan_frame_context.h"
 #include "shaders/push_constants.h"
 
 namespace karin
@@ -41,7 +42,7 @@ public:
         Text,
     };
 
-    VulkanRendererImpl(std::unique_ptr<IVulkanSurface> surface);
+    VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frameContext);
     ~VulkanRendererImpl() override = default;
 
     void cleanUp() override;
@@ -69,14 +70,17 @@ public:
         std::optional<Rectangle> clipRect = std::nullopt
     );
 
+    void beginOffscreenLayer(const Rectangle& bounds, float alpha);
+    void endOffscreenLayer();
+
     void startResizing() override
     {
-        m_surface->startResizing();
+        m_frameContext->startResizing();
     }
 
     void finishResizing() override
     {
-        m_surface->finishResizing();
+        m_frameContext->finishResizing();
     }
 
     Image createImage(const std::vector<std::byte>& data, uint32_t width, uint32_t height) override
@@ -95,7 +99,7 @@ public:
     }
 
 protected:
-    std::unique_ptr<IVulkanSurface> m_surface;
+    std::unique_ptr<VulkanFrameContext> m_frameContext;
 
 private:
     struct DrawCommand
@@ -106,57 +110,52 @@ private:
         VertexPushConstants vertData;
         PipelineType pipelineType;
         std::optional<VkRect2D> scissor;
-        std::vector<VkDescriptorSet> descriptorSets;
+        std::vector<const VulkanTextureResourceDescriptor *> textureResources;
     };
 
-    struct MatrixBufferObject
+    // viewport, scissor, alpha: if primary batch, fill after begin command buffer
+    struct DrawBatch
     {
-        glm::mat4 proj;
+        bool isOffscreenLayer = false;
+
+        VkViewport viewport;
+        VkRect2D scissor;
+        float alpha = 1.0f;
+
+        // layerID: primary target is 0
+        uint16_t layerID = 0;
+        VkImageLayout renderTargetImageLayout;
+        VkAttachmentLoadOp loadOp;
+        VkClearValue clearValue;
+        VkRect2D targetRect;
+
+        std::vector<DrawCommand> commands;
     };
 
-    void createCommandBuffers();
-    void createSyncObjects();
-    void createVertexBuffer();
-    void createIndexBuffer();
-    void createMatrixBuffer();
-    void createPipeline();
-    void createViewport();
+    struct RenderState
+    {
+        bool isOffscreenLayer = false;
+        Rectangle targetRect;
+        uint16_t layerID;
+        float alpha = 1.0f;
+    };
+    uint16_t m_lastLayerID = 0;
 
-    void doResize();
+    void createPipeline();
 
     std::unordered_map<PipelineType, std::unique_ptr<VulkanPipeline>> m_pipelines;
     std::unique_ptr<VulkanDeviceResources> m_deviceResources;
     std::unique_ptr<VulkanFontRenderer> m_fontRenderer;
 
-    std::vector<DrawCommand> m_drawCommands;
+    std::unique_ptr<VulkanGeometryBuffer> m_geometryBuffer;
+    std::unique_ptr<VulkanViewContext> m_viewContext;
 
-    uint8_t m_currentFrame = 0;
-
-    std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkSemaphore> m_renderFinishedSemaphores;
-    std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    std::vector<VkFence> m_inflightFences;
-
-    VkExtent2D m_extent = {};
-    VkViewport m_viewport = {};
-    VkRect2D m_scissor = {};
-
-    VulkanBuffer<VulkanPipeline::Vertex> m_vertexBuffer;
-    VulkanPipeline::Vertex* m_vertexStartPoint = nullptr;
-    VulkanBuffer<uint16_t> m_indexBuffer;
-    uint16_t* m_indexStartPoint = nullptr;
-    uint16_t m_vertexOffset = 0;
-    size_t m_indexCount = 0;
-
-    MatrixBufferObject m_projMatrixData = {};
-    VkDescriptorSetLayout m_projMatrixDescriptorSetLayout = VK_NULL_HANDLE;
-    std::vector<VkDescriptorSet> m_projMatrixDescriptorSets;
-    std::vector<VulkanBuffer<MatrixBufferObject>> m_projMatrixBuffers;
-
-    static constexpr VkDeviceSize vertexBufferSize = 1024 * 128; // 2MB
-    static constexpr VkDeviceSize indexBufferSize = 1024 * 512; // 2MB
+    std::vector<RenderState> m_renderCommandStack;
+    std::vector<DrawBatch> m_drawBatches;
 
     static constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+    static constexpr size_t RENDER_COMMAND_STACK_SIZE = 16;
+    static constexpr size_t MAX_OFFSCREEN_LAYER_SIZE = 16;
 
     VkClearValue m_clearColor = {{1.0f, 1.0f, 1.0f, 1.0f}};
 };

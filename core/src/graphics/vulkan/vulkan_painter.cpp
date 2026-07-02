@@ -663,11 +663,12 @@ void VulkanPainter::drawImage(
 
 void VulkanPainter::pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state)
 {
-    // TODO
+    // TODO: GraphicsContext::Stateの利用
+    m_renderer->beginOffscreenLayer(bounds, alpha);
 }
 
 void VulkanPainter::popLayer()
 {
-    // TODO
+    m_renderer->endOffscreenLayer();
 }
 } // karin

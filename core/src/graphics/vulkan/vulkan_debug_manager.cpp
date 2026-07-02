@@ -138,9 +138,4 @@ void VulkanDebugManager::addDebugSupportToInstance(
     createInfo.pNext = &debugCreateInfo;
 }
 
-void VulkanDebugManager::addDebugSupportToDevice(VkDeviceCreateInfo& createInfo) const
-{
-    createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
-    createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
-}
 } // karin

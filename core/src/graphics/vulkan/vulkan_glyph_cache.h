@@ -8,13 +8,12 @@
 #include <vector>
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vma.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/common/geometry/point.h>
-#include "vulkan_context.h"
+#include "vulkan_buffer.h"
 
 namespace karin
 {
@@ -65,7 +64,6 @@ private:
     void createAtlas();
     void createDescriptorSetLayout();
     void createSampler();
-    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     static constexpr int ATLAS_WIDTH = 2048;
     static constexpr int ATLAS_HEIGHT = 2048;
@@ -77,10 +75,8 @@ private:
     std::unordered_map<size_t, GlyphInfo> m_glyphMap;
     std::vector<GlyphUploadInfo> m_uploadQueue;
 
-    VkImage m_atlasImage = VK_NULL_HANDLE;
-    VmaAllocation m_atlasImageAllocation = VK_NULL_HANDLE;
-    VkImageView m_atlasImageView = VK_NULL_HANDLE;
-    VkImageLayout m_atlasImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    VulkanImage m_atlas;
+    bool m_initializeAtlasLayout = false;
     std::vector<VkDescriptorSet> m_atlasDescriptorSets; // One per frame in flight
     VkSampler m_atlasSampler = VK_NULL_HANDLE;
     VkDescriptorSetLayout m_atlasDescriptorSetLayout = VK_NULL_HANDLE;
