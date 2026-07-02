@@ -272,7 +272,10 @@ void VulkanGlyphCache::createAtlas()
             .layerCount = 1,
         },
     };
-    m_atlas.create(imageCreateInfo, imageAllocInfo, viewInfo);
+    if (m_atlas.create(imageCreateInfo, imageAllocInfo, viewInfo) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create glyph atlas");
+    }
 
     std::vector layouts(m_maxFramesInFlight, m_atlasDescriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo = {
