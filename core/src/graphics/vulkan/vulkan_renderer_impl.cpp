@@ -107,12 +107,15 @@ void VulkanRendererImpl::endDraw()
     m_fontRenderer->flushGlyphUploads();
 
     VulkanFrameContext::FrameState state = m_frameContext->beginFrame();
+    if (state.needFinish)
+    {
+        return;
+    }
 
     VkCommandBuffer commandBuffer = state.commandBuffer;
     uint8_t currentFrame = state.frameIndex;
 
     m_geometryBuffer->bind(commandBuffer);
-
 
     for (auto& batch : m_drawBatches)
     {
