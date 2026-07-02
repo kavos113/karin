@@ -389,7 +389,7 @@ void VulkanRendererImpl::endDraw()
             FragPushConstants fragData = {
                 .shapeType = static_cast<uint32_t>(ShapeType::Nothing),
                 .patternType = static_cast<uint32_t>(PatternType::Image),
-                .patternParams = {1.0f, 0.0f, 0.0f, 0.0f}
+                .patternParams = {batch.alpha, 0.0f, 0.0f, 0.0f}
             };
             VkDescriptorSet descriptorSet = m_deviceResources->offscreenImageDescriptorSet(renderTargetImageView);
             vkCmdBindDescriptorSets(
@@ -515,17 +515,18 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     RenderState state = {
         .isOffscreenLayer = true,
         .targetRect = bounds,
-        .layerID = m_lastLayerID
+        .layerID = m_lastLayerID,
+        .alpha = alpha,
     };
     m_renderCommandStack.push_back(state);
 
     // TODO: clear colorを指定できるようにしてもいいかも
-    // TODO: alphaを使う
     m_deviceResources->newOffscreenImage(bounds, m_frameContext->surfaceFormat(), m_lastLayerID);
     DrawBatch batch = {
         .isOffscreenLayer = true,
         .viewport = viewport,
         .scissor = scissor,
+        .alpha = alpha,
         .layerID = m_lastLayerID,
         .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -590,6 +591,7 @@ void VulkanRendererImpl::endOffscreenLayer()
             .isOffscreenLayer = true,
             .viewport = viewport,
             .scissor = scissor,
+            .alpha = state.alpha,
             .layerID = state.layerID,
             .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
