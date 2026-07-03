@@ -24,11 +24,8 @@ void D2DFontRenderer::drawText(const TextBlob& text, Point start, const Pattern&
         throw std::runtime_error("Unsupported font face type");
     }
 
-    D2D1_MATRIX_3X2_F oldTransform;
-    m_deviceContext->GetTransform(&oldTransform);
-
     D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(start.x + text.layoutSize.width / 2, start.y + text.layoutSize.height / 2);
-    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix * oldTransform);
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
 
     std::vector<UINT16> glyphIndices;
     std::vector<DWRITE_GLYPH_OFFSET> glyphOffsets;
@@ -61,7 +58,5 @@ void D2DFontRenderer::drawText(const TextBlob& text, Point start, const Pattern&
         m_deviceResources->brush(pattern).Get(),
         DWRITE_MEASURING_MODE_NATURAL
     );
-
-    m_deviceContext->SetTransform(oldTransform);
 }
 } // karin
