@@ -28,6 +28,14 @@ struct Rectangle
     {
         return pos == other.pos && size == other.size;
     }
+
+    Rectangle move(Point delta) const
+    {
+        return {
+            Point(pos.x + delta.x, pos.y + delta.y),
+            size
+        };
+    }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Rectangle& rect)
