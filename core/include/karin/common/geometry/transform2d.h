@@ -37,6 +37,8 @@ private:
 std::ostream& operator<<(std::ostream& os, const Transform2D& transform);
 
 Point operator*(const Transform2D& transform, const Point& point);
+
+// create transformed AABB
 Rectangle applyTransform(const Transform2D& transform, const Rectangle& rect);
 
 } // karin

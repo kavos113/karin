@@ -664,7 +664,13 @@ void VulkanPainter::drawImage(
 void VulkanPainter::pushLayer(Rectangle bounds, float alpha, const GraphicsContext::State& state)
 {
     // TODO: GraphicsContext::Stateの利用
-    m_renderer->beginOffscreenLayer(bounds, alpha);
+    float halfWidth = bounds.size.width / 2.0f;
+    float halfHeight = bounds.size.height / 2.0f;
+    Rectangle center(-halfWidth, -halfHeight, bounds.size.width, bounds.size.height);
+    Rectangle rec = applyTransform(state.transform, center);
+    rec.pos = rec.pos + Point(bounds.pos.x + halfWidth, bounds.pos.y + halfHeight);
+
+    m_renderer->beginOffscreenLayer(rec, alpha);
 }
 
 void VulkanPainter::popLayer()
