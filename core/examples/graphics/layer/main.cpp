@@ -35,7 +35,7 @@ int main()
                 }
             );
 
-            // gc.multiplyTransform(karin::Transform2D().rotate(std::numbers::pi / 6));
+            gc.multiplyTransform(karin::Transform2D().rotate(std::numbers::pi / 6));
             gc.withLayer(karin::Rectangle(50, 100, 200, 200), 0.7f,
                 [&gc, &whitePattern, &cyanPattern, &magentaPattern]
                 {
