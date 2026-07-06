@@ -1,16 +1,15 @@
-#include <karin/system.h>
+#include <gtest/gtest.h>
+
+#include <numbers>
+
 #include <karin/graphics.h>
 #include <karin/common.h>
 
-#include <memory>
-#include <numbers>
+#include "visual_tester.h"
 
-int main()
+TEST(ExamplesVisualTest, Layer)
 {
-    karin::Application& app = karin::Application::instance();
-    std::unique_ptr<karin::Window> window = app.createWindow("Hello Graphics", 100, 100, 800, 600);
-
-    karin::WindowRenderer renderer(window.get());
+    karin::OffscreenRenderer renderer(800, 600);
 
     renderer.setClearColor(karin::Color(karin::Color::Green));
 
@@ -47,14 +46,15 @@ int main()
         }
     );
 
-    renderer.update();
+    renderer.draw();
 
-    window->setStatus(karin::Window::ShowStatus::SHOW);
-
-    karin::EventPayload event;
-    while (app.waitEvent(event)) {}
+    bool result = VisualTester::checkOrUpdate(
+        "layer",
+        renderer.getImageData(),
+        800,
+        600
+    );
+    ASSERT_TRUE(result);
 
     renderer.cleanUp();
-
-    return 0;
 }
