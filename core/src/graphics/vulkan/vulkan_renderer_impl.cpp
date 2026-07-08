@@ -82,6 +82,7 @@ bool VulkanRendererImpl::beginDraw()
     m_drawBatches.clear();
     m_renderCommandStack.clear();
     m_lastLayerID = 0;
+    m_deviceResources->clearOffscreenImages();
 
     Rectangle targetRect(Point(0, 0), toKarinSize(m_frameContext->extent()));
     RenderState state = {
@@ -428,8 +429,6 @@ void VulkanRendererImpl::endDraw()
     }
 
     m_frameContext->endFrame();
-
-    m_deviceResources->clearOffscreenImages();
 }
 
 void VulkanRendererImpl::resize(Size size)

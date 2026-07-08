@@ -16,6 +16,12 @@ namespace karin
 {
 void VulkanDeviceResources::cleanup()
 {
+    for (auto& image : m_offscreenImages | std::views::values)
+    {
+        image.cleanup();
+    }
+    m_offscreenImages.clear();
+
     for (auto& val : m_gradientPointLutMap | std::views::values)
     {
         vmaDestroyImage(VulkanContext::instance().allocator(), val.image, val.allocation);
