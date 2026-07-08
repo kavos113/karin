@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_TEXT_PLATFORM_H
-#define SRC_GRAPHICS_TEXT_PLATFORM_H
+#ifndef GRAPHICS_TEXT_PLATFORM_H
+#define GRAPHICS_TEXT_PLATFORM_H
 
 #include <memory>
 
@@ -33,4 +33,4 @@ inline std::unique_ptr<IPlatformFontLoader> createFontLoader()
 }
 }
 
-#endif //SRC_GRAPHICS_TEXT_PLATFORM_H
+#endif //GRAPHICS_TEXT_PLATFORM_H

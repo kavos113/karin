@@ -1,5 +1,5 @@
-#ifndef KARIN_COMMON_SIZE_H
-#define KARIN_COMMON_SIZE_H
+#ifndef KARIN_COMMON_GEOMETRY_SIZE_H
+#define KARIN_COMMON_GEOMETRY_SIZE_H
 
 #include <iostream>
 
@@ -22,4 +22,4 @@ inline std::ostream& operator<<(std::ostream& os, const Size& size)
 }
 } // karin
 
-#endif //KARIN_COMMON_SIZE_H
+#endif //KARIN_COMMON_GEOMETRY_SIZE_H

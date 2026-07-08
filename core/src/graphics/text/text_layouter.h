@@ -1,5 +1,5 @@
-#ifndef KARIN_FONT_LAYOUTER_H
-#define KARIN_FONT_LAYOUTER_H
+#ifndef GRAPHICS_TEXT_TEXT_LAYOUTER_H
+#define GRAPHICS_TEXT_TEXT_LAYOUTER_H
 
 #include <karin/common/geometry/rectangle.h>
 #include <karin/graphics/text_style.h>
@@ -29,4 +29,4 @@ public:
 };
 } // karin
 
-#endif //KARIN_FONT_LAYOUTER_H
+#endif //GRAPHICS_TEXT_TEXT_LAYOUTER_H

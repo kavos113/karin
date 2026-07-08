@@ -1,5 +1,5 @@
-#ifndef KARIN_COMMON_COLOR_PATTERN_H
-#define KARIN_COMMON_COLOR_PATTERN_H
+#ifndef KARIN_GRAPHICS_PATTERN_H
+#define KARIN_GRAPHICS_PATTERN_H
 
 #include "image.h"
 
@@ -92,4 +92,4 @@ enum class PatternType : uint32_t
 };
 }
 
-#endif //KARIN_COMMON_COLOR_PATTERN_H
+#endif //KARIN_GRAPHICS_PATTERN_H

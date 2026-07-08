@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
-#define SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+#ifndef GRAPHICS_VULKAN_VULKAN_PAINTER_H
+#define GRAPHICS_VULKAN_VULKAN_PAINTER_H
 
 #include <karin/common/geometry/point.h>
 #include <karin/common/geometry/rectangle.h>
@@ -43,4 +43,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_GRAPHICS_VULKAN_VK_GRAPHICS_CONTEXT_IMPL_H
+#endif //GRAPHICS_VULKAN_VULKAN_PAINTER_H

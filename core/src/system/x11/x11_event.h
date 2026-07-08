@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_SYSTEM_X11_X11_EVENT_H
-#define CORE_SRC_SYSTEM_X11_X11_EVENT_H
+#ifndef SYSTEM_X11_X11_EVENT_H
+#define SYSTEM_X11_X11_EVENT_H
 
 #include <X11/Xlib.h>
 #include <karin/system/event.h>
@@ -11,4 +11,4 @@ namespace karin
 std::optional<Event> translateX11Event(XEvent* event);
 }
 
-#endif //CORE_SRC_SYSTEM_X11_X11_EVENT_H
+#endif //SYSTEM_X11_X11_EVENT_H

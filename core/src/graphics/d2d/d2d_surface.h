@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_D2D_D2D_SURFACE_H
-#define CORE_SRC_GRAPHICS_D2D_D2D_SURFACE_H
+#ifndef GRAPHICS_D2D_D2D_SURFACE_H
+#define GRAPHICS_D2D_D2D_SURFACE_H
 
 #include <d2d1.h>
 #include <wrl/client.h>
@@ -22,4 +22,4 @@ public:
 };
 } // karin
 
-#endif //CORE_SRC_GRAPHICS_D2D_D2D_SURFACE_H
+#endif //GRAPHICS_D2D_D2D_SURFACE_H

@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_TEXT_FONT_MANAGER_H
-#define CORE_SRC_GRAPHICS_TEXT_FONT_MANAGER_H
+#ifndef GRAPHICS_TEXT_FONT_MANAGER_H
+#define GRAPHICS_TEXT_FONT_MANAGER_H
 
 #include <memory>
 #include <unordered_map>
@@ -27,4 +27,4 @@ private:
 };
 } // karin
 
-#endif //CORE_SRC_GRAPHICS_TEXT_FONT_MANAGER_H
+#endif //GRAPHICS_TEXT_FONT_MANAGER_H

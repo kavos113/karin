@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_RESOURCES_PLATFORM_H
-#define SRC_GRAPHICS_RESOURCES_PLATFORM_H
+#ifndef GRAPHICS_PLATFORM_H
+#define GRAPHICS_PLATFORM_H
 
 #include <memory>
 
@@ -99,4 +99,4 @@ inline std::unique_ptr<IPainter> createPainter(IRendererImpl* impl)
 }
 }
 
-#endif //SRC_GRAPHICS_RESOURCES_PLATFORM_H
+#endif //GRAPHICS_PLATFORM_H

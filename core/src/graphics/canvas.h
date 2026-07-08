@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_CANVAS_H
-#define CORE_SRC_GRAPHICS_CANVAS_H
+#ifndef GRAPHICS_CANVAS_H
+#define GRAPHICS_CANVAS_H
 
 #include <vector>
 
@@ -45,4 +45,4 @@ private:
 };
 } // karin
 
-#endif //CORE_SRC_GRAPHICS_CANVAS_H
+#endif //GRAPHICS_CANVAS_H

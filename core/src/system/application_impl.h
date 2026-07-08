@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_IAPPLICATIONIMPL_H
-#define SRC_SYSTEM_IAPPLICATIONIMPL_H
+#ifndef SYSTEM_APPLICATION_IMPL_H
+#define SYSTEM_APPLICATION_IMPL_H
 
 #include <karin/system/event.h>
 
@@ -16,4 +16,4 @@ public:
 };
 } // karin
 
-#endif //SRC_SYSTEM_IAPPLICATIONIMPL_H
+#endif //SYSTEM_APPLICATION_IMPL_H

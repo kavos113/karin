@@ -1,5 +1,5 @@
-#ifndef VK_DEBUG_UTILS_H
-#define VK_DEBUG_UTILS_H
+#ifndef GRAPHICS_VULKAN_VULAKN_FUNCTIONS_H
+#define GRAPHICS_VULKAN_VULAKN_FUNCTIONS_H
 
 #include <vulkan/vulkan.h>
 
@@ -38,4 +38,4 @@ inline void vk_DestroyDebugUtilsMessengerEXT(
     }
 }
 
-#endif //VK_DEBUG_UTILS_H
+#endif //GRAPHICS_VULKAN_VULAKN_FUNCTIONS_H

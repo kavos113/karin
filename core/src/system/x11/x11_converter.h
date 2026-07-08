@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_X11_X11_CONVERTER_H
-#define SRC_SYSTEM_X11_X11_CONVERTER_H
+#ifndef SYSTEM_X11_X11_CONVERTER_H
+#define SYSTEM_X11_X11_CONVERTER_H
 
 #include <karin/system/event.h>
 
@@ -13,4 +13,4 @@ KeyEvent::Modifier x11ConvertModifier(unsigned int state);
 std::string x11ConvertKeyChar(XEvent* event, XIC xic);
 }
 
-#endif //SRC_SYSTEM_X11_X11_CONVERTER_H
+#endif //SYSTEM_X11_X11_CONVERTER_H

@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_VULKAN_VULKAN_BUFER_H
-#define CORE_SRC_GRAPHICS_VULKAN_VULKAN_BUFER_H
+#ifndef GRAPHICS_VULKAN_VULKAN_BUFFER_H
+#define GRAPHICS_VULKAN_VULKAN_BUFFER_H
 
 #include <vulkan/vulkan.h>
 #include "vma.h"
@@ -159,4 +159,4 @@ struct VulkanImage
 };
 } // karin
 
-#endif //CORE_SRC_GRAPHICS_VULKAN_VULKAN_BUFER_H
+#endif //GRAPHICS_VULKAN_VULKAN_BUFFER_H

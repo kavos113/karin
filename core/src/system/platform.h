@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_PLATFORM_H
-#define SRC_SYSTEM_PLATFORM_H
+#ifndef SYSTEM_PLATFORM_H
+#define SYSTEM_PLATFORM_H
 
 #include "application_impl.h"
 #include "window_impl.h"
@@ -50,4 +50,4 @@ inline std::unique_ptr<IWindowImpl> createWindowImpl(
 }
 }
 
-#endif //SRC_SYSTEM_PLATFORM_H
+#endif //SYSTEM_PLATFORM_H

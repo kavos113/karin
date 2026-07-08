@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_WINDOW_IMPL_H
-#define SRC_SYSTEM_WINDOW_IMPL_H
+#ifndef SYSTEM_WINDOW_IMPL_H
+#define SYSTEM_WINDOW_IMPL_H
 #include <functional>
 
 #include <karin/common/geometry/size.h>
@@ -32,4 +32,4 @@ public:
 };
 } // karin
 
-#endif //SRC_SYSTEM_WINDOW_IMPL_H
+#endif //SYSTEM_WINDOW_IMPL_H

@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_GEOMETRY_D2D_RECTANGLE_H
-#define SRC_COMMON_GEOMETRY_D2D_RECTANGLE_H
+#ifndef GRAPHICS_D2D_D2D_GEOMETRY_H
+#define GRAPHICS_D2D_D2D_GEOMETRY_H
 
 #include <karin/common/geometry/rectangle.h>
 #include <d2d1_1.h>
@@ -27,4 +27,4 @@ inline D2D1_SIZE_F toD2DSize(const Size& size)
 }
 }
 
-#endif //SRC_COMMON_GEOMETRY_D2D_RECTANGLE_H
+#endif //GRAPHICS_D2D_D2D_GEOMETRY_H

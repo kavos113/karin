@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_GEOMETRY_GLM_GEOMETRY_H
-#define SRC_COMMON_GEOMETRY_GLM_GEOMETRY_H
+#ifndef GRAPHICS_VULKAN_GLM_GEOMETRY_H
+#define GRAPHICS_VULKAN_GLM_GEOMETRY_H
 
 #include <glm/glm.hpp>
 
@@ -19,4 +19,4 @@ inline glm::vec2 toGlmVec2(const Size& size)
 }
 }
 
-#endif //SRC_COMMON_GEOMETRY_GLM_GEOMETRY_H
+#endif //GRAPHICS_VULKAN_GLM_GEOMETRY_H

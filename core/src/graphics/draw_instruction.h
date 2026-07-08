@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GRAPHICS_DRAW_INSTRUCTION_H
-#define CORE_SRC_GRAPHICS_DRAW_INSTRUCTION_H
+#ifndef GRAPHICS_DRAW_INSTRUCTION_H
+#define GRAPHICS_DRAW_INSTRUCTION_H
 
 #include <variant>
 #include <vector>
@@ -129,4 +129,4 @@ struct DrawInstruction
 
 }
 
-#endif //CORE_SRC_GRAPHICS_DRAW_INSTRUCTION_H
+#endif //GRAPHICS_DRAW_INSTRUCTION_H

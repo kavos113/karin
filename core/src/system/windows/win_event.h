@@ -1,5 +1,5 @@
-#ifndef KARIN_WIN_EVENT_H
-#define KARIN_WIN_EVENT_H
+#ifndef SYSTEM_WINDOWS_WIN_EVENT_H
+#define SYSTEM_WINDOWS_WIN_EVENT_H
 
 #include <windows.h>
 #include <karin/system/event.h>
@@ -13,4 +13,4 @@ namespace karin
 std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lParam);
 } // karin
 
-#endif //KARIN_WIN_EVENT_H
+#endif //SYSTEM_WINDOWS_WIN_EVENT_H

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_D2D_D2D_FONT_RENDERER_H
-#define SRC_GRAPHICS_D2D_D2D_FONT_RENDERER_H
+#ifndef GRAPHICS_D2D_D2D_FONT_RENDERER_H
+#define GRAPHICS_D2D_D2D_FONT_RENDERER_H
 
 #include <d2d1_3.h>
 #include <wrl/client.h>
@@ -24,4 +24,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_D2D_D2D_FONT_RENDERER_H
+#endif //GRAPHICS_D2D_D2D_FONT_RENDERER_H

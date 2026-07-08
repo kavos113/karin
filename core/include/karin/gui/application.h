@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_APPLICATION_H
-#define SRC_GUI_APPLICATION_H
+#ifndef KARIN_GUI_APPLICATION_H
+#define KARIN_GUI_APPLICATION_H
 
 #include "window.h"
 
@@ -35,4 +35,4 @@ private:
 };
 } // karin::gui
 
-#endif //SRC_GUI_APPLICATION_H
+#endif //KARIN_GUI_APPLICATION_H

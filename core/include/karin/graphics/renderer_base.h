@@ -1,5 +1,5 @@
-#ifndef CORE_KARIN_GRAPHICS_RENDERER_BASE_H
-#define CORE_KARIN_GRAPHICS_RENDERER_BASE_H
+#ifndef KARIN_GRAPHICS_RENDERER_BASE_H
+#define KARIN_GRAPHICS_RENDERER_BASE_H
 
 #include <cstddef>
 #include <cstdint>
@@ -53,4 +53,4 @@ protected:
 };
 } // karin
 
-#endif //CORE_KARIN_GRAPHICS_RENDERER_BASE_H
+#endif //KARIN_GRAPHICS_RENDERER_BASE_H

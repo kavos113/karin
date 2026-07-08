@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_COLOR_D2D_COLOR_H
-#define SRC_COMMON_COLOR_D2D_COLOR_H
+#ifndef GRAPHICS_D2D_D2D_COLOR_H
+#define GRAPHICS_D2D_D2D_COLOR_H
 
 #include <d2d1_1.h>
 #include <karin/common/color/color.h>
@@ -12,4 +12,4 @@ inline D2D1_COLOR_F toD2DColor(const Color& color)
 }
 }
 
-#endif //SRC_COMMON_COLOR_D2D_COLOR_H
+#endif //GRAPHICS_D2D_D2D_COLOR_H

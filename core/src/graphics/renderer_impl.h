@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_GRAPHICS_RENDERER_IMPL_H
-#define SRC_GRAPHICS_GRAPHICS_RENDERER_IMPL_H
+#ifndef GRAPHICS_RENDERER_IMPL_H
+#define GRAPHICS_RENDERER_IMPL_H
 
 #include <cstddef>
 #include <cstdint>
@@ -35,4 +35,4 @@ public:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_GRAPHICS_RENDERER_IMPL_H
+#endif //GRAPHICS_RENDERER_IMPL_H

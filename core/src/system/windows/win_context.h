@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_WINDOWS_WIN_CONTEXT_H
-#define SRC_SYSTEM_WINDOWS_WIN_CONTEXT_H
+#ifndef SYSTEM_WINDOWS_WIN_CONTEXT_H
+#define SYSTEM_WINDOWS_WIN_CONTEXT_H
 #include "win_window_class_registry.h"
 
 namespace karin
@@ -22,4 +22,4 @@ private:
 };
 } // karin
 
-#endif //SRC_SYSTEM_WINDOWS_WIN_CONTEXT_H
+#endif //SYSTEM_WINDOWS_WIN_CONTEXT_H
