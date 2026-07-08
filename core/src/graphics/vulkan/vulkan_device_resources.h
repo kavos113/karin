@@ -74,6 +74,7 @@ public:
 
     void clearOffscreenImages() const;
     VulkanImage* offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
+    Rectangle offscreenImageUv(uint16_t layerID, Size imageSize) const;
 
 private:
     static constexpr size_t LUT_WIDTH = 256;

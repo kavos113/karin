@@ -364,22 +364,23 @@ void VulkanRendererImpl::endDraw()
                 m_pipelines[PipelineType::Geometry]->pipeline()
             );
 
+            Rectangle uv = m_deviceResources->offscreenImageUv(batch.layerID, {batch.viewport.width, batch.viewport.height});
             std::vector<VulkanPipeline::Vertex> vertices = {
                 {
                     .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y},
-                    .uv = {0.0f, 0.0f},
+                    .uv = {uv.pos.x, uv.pos.y},
                 },
                 {
                     .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y},
-                    .uv = {1.0f, 0.0f},
+                    .uv = {uv.pos.x + uv.size.width, uv.pos.y},
                 },
                 {
                     .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y + batch.targetRect.extent.height},
-                    .uv = {1.0f, 1.0f},
+                    .uv = {uv.pos.x + uv.size.width, uv.pos.y + uv.size.height},
                 },
                 {
                     .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y + batch.targetRect.extent.height},
-                    .uv = {0.0f, 1.0f},
+                    .uv = {uv.pos.x, uv.pos.y + uv.size.height},
                 }
             };
             std::vector<uint16_t> indices = {

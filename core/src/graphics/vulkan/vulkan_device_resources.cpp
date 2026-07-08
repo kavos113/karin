@@ -21,6 +21,8 @@ public:
     ~VulkanLayerPool() = default;
 
     VulkanImage *layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
+    Rectangle layerUv(uint16_t layerID, float width, float height) const;
+
     void cleanup();
     void cleanOnFrame();
 
@@ -28,8 +30,8 @@ private:
     struct Layer
     {
         VulkanImage image;
-        float width;
-        float height;
+        float width = 0.0f;
+        float height = 0.0f;
     };
 
     std::vector<Layer> m_layers;
@@ -114,6 +116,18 @@ VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height,
     }
 
     return &layer.image;
+}
+
+Rectangle VulkanLayerPool::layerUv(uint16_t layerID, float width, float height) const
+{
+    if (layerID >= m_layers.size())
+    {
+        throw std::invalid_argument("invalid layer id");
+    }
+
+    auto& layer = m_layers[layerID];
+
+    return Rectangle(0.0f, 0.0f, width / layer.width, height / layer.height);
 }
 
 void VulkanLayerPool::cleanup()
@@ -920,6 +934,11 @@ void VulkanDeviceResources::clearOffscreenImages() const
 VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
 {
     return m_offscreenLayerPool->layer(layerID, imageSize.width, imageSize.height, imageFormat);
+}
+
+Rectangle VulkanDeviceResources::offscreenImageUv(uint16_t layerID, Size imageSize) const
+{
+    return m_offscreenLayerPool->layerUv(layerID, imageSize.width, imageSize.height);
 }
 
 VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)
