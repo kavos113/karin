@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_LEAF_NODE_H
-#define SRC_GUI_LEAF_NODE_H
+#ifndef KARIN_GUI_LEAF_NODE_H
+#define KARIN_GUI_LEAF_NODE_H
 
 #include "view_node.h"
 
@@ -24,4 +24,4 @@ private:
 };
 } // karin::gui
 
-#endif //SRC_GUI_LEAF_NODE_H
+#endif //KARIN_GUI_LEAF_NODE_H

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_D2D_D2D_CONTEXT_H
-#define SRC_GRAPHICS_D2D_D2D_CONTEXT_H
+#ifndef GRAPHICS_D2D_D2D_CONTEXT_H
+#define GRAPHICS_D2D_D2D_CONTEXT_H
 
 #include <d2d1_1.h>
 #include <dxgi1_6.h>
@@ -50,4 +50,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_D2D_D2D_CONTEXT_H
+#endif //GRAPHICS_D2D_D2D_CONTEXT_H

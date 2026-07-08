@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_WINDOWS_WIN_CONVERTER_H
-#define SRC_SYSTEM_WINDOWS_WIN_CONVERTER_H
+#ifndef SYSTEM_WINDOWS_WIN_CONVERTER_H
+#define SYSTEM_WINDOWS_WIN_CONVERTER_H
 
 #include <karin/system/event.h>
 
@@ -15,4 +15,4 @@ KeyEvent::Modifier getWinModifierState();
 std::string winKeyToChar(WPARAM wParam, LPARAM lParam);
 }
 
-#endif //SRC_SYSTEM_WINDOWS_WIN_CONVERTER_H
+#endif //SYSTEM_WINDOWS_WIN_CONVERTER_H

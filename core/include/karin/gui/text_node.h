@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_TEXT_NODE_H
-#define SRC_GUI_TEXT_NODE_H
+#ifndef KARIN_GUI_TEXT_NODE_H
+#define KARIN_GUI_TEXT_NODE_H
 
 #include <karin/graphics/text_style.h>
 #include <karin/graphics/paragraph_style.h>
@@ -35,4 +35,4 @@ private:
 };
 } // karin::gui
 
-#endif //SRC_GUI_TEXT_NODE_H
+#endif //KARIN_GUI_TEXT_NODE_H

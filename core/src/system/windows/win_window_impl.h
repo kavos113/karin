@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
-#define SRC_SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
+#ifndef SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
+#define SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
 
 #include <windows.h>
 #include <window_impl.h>
@@ -62,4 +62,4 @@ private:
 };
 } // karin
 
-#endif //SRC_SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
+#endif //SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H

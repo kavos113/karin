@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
-#define SRC_GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
+#ifndef GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
+#define GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
 
 #include <karin/graphics/graphics_context.h>
 #include "font_renderer_impl.h"
@@ -48,4 +48,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H
+#endif //GRAPHICS_VULKAN_VULKAN_FONT_RENDERER_H

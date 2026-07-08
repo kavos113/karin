@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_VIEW_NODE_H
-#define SRC_GUI_VIEW_NODE_H
+#ifndef KARIN_GUI_VIEW_NODE_H
+#define KARIN_GUI_VIEW_NODE_H
 
 #include <karin/common/geometry/size.h>
 #include <karin/common/geometry/point.h>
@@ -87,4 +87,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GUI_VIEW_NODE_H
+#endif //KARIN_GUI_VIEW_NODE_H

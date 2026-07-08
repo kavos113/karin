@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_X11_X11_WINDOW_IMPL_H
-#define SRC_SYSTEM_X11_X11_WINDOW_IMPL_H
+#ifndef SYSTEM_X11_X11_WINDOW_IMPL_H
+#define SYSTEM_X11_X11_WINDOW_IMPL_H
 #include <mutex>
 #include <string>
 #include <vector>
@@ -77,4 +77,4 @@ private:
 };
 } // karin
 
-#endif //SRC_SYSTEM_X11_X11_WINDOW_IMPL_H
+#endif //SYSTEM_X11_X11_WINDOW_IMPL_H

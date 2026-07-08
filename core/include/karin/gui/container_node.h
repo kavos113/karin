@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_CONTAINER_NODE_H
-#define SRC_GUI_CONTAINER_NODE_H
+#ifndef KARIN_GUI_CONTAINER_NODE_H
+#define KARIN_GUI_CONTAINER_NODE_H
 
 #include <memory>
 #include <vector>
@@ -57,4 +57,4 @@ protected:
 };
 } // karin::gui
 
-#endif //SRC_GUI_CONTAINER_NODE_H
+#endif //KARIN_GUI_CONTAINER_NODE_H

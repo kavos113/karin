@@ -1,5 +1,5 @@
-#ifndef KARIN_COMMON_POINT_H
-#define KARIN_COMMON_POINT_H
+#ifndef KARIN_COMMON_GEOMETRY_POINT_H
+#define KARIN_COMMON_GEOMETRY_POINT_H
 
 #include <iostream>
 
@@ -37,4 +37,4 @@ inline std::ostream& operator<<(std::ostream& os, const Point& point)
 }
 } // karin
 
-#endif //KARIN_COMMON_POINT_H
+#endif //KARIN_COMMON_GEOMETRY_POINT_H

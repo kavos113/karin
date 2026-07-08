@@ -1,5 +1,5 @@
-#ifndef SRC_GUI_WINDOW_H
-#define SRC_GUI_WINDOW_H
+#ifndef KARIN_GUI_WINDOW_H
+#define KARIN_GUI_WINDOW_H
 
 #include <karin/system/window.h>
 #include <karin/system/event.h>
@@ -49,4 +49,4 @@ private:
 };
 } // karin::gui
 
-#endif //SRC_GUI_WINDOW_H
+#endif //KARIN_GUI_WINDOW_H

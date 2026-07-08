@@ -1,5 +1,5 @@
-#ifndef KARIN_COMMON_RECTANGLE_H
-#define KARIN_COMMON_RECTANGLE_H
+#ifndef KARIN_COMMON_GEOMETRY_RECTANGLE_H
+#define KARIN_COMMON_GEOMETRY_RECTANGLE_H
 #include "point.h"
 #include "size.h"
 
@@ -44,4 +44,4 @@ inline std::ostream& operator<<(std::ostream& os, const Rectangle& rect)
 }
 } // karin
 
-#endif //KARIN_COMMON_RECTANGLE_H
+#endif //KARIN_COMMON_GEOMETRY_RECTANGLE_H

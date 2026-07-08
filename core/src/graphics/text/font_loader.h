@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_TEXT_FONT_LOADER_H
-#define SRC_GRAPHICS_TEXT_FONT_LOADER_H
+#ifndef GRAPHICS_TEXT_FONT_LOADER_H
+#define GRAPHICS_TEXT_FONT_LOADER_H
 
 #include <karin/graphics/font.h>
 #include <karin/graphics/font_face.h>
@@ -25,4 +25,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_TEXT_FONT_LOADER_H
+#endif //GRAPHICS_TEXT_FONT_LOADER_H

@@ -1,5 +1,5 @@
-#ifndef KARIN_GRAPHICS_GRAPHICS_PATH_H
-#define KARIN_GRAPHICS_GRAPHICS_PATH_H
+#ifndef KARIN_GRAPHICS_PATH_H
+#define KARIN_GRAPHICS_PATH_H
 
 #include <memory>
 #include <karin/common/geometry/point.h>
@@ -43,4 +43,4 @@ private:
 };
 } // karin
 
-#endif //KARIN_GRAPHICS_GRAPHICS_PATH_H
+#endif //KARIN_GRAPHICS_PATH_H

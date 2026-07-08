@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H
-#define SRC_GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H
+#ifndef GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H
+#define GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H
 
 #include <text/harfbuzz_provider.h>
 #include <karin/graphics/font_face.h>
@@ -27,4 +27,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H
+#endif //GRAPHICS_TEXT_WINDOWS_DWRITE_FONT_FACE_H

@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_D2D_MATRIX_CONVERTER_H
-#define SRC_COMMON_D2D_MATRIX_CONVERTER_H
+#ifndef COMMON_D2D_MATRIX_CONVERTER_H
+#define COMMON_D2D_MATRIX_CONVERTER_H
 
 #include <d2d1.h>
 #include <karin/common/geometry/transform2d.h>
@@ -20,4 +20,4 @@ inline D2D1_MATRIX_3X2_F toD2DMatrix(const Transform2D& transform)
 }
 
 
-#endif //SRC_COMMON_D2D_MATRIX_CONVERTER_H
+#endif //COMMON_D2D_MATRIX_CONVERTER_H

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H
-#define SRC_GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H
+#ifndef GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H
+#define GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H
 
 #include <karin/graphics/font_face.h>
 #include <karin/graphics/font.h>
@@ -20,4 +20,4 @@ public:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H
+#endif //GRAPHICS_TEXT_FONT_LOADER_PLATFORM_H

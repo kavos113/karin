@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_UTILS_HASH_H
-#define SRC_COMMON_UTILS_HASH_H
+#ifndef COMMON_UTILS_HASH_H
+#define COMMON_UTILS_HASH_H
 
 #include <functional>
 
@@ -10,4 +10,4 @@ void hash_combine(std::size_t& seed, const T& v)
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-#endif //SRC_COMMON_UTILS_HASH_H
+#endif //COMMON_UTILS_HASH_H

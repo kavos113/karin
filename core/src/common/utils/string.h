@@ -1,5 +1,5 @@
-#ifndef SRC_COMMON_UTILS_STRING_H
-#define SRC_COMMON_UTILS_STRING_H
+#ifndef COMMON_UTILS_STRING_H
+#define COMMON_UTILS_STRING_H
 
 #ifdef KARIN_PLATFORM_WINDOWS
 #include <windows.h>
@@ -124,4 +124,4 @@ inline std::wstring toWString(const std::string& str)
 #endif
 }
 
-#endif //SRC_COMMON_UTILS_STRING_H
+#endif //COMMON_UTILS_STRING_H

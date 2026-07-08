@@ -1,5 +1,5 @@
-#ifndef KARIN_GRAPHICS_GRAPHICS_RENDERER_H
-#define KARIN_GRAPHICS_GRAPHICS_RENDERER_H
+#ifndef KARIN_GRAPHICS_WINDOW_RENDERER_H
+#define KARIN_GRAPHICS_WINDOW_RENDERER_H
 
 #include <karin/system/window.h>
 #include "renderer_base.h"
@@ -29,4 +29,4 @@ private:
 };
 } // karin
 
-#endif //KARIN_GRAPHICS_GRAPHICS_RENDERER_H
+#endif //KARIN_GRAPHICS_WINDOW_RENDERER_H

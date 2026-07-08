@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_X11_X11_CONTEXT_H
-#define SRC_SYSTEM_X11_X11_CONTEXT_H
+#ifndef SYSTEM_X11_X11_CONTEXT_H
+#define SYSTEM_X11_X11_CONTEXT_H
 
 #include <X11/Xlib.h>
 
@@ -19,4 +19,4 @@ private:
 };
 } // karin
 
-#endif //SRC_SYSTEM_X11_X11_CONTEXT_H
+#endif //SYSTEM_X11_X11_CONTEXT_H

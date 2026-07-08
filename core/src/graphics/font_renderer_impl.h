@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_FONT_RENDERER_H
-#define SRC_GRAPHICS_FONT_RENDERER_H
+#ifndef GRAPHICS_FONT_RENDERER_IMPL_H
+#define GRAPHICS_FONT_RENDERER_IMPL_H
 
 #include <karin/common/geometry/point.h>
 #include <karin/graphics/pattern.h>
@@ -18,4 +18,4 @@ public:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_FONT_RENDERER_H
+#endif //GRAPHICS_FONT_RENDERER_IMPL_H

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_GRAPHICS_PATH_IMPL_H
-#define SRC_GRAPHICS_GRAPHICS_PATH_IMPL_H
+#ifndef GRAPHICS_PATH_IMPL_H
+#define GRAPHICS_PATH_IMPL_H
 
 #include <variant>
 #include <vector>
@@ -50,4 +50,4 @@ private:
 };
 } // karin
 
-#endif //SRC_GRAPHICS_GRAPHICS_PATH_IMPL_H
+#endif //GRAPHICS_PATH_IMPL_H

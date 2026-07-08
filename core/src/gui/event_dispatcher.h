@@ -1,5 +1,5 @@
-#ifndef CORE_SRC_GUI_EVENT_DISPATCHER_H
-#define CORE_SRC_GUI_EVENT_DISPATCHER_H
+#ifndef GUI_EVENT_DISPATCHER_H
+#define GUI_EVENT_DISPATCHER_H
 
 #include <karin/system/event.h>
 #include <karin/gui/view_node.h>
@@ -28,4 +28,4 @@ private:
 
 } // karin::gui
 
-#endif //CORE_SRC_GUI_EVENT_DISPATCHER_H
+#endif //GUI_EVENT_DISPATCHER_H
