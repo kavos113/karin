@@ -50,20 +50,13 @@ private:
     std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
 };
 
+class VulkanLayerPool;
+
 class VulkanDeviceResources
 {
 public:
-    explicit VulkanDeviceResources(
-        size_t maxFramesInFlight
-    )
-        : m_maxFramesInFlight(maxFramesInFlight)
-    {
-        createSamplers();
-        createDescriptorSetLayouts();
-        createDummyTexture();
-    }
-
-    ~VulkanDeviceResources() = default;
+    explicit VulkanDeviceResources(size_t maxFramesInFlight);
+    ~VulkanDeviceResources();
 
     Image createImage(const std::vector<std::byte>& data, uint32_t width, uint32_t height);
 
@@ -79,9 +72,8 @@ public:
         return m_geometryDescriptorSetLayout;
     }
 
-    void newOffscreenImage(const Rectangle& rect, VkFormat imageFormat, uint16_t layerID);
-    void clearOffscreenImages();
-    VulkanImage* offscreenImage(uint16_t layerID);
+    void clearOffscreenImages() const;
+    VulkanImage* offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
 
 private:
     static constexpr size_t LUT_WIDTH = 256;
@@ -93,6 +85,8 @@ private:
     static std::array<uint8_t, LUT_WIDTH * 4> generateGradientPointLut(
         const std::vector<GradientPoints::GradientPoint>& gradientPoints
     );
+
+    std::unique_ptr<VulkanLayerPool> m_offscreenLayerPool;
 
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;

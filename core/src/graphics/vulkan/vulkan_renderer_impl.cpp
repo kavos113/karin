@@ -131,7 +131,7 @@ void VulkanRendererImpl::endDraw()
 
         if (batch.isOffscreenLayer)
         {
-            VulkanImage *image = m_deviceResources->offscreenImage(batch.layerID);
+            VulkanImage *image = m_deviceResources->offscreenImage(batch.layerID, {batch.viewport.width, batch.viewport.height}, m_frameContext->surfaceFormat());
 
             // TODO: poplayerのあとはUNDEFINEDではない
             transitionImageLayout(
@@ -528,7 +528,6 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
     m_renderCommandStack.push_back(state);
 
     // TODO: clear colorを指定できるようにしてもいいかも
-    m_deviceResources->newOffscreenImage(bounds, m_frameContext->surfaceFormat(), m_lastLayerID);
     DrawBatch batch = {
         .isOffscreenLayer = true,
         .viewport = viewport,

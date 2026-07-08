@@ -14,6 +14,139 @@
 
 namespace karin
 {
+class VulkanLayerPool
+{
+public:
+    VulkanLayerPool();
+    ~VulkanLayerPool() = default;
+
+    VulkanImage *layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
+    void cleanup();
+    void cleanOnFrame();
+
+private:
+    struct Layer
+    {
+        VulkanImage image;
+        float width;
+        float height;
+    };
+
+    std::vector<Layer> m_layers;
+    std::vector<VulkanImage> m_deletionQueue;
+
+    static constexpr size_t DEFAULT_LAYERS_SIZE = 16;
+};
+
+VulkanLayerPool::VulkanLayerPool()
+{
+    m_layers.resize(DEFAULT_LAYERS_SIZE);
+}
+
+VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height, VkFormat imageFormat)
+{
+    if (layerID >= m_layers.size())
+    {
+        m_layers.resize(layerID + DEFAULT_LAYERS_SIZE);
+    }
+
+    auto& layer = m_layers[layerID];
+
+    if (!layer.image.valid() || layer.width < width || layer.height < height)
+    {
+        if (layer.image.valid())
+        {
+            m_deletionQueue.push_back(std::move(layer.image));
+        }
+
+        float newWidth = width * 1.2f;
+        float newHeight = height * 1.2f;
+
+        VkImageCreateInfo imageInfo = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+            .imageType = VK_IMAGE_TYPE_2D,
+            .format = imageFormat,
+            .extent = {
+                .width = static_cast<uint32_t>(newWidth),
+                .height = static_cast<uint32_t>(newHeight),
+                .depth = 1,
+            },
+            .mipLevels = 1,
+            .arrayLayers = 1,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .tiling = VK_IMAGE_TILING_OPTIMAL,
+            .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        };
+        VmaAllocationCreateInfo allocationInfo = {
+            .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+            .usage = VMA_MEMORY_USAGE_AUTO,
+        };
+        VkImageViewCreateInfo viewInfo = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = imageFormat,
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+        };
+
+        VulkanImage image;
+        if (image.create(imageInfo, allocationInfo, viewInfo) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create offscreen image");
+        }
+
+        layer.image = std::move(image);
+        layer.width = newWidth;
+        layer.height = newHeight;
+    }
+
+    return &layer.image;
+}
+
+void VulkanLayerPool::cleanup()
+{
+    for (auto& layer : m_layers)
+    {
+        layer.image.cleanup();
+    }
+
+    m_layers.clear();
+}
+
+void VulkanLayerPool::cleanOnFrame()
+{
+    for (auto& image : m_deletionQueue)
+    {
+        image.cleanup();
+    }
+    m_deletionQueue.clear();
+}
+
+VulkanDeviceResources::VulkanDeviceResources(size_t maxFramesInFlight)
+    : m_maxFramesInFlight(maxFramesInFlight)
+{
+    createSamplers();
+    createDescriptorSetLayouts();
+    createDummyTexture();
+
+    m_offscreenLayerPool = std::make_unique<VulkanLayerPool>();
+}
+
+VulkanDeviceResources::~VulkanDeviceResources() = default;
+
 void VulkanDeviceResources::cleanup()
 {
     for (auto& image : m_offscreenImages | std::views::values)
@@ -21,6 +154,8 @@ void VulkanDeviceResources::cleanup()
         image.cleanup();
     }
     m_offscreenImages.clear();
+
+    m_offscreenLayerPool->cleanup();
 
     for (auto& val : m_gradientPointLutMap | std::views::values)
     {
@@ -777,75 +912,14 @@ void VulkanDeviceResources::createDummyTexture()
     );
 }
 
-void VulkanDeviceResources::newOffscreenImage(const Rectangle& rect, VkFormat imageFormat, uint16_t layerID)
+void VulkanDeviceResources::clearOffscreenImages() const
 {
-    VkImageCreateInfo imageInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-        .imageType = VK_IMAGE_TYPE_2D,
-        .format = imageFormat,
-        .extent = {
-            .width = static_cast<uint32_t>(rect.size.width),
-            .height = static_cast<uint32_t>(rect.size.height),
-            .depth = 1,
-        },
-        .mipLevels = 1,
-        .arrayLayers = 1,
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .tiling = VK_IMAGE_TILING_OPTIMAL,
-        .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-    };
-    VmaAllocationCreateInfo allocationInfo = {
-        .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-        .usage = VMA_MEMORY_USAGE_AUTO,
-    };
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = imageFormat,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-
-    VulkanImage image;
-    if (image.create(imageInfo, allocationInfo, viewInfo) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create offscreen image");
-    }
-
-    m_offscreenImages[layerID] = std::move(image);
+    m_offscreenLayerPool->cleanOnFrame();
 }
 
-void VulkanDeviceResources::clearOffscreenImages()
+VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
 {
-    for (auto& image : m_offscreenImages | std::views::values)
-    {
-        image.cleanup();
-    }
-
-    m_offscreenImages.clear();
-}
-
-VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID)
-{
-    if (!m_offscreenImages.contains(layerID))
-    {
-        return nullptr;
-    }
-
-    return &m_offscreenImages[layerID];
+    return m_offscreenLayerPool->layer(layerID, imageSize.width, imageSize.height, imageFormat);
 }
 
 VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)
