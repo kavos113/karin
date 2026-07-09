@@ -173,18 +173,15 @@ void VulkanDeviceResources::cleanup()
 
     for (auto& val : m_gradientPointLutMap | std::views::values)
     {
-        vmaDestroyImage(VulkanContext::instance().allocator(), val.image, val.allocation);
-        vkDestroyImageView(VulkanContext::instance().device(), val.imageView, nullptr);
+        val.cleanup();
     }
 
     for (auto& val : m_textureMap | std::views::values)
     {
-        vmaDestroyImage(VulkanContext::instance().allocator(), val.image, val.allocation);
-        vkDestroyImageView(VulkanContext::instance().device(), val.imageView, nullptr);
+        val.cleanup();
     }
 
-    vmaDestroyImage(VulkanContext::instance().allocator(), m_dummyTexture.image, m_dummyTexture.allocation);
-    vkDestroyImageView(VulkanContext::instance().device(), m_dummyTexture.imageView, nullptr);
+    m_dummyTexture.cleanup();
 
     m_gradientPointLutMap.clear();
     m_textureMap.clear();
@@ -234,7 +231,6 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     memcpy(mappedData, data.data(), data.size());
     vmaUnmapMemory(VulkanContext::instance().allocator(), stagingBufferMemory);
 
-
     VmaAllocationCreateInfo gradientPointLutAllocationInfo = {
         .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
         .usage = VMA_MEMORY_USAGE_AUTO,
@@ -252,14 +248,28 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage gradientPointLutImage;
-    VmaAllocation gradientPointLutImageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &gradientPointLutAllocationInfo, &gradientPointLutImage,
-        &gradientPointLutImageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage gradientPointLutImage;
+    if (gradientPointLutImage.create(imageInfo, gradientPointLutAllocationInfo, viewInfo) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create gradient point LUT image");
+        throw std::runtime_error("failed to create gradient point lut image");
     }
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
@@ -270,7 +280,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = gradientPointLutImage,
+        .image = gradientPointLutImage.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -301,7 +311,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .imageExtent = {LUT_WIDTH, 1, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, gradientPointLutImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, gradientPointLutImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -310,7 +320,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = gradientPointLutImage,
+        .image = gradientPointLutImage.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -330,31 +340,6 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
-
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = gradientPointLutImage,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView gradientPointLutImageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &gradientPointLutImageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create gradient point LUT image view");
-    }
 
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
@@ -390,7 +375,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = gradientPointLutSampler,
-            .imageView = gradientPointLutImageView,
+            .imageView = gradientPointLutImage.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -407,9 +392,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     }
 
     VulkanTextureResourceDescriptor lutTexture(
-        gradientPointLutImage,
-        gradientPointLutImageAllocation,
-        gradientPointLutImageView,
+        (std::move(gradientPointLutImage)),
         descriptorSets
     );
     auto inserted = m_gradientPointLutMap.insert_or_assign(points.hash(), std::move(lutTexture));
@@ -559,11 +542,26 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage image;
-    VmaAllocation imageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &imageAllocationInfo, &image, &imageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage image;
+    if (image.create(imageInfo, imageAllocationInfo, viewInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image");
     }
@@ -576,7 +574,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -607,7 +605,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .imageExtent = {width, height, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -616,7 +614,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -636,31 +634,6 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
 
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView imageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create image view");
-    }
-
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
     VkDescriptorSetAllocateInfo allocInfo = {
@@ -678,7 +651,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = m_clampSampler,
-            .imageView = imageView,
+            .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -696,9 +669,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
 
 
     VulkanTextureResourceDescriptor texture(
-        image,
-        imageAllocation,
-        imageView,
+        (std::move(image)),
         descriptorSets
     );
 
@@ -783,13 +754,28 @@ void VulkanDeviceResources::createDummyTexture()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage image;
-    VmaAllocation imageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &imageAllocationInfo, &image, &imageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage image;
+    if (image.create(imageInfo, imageAllocationInfo, viewInfo) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create dummy texture image");
+        throw std::runtime_error("failed to create image");
     }
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
@@ -800,7 +786,7 @@ void VulkanDeviceResources::createDummyTexture()
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -831,7 +817,7 @@ void VulkanDeviceResources::createDummyTexture()
         .imageExtent = {1, 1, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -840,7 +826,7 @@ void VulkanDeviceResources::createDummyTexture()
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -860,31 +846,6 @@ void VulkanDeviceResources::createDummyTexture()
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
 
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView imageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create image view for dummy texture");
-    }
-
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
     VkDescriptorSetAllocateInfo allocInfo = {
@@ -902,7 +863,7 @@ void VulkanDeviceResources::createDummyTexture()
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = m_clampSampler,
-            .imageView = imageView,
+            .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -919,9 +880,7 @@ void VulkanDeviceResources::createDummyTexture()
     }
 
     m_dummyTexture = VulkanTextureResourceDescriptor(
-        image,
-        imageAllocation,
-        imageView,
+        std::move(image),
         descriptorSets
     );
 }

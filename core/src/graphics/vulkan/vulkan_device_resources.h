@@ -21,10 +21,28 @@ namespace karin
 class VulkanTextureResourceDescriptor
 {
 public:
-    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&&) noexcept = default;
-    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&&) noexcept = default;
     VulkanTextureResourceDescriptor(const VulkanTextureResourceDescriptor&) = delete;
     VulkanTextureResourceDescriptor& operator=(const VulkanTextureResourceDescriptor&) = delete;
+
+    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&& other) noexcept
+        : image(std::move(other.image)), descriptorSets(other.descriptorSets)
+    {
+        other.descriptorSets.clear();
+    }
+
+    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&& other) noexcept
+    {
+        if (this != &other)
+        {
+            cleanup();
+
+            image = std::move(other.image);
+            descriptorSets = std::move(other.descriptorSets);
+
+            other.descriptorSets.clear();
+        }
+        return *this;
+    }
 
     VkDescriptorSet descriptorSet(uint32_t currentFrame) const
     {
@@ -36,17 +54,18 @@ private:
 
     VulkanTextureResourceDescriptor() = default;
     explicit VulkanTextureResourceDescriptor(
-        VkImage i,
-        VmaAllocation a,
-        VkImageView iv,
+        VulkanImage i,
         const std::vector<VkDescriptorSet>& ds
-    ) : image(i), allocation(a), imageView(iv), descriptorSets(ds)
+    ) : image(std::move(i)), descriptorSets(ds)
     {
     }
 
-    VkImage image = VK_NULL_HANDLE;
-    VmaAllocation allocation = VK_NULL_HANDLE;
-    VkImageView imageView = VK_NULL_HANDLE;
+    void cleanup()
+    {
+        image.cleanup();
+    }
+
+    VulkanImage image;
     std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
 };
 
