@@ -259,7 +259,15 @@ void GraphicsContext::endLayer()
         Layer layer = std::move(m_layerStack.back());
         m_layerStack.pop_back();
 
-        m_canvas->drawLayer(layer.bounds, layer.alpha, *layer.canvas, m_currentState);
+        if (m_layerStack.empty())
+        {
+            m_canvas->drawLayer(layer.bounds, layer.alpha, *layer.canvas, m_currentState);
+        }
+        else
+        {
+            Layer& topLayer = m_layerStack.back();
+            topLayer.canvas->drawLayer(layer.bounds, layer.alpha, *layer.canvas, m_currentState);
+        }
     }
 }
 } // karin

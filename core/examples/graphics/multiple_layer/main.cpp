@@ -25,7 +25,6 @@ int main()
             gc.fillRect(karin::Rectangle(575, 175, 150, 50), cyanPattern);
             gc.fillEllipse(karin::Point(650, 200), 50, 50, magentaPattern);
 
-            gc.multiplyTransform(karin::Transform2D().rotate(std::numbers::pi / 6));
             gc.withLayer(karin::Rectangle(50, 50, 500, 300), 0.7f,
                 [&gc, &whitePattern, &cyanPattern, &magentaPattern]
                 {
