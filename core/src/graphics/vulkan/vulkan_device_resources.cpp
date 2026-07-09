@@ -17,10 +17,10 @@ namespace karin
 class VulkanLayerPool
 {
 public:
-    VulkanLayerPool();
+    VulkanLayerPool(VkDescriptorSetLayout descriptorSetLayout, VkSampler sampler, uint16_t maxFramesInFlight);
     ~VulkanLayerPool() = default;
 
-    VulkanImage *layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
+    VulkanTextureResourceDescriptor* layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
     Rectangle layerUv(uint16_t layerID, float width, float height) const;
 
     void cleanup();
@@ -29,23 +29,28 @@ public:
 private:
     struct Layer
     {
-        VulkanImage image;
+        VulkanTextureResourceDescriptor image;
         float width = 0.0f;
         float height = 0.0f;
     };
 
     std::vector<Layer> m_layers;
-    std::vector<VulkanImage> m_deletionQueue;
+    std::vector<VulkanTextureResourceDescriptor> m_deletionQueue;
+
+    VkDescriptorSetLayout m_descriptorSetLayout;
+    VkSampler m_sampler;
+    uint16_t m_maxFramesInFlight;
 
     static constexpr size_t DEFAULT_LAYERS_SIZE = 16;
 };
 
-VulkanLayerPool::VulkanLayerPool()
+VulkanLayerPool::VulkanLayerPool(VkDescriptorSetLayout descriptorSetLayout, VkSampler sampler, uint16_t maxFramesInFlight)
+    : m_descriptorSetLayout(descriptorSetLayout), m_sampler(sampler), m_maxFramesInFlight(maxFramesInFlight)
 {
     m_layers.resize(DEFAULT_LAYERS_SIZE);
 }
 
-VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height, VkFormat imageFormat)
+VulkanTextureResourceDescriptor* VulkanLayerPool::layer(uint16_t layerID, float width, float height, VkFormat imageFormat)
 {
     if (layerID >= m_layers.size())
     {
@@ -110,7 +115,40 @@ VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height,
             throw std::runtime_error("failed to create offscreen image");
         }
 
-        layer.image = std::move(image);
+        std::vector layouts(m_maxFramesInFlight, m_descriptorSetLayout);
+        std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
+        VkDescriptorSetAllocateInfo allocInfo = {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+            .descriptorPool = VulkanContext::instance().descriptorPool(),
+            .descriptorSetCount = m_maxFramesInFlight,
+            .pSetLayouts = layouts.data(),
+        };
+        if (vkAllocateDescriptorSets(VulkanContext::instance().device(), &allocInfo, descriptorSets.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to allocate descriptor sets for dummy texture");
+        }
+
+        for (size_t i = 0; i < m_maxFramesInFlight; ++i)
+        {
+            VkDescriptorImageInfo descriptorImageInfo = {
+                .sampler = m_sampler,
+                .imageView = image.imageView,
+                .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            };
+
+            VkWriteDescriptorSet descriptorWrite = {
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = 0,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                .pImageInfo = &descriptorImageInfo,
+            };
+            vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+        }
+
+        layer.image = VulkanTextureResourceDescriptor(std::move(image), descriptorSets);
         layer.width = newWidth;
         layer.height = newHeight;
     }
@@ -156,19 +194,13 @@ VulkanDeviceResources::VulkanDeviceResources(size_t maxFramesInFlight)
     createDescriptorSetLayouts();
     createDummyTexture();
 
-    m_offscreenLayerPool = std::make_unique<VulkanLayerPool>();
+    m_offscreenLayerPool = std::make_unique<VulkanLayerPool>(m_geometryDescriptorSetLayout, m_clampSampler, m_maxFramesInFlight);
 }
 
 VulkanDeviceResources::~VulkanDeviceResources() = default;
 
 void VulkanDeviceResources::cleanup()
 {
-    for (auto& image : m_offscreenImages | std::views::values)
-    {
-        image.cleanup();
-    }
-    m_offscreenImages.clear();
-
     m_offscreenLayerPool->cleanup();
 
     for (auto& val : m_gradientPointLutMap | std::views::values)
@@ -890,7 +922,7 @@ void VulkanDeviceResources::clearOffscreenImages() const
     m_offscreenLayerPool->cleanOnFrame();
 }
 
-VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
+const VulkanTextureResourceDescriptor* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
 {
     return m_offscreenLayerPool->layer(layerID, imageSize.width, imageSize.height, imageFormat);
 }
@@ -898,38 +930,5 @@ VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageS
 Rectangle VulkanDeviceResources::offscreenImageUv(uint16_t layerID, Size imageSize) const
 {
     return m_offscreenLayerPool->layerUv(layerID, imageSize.width, imageSize.height);
-}
-
-VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)
-{
-    VkDescriptorSet descriptorSet;
-    VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .descriptorPool = VulkanContext::instance().descriptorPool(),
-        .descriptorSetCount = 1,
-        .pSetLayouts = &m_geometryDescriptorSetLayout,
-    };
-    if (vkAllocateDescriptorSets(VulkanContext::instance().device(), &allocInfo, &descriptorSet) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to allocate descriptor set for offscreen image");
-    }
-
-    VkDescriptorImageInfo descriptorImageInfo = {
-        .sampler = m_clampSampler,
-        .imageView = imageView,
-        .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-    };
-    VkWriteDescriptorSet descriptorWrite = {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = descriptorSet,
-        .dstBinding = 0,
-        .dstArrayElement = 0,
-        .descriptorCount = 1,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .pImageInfo = &descriptorImageInfo,
-    };
-    vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
-
-    return descriptorSet;
 }
 } // karin

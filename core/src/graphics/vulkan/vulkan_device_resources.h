@@ -18,6 +18,8 @@
 
 namespace karin
 {
+class VulkanLayerPool;
+
 class VulkanTextureResourceDescriptor
 {
 public:
@@ -51,6 +53,7 @@ public:
 
 private:
     friend class VulkanDeviceResources;
+    friend class VulkanLayerPool;
 
     VulkanTextureResourceDescriptor() = default;
     explicit VulkanTextureResourceDescriptor(
@@ -65,11 +68,14 @@ private:
         image.cleanup();
     }
 
+    bool valid() const
+    {
+        return image.valid();
+    }
+
     VulkanImage image;
     std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
 };
-
-class VulkanLayerPool;
 
 class VulkanDeviceResources
 {
@@ -84,7 +90,7 @@ public:
     const VulkanTextureResourceDescriptor *gradientPointLut(const GradientPoints& points);
     const VulkanTextureResourceDescriptor *texture(Image image);
     const VulkanTextureResourceDescriptor *dummyTexture() const;
-    VkDescriptorSet offscreenImageDescriptorSet(VkImageView imageView);
+    const VulkanTextureResourceDescriptor *offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
 
     VkDescriptorSetLayout geometryDescriptorSetLayout() const
     {
@@ -92,7 +98,6 @@ public:
     }
 
     void clearOffscreenImages() const;
-    VulkanImage* offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
     Rectangle offscreenImageUv(uint16_t layerID, Size imageSize) const;
 
 private:
@@ -111,7 +116,6 @@ private:
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;
     VulkanTextureResourceDescriptor m_dummyTexture; // 1 x 1 white pixel
-    std::unordered_map<uint16_t, VulkanImage> m_offscreenImages;
 
     VkSampler m_clampSampler = VK_NULL_HANDLE;
     VkSampler m_repeatSampler = VK_NULL_HANDLE;
