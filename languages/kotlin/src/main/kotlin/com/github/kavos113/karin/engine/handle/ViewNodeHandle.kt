@@ -64,6 +64,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setBackgroundColor(ptr, color.r, color.g, color.b, color.a)
     }
 
+    fun setOpacity(opacity: Float) {
+        JniViewNodeBridge.setOpacity(ptr, opacity)
+    }
+
     fun setMargin(flags: Char, left: Float, top: Float, right: Float, bottom: Float) {
         JniViewNodeBridge.setMargin(ptr, flags, left, top, right, bottom)
     }
@@ -112,7 +116,15 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
         }
     }
 
-    // TODO
+    style.opacity?.let {
+        setOpacity(it)
+    }
+
+    style.opacityState?.let { state ->
+        state.onChange { opacity ->
+            setOpacity(opacity)
+        }
+    }
 }
 
 internal fun ViewNodeHandle.applyLayout(layout: Layout) {
