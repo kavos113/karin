@@ -191,6 +191,11 @@ void ViewNode::setBackgroundColor(Color color)
     m_backgroundColor = color;
 }
 
+void ViewNode::setOpacity(float opacity)
+{
+    m_opacity = opacity;
+}
+
 YGNodeRef ViewNode::getYogaNode() const
 {
     return m_yogaNode;

@@ -62,26 +62,56 @@ void ContainerNode::onDetachFromWindow()
 
 void ContainerNode::drawInternal(GraphicsContext& gc) const
 {
-    drawBackground(gc);
+    Rectangle layout = getLayout();
 
-    gc.withSave([&]
+    if (m_opacity < 1.0f)
     {
-        Rectangle layout = getLayout();
-        gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
-
-        if (m_enableClip)
+        gc.withLayer(layout, m_opacity, [this, &gc]
         {
-            Rectangle clipRect(0, 0, layout.size.width, layout.size.height);
-            gc.clip(clipRect);
-        }
+            drawBackground(gc);
 
-        for (const auto& child : m_children)
+            gc.withSave([&]
+            {
+                Rectangle layout = getLayout();
+                gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
+
+                if (m_enableClip)
+                {
+                    Rectangle clipRect(0, 0, layout.size.width, layout.size.height);
+                    gc.clip(clipRect);
+                }
+
+                for (const auto& child : m_children)
+                {
+                    child->draw(gc);
+                }
+            });
+
+            drawForeground(gc);
+        });
+    }
+    else
+    {
+        drawBackground(gc);
+
+        gc.withSave([&gc, layout, this]
         {
-            child->draw(gc);
-        }
-    });
+            gc.multiplyTransform(Transform2D().translate(layout.pos.x, layout.pos.y));
 
-    drawForeground(gc);
+            if (m_enableClip)
+            {
+                Rectangle clipRect(0, 0, layout.size.width, layout.size.height);
+                gc.clip(clipRect);
+            }
+
+            for (const auto& child : m_children)
+            {
+                child->draw(gc);
+            }
+        });
+
+        drawForeground(gc);
+    }
 }
 
 void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
