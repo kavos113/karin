@@ -42,6 +42,12 @@ class BoxTest {
         every {
             JniViewNodeBridge.setHeight(any(), any())
         } just runs
+        every {
+            JniViewNodeBridge.requestRelayout(any())
+        } just runs
+        every {
+            JniViewNodeBridge.requestRedraw(any())
+        } just runs
     }
 
     @AfterEach
@@ -83,6 +89,7 @@ class BoxTest {
 
         verify(atLeast = 1) {
             JniViewNodeBridge.setBackgroundColor(123L, 0f, 1f, 0f, 1f)
+            JniViewNodeBridge.requestRedraw(123L)
         }
     }
 
