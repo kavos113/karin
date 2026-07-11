@@ -25,4 +25,9 @@ YGSize LeafNode::staticMeasureFunc(
 
     return {0, 0};
 }
+
+bool LeafNode::needLayer() const
+{
+    return false;
+}
 } // karin::gui

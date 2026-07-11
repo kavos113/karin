@@ -26,11 +26,7 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
-    gc.withSave([&gc, &textBlob, &start, this]
-    {
-        gc.setAlpha(m_opacity);
-        gc.drawText(textBlob, start, m_pattern);
-    });
+    gc.drawText(textBlob, start, m_pattern);
 }
 
 YGSize TextNode::measure(Size availableSize) const

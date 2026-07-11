@@ -21,6 +21,7 @@ protected:
 
 private:
     static YGSize staticMeasureFunc(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
+    bool needLayer() const final;
 };
 } // karin::gui
 

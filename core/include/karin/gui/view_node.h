@@ -74,8 +74,7 @@ public:
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
-
-    float m_opacity = 1.0f;
+    virtual bool needLayer() const;
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
@@ -87,6 +86,7 @@ private:
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;
     std::function<void(Point point)> m_onClick;
+    float m_opacity = 1.0f;
 };
 } // karin
 
