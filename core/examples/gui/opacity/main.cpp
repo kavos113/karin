@@ -6,10 +6,6 @@
 
 int main()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
     karin::gui::Application app;
     auto window = app.createWindow("Opacity", 100, 100, 800, 600);
 
@@ -29,7 +25,7 @@ int main()
 
     auto bigRect = std::make_unique<karin::gui::RectangleNode>(
         karin::Size(200, 200),
-        karin::Color(1.0f, 1.0f, 1.0f)
+        karin::Color(0.0f, 1.0f, 1.0f)
     );
     for (int i = 0; i < 5; ++i)
     {
@@ -43,12 +39,13 @@ int main()
     bigRect->setGap(5.0f);
     bigRect->setWrapMode(karin::gui::ContainerNode::WrapMode::Wrap);
     bigRect->setPadding(karin::gui::ViewNode::Side::All, 10.0f);
-    bigRect->setOpacity(0.7f);
+    bigRect->setOpacity(0.2f);
     rootView->addChild(std::move(bigRect));
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
     rootView->setGap(10.0f);
     rootView->setWrapMode(karin::gui::ContainerNode::WrapMode::Wrap);
+    rootView->setBackgroundColor(karin::Color(0.7f, 0.7f, 0.0f));
 
     window->setRootView(std::move(rootView));
     app.run();
