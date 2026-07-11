@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setOpacity
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setOpacity
+  (JNIEnv *, jclass, jlong, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setMargin
  * Signature: (JCFFFF)V
  */
