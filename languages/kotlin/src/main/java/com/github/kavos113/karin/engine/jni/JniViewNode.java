@@ -12,6 +12,7 @@ class JniViewNode {
     static native void setWidth(long nodePtr, float width);
     static native void setHeight(long nodePtr, float height);
     static native void setBackgroundColor(long nodePtr, float r, float g, float b, float a);
+    static native void setOpacity(long nodePtr, float opacity);
 
     static final char MARGIN_LEFT = 1;
     static final char MARGIN_TOP = 2;
@@ -24,6 +25,7 @@ class JniViewNode {
     static native void setPaddingSide(long nodePtr, int side, float value);
 
     static native void requestRelayout(long nodePtr);
+    static native void requestRedraw(long nodePtr);
 
     static native void destroy(long nodePtr);
 }

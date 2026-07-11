@@ -13,15 +13,15 @@ data class Style private constructor(
     fun background(color: Color) = copy(backgroundColor = color)
     fun background(state: State<Color>) = copy(backgroundColorState = state)
 
-    fun alpha(value: Float) = copy(opacity = value)
-    fun alpha(state: State<Float>) = copy(opacityState = state)
+    fun opacity(value: Float) = copy(opacity = value)
+    fun opacity(state: State<Float>) = copy(opacityState = state)
 
     companion object {
         val Default = Style()
 
         fun background(color: Color) = Style().background(color)
         fun background(state: State<Color>) = Style().background(state)
-        fun alpha(value: Float) = Style().alpha(value)
-        fun alpha(state: State<Float>) = Style().alpha(state)
+        fun opacity(value: Float) = Style().opacity(value)
+        fun opacity(state: State<Float>) = Style().opacity(state)
     }
 }

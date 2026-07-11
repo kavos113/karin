@@ -84,12 +84,38 @@ ViewNode::~ViewNode()
 
 void ViewNode::draw(GraphicsContext& gc) const
 {
-    drawBackgroundColor(gc);
-    gc.withSave([&]
+    if (needLayer())
     {
-        drawInternal(gc);
-    });
-    drawBorder(gc);
+        Rectangle layout = getLayout();
+        gc.withLayer(layout, m_opacity, [&gc, this]
+        {
+            gc.withSave([&gc, this]
+            {
+                gc.setAlpha(m_opacity);
+
+                drawBackgroundColor(gc);
+                gc.withSave([&gc, this]
+                {
+                    drawInternal(gc);
+                });
+                drawBorder(gc);
+            });
+        });
+    }
+    else
+    {
+        gc.withSave([&gc, this]
+        {
+            gc.setAlpha(m_opacity);
+
+            drawBackgroundColor(gc);
+            gc.withSave([&gc, this]
+            {
+                drawInternal(gc);
+            });
+            drawBorder(gc);
+        });
+    }
 }
 
 void ViewNode::calculateLayout() const
@@ -117,11 +143,19 @@ void ViewNode::onDetachFromWindow()
     m_window = nullptr;
 }
 
-void ViewNode::requestRelayout()
+void ViewNode::requestRelayout() const
 {
     if (m_window)
     {
         m_window->requestRelayout();
+    }
+}
+
+void ViewNode::requestRedraw() const
+{
+    if (m_window)
+    {
+        m_window->requestRedraw();
     }
 }
 
@@ -212,6 +246,11 @@ void ViewNode::triggerClick(Point point) const
     {
         m_onClick(point);
     }
+}
+
+bool ViewNode::needLayer() const
+{
+    return m_opacity < 1.0f;
 }
 
 void ViewNode::drawBorder(GraphicsContext& gc) const

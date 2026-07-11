@@ -16,7 +16,7 @@ class ColorTest {
 
     @Test
     fun testColor_constructor_rgbaInt() {
-        val color = Color(0x80FF0000.toInt())
+        val color = Color(0xFF000080.toInt())
         assertEquals(1f, color.r)
         assertEquals(0f, color.g)
         assertEquals(0f, color.b)

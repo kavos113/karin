@@ -8,6 +8,7 @@ internal object JniViewNodeBridge {
     fun setWidth(nodePtr: Long, width: Float) = JniViewNode.setWidth(nodePtr, width)
     fun setHeight(nodePtr: Long, height: Float) = JniViewNode.setHeight(nodePtr, height)
     fun setBackgroundColor(nodePtr: Long, r: Float, g: Float, b: Float, a: Float) = JniViewNode.setBackgroundColor(nodePtr, r, g, b, a)
+    fun setOpacity(nodePtr: Long, opacity: Float) = JniViewNode.setOpacity(nodePtr, opacity);
 
     const val MARGIN_FLAG_LEFT = 0b0001
     const val MARGIN_FLAG_TOP = 0b0010
@@ -20,6 +21,7 @@ internal object JniViewNodeBridge {
     fun setPaddingSide(nodePtr: Long, side: Int, value: Float) = JniViewNode.setPaddingSide(nodePtr, side, value)
 
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
+    fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }

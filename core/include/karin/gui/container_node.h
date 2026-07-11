@@ -47,6 +47,7 @@ public:
 
 protected:
     void drawInternal(GraphicsContext& gc) const final;
+    bool needLayer() const final;
 
     virtual void drawBackground(GraphicsContext& gc) const {}
     virtual void drawForeground(GraphicsContext& gc) const {}
