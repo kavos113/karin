@@ -1,5 +1,3 @@
-import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
-
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kover)
@@ -38,4 +36,8 @@ tasks.withType<JavaCompile> {
             "-h", jniHeaderDir.absolutePath
         )
     )
+}
+
+tasks.withType<Test> {
+    systemProperty("karin.test.skip_native_load", "true")
 }

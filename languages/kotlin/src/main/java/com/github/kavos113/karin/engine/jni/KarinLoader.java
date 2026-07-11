@@ -14,6 +14,11 @@ class KarinLoader {
             return;
         }
 
+        if (System.getProperty("karin.test.skip_native_load") != null) {
+            loaded = true;
+            return;
+        }
+
         String os = System.getProperty("os.name").toLowerCase();
         String resourcePath;
 
