@@ -117,6 +117,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.backgroundColorState?.let { state ->
         state.onChange { color ->
             setBackgroundColor(color)
+            requestRedraw()
         }
     }
 
@@ -127,6 +128,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.opacityState?.let { state ->
         state.onChange { opacity ->
             setOpacity(opacity)
+            requestRedraw()
         }
     }
 }
@@ -203,60 +205,70 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     layout.paddingTopState?.let { state ->
         state.onChange { value ->
             setPaddingSide(ViewNodeHandle.Side.Top, value)
+            requestRelayout()
         }
     }
 
     layout.paddingBottomState?.let { state ->
         state.onChange { value ->
             setPaddingSide(ViewNodeHandle.Side.Bottom, value)
+            requestRelayout()
         }
     }
 
     layout.paddingLeftState?.let { state ->
         state.onChange { value ->
             setPaddingSide(ViewNodeHandle.Side.Left, value)
+            requestRelayout()
         }
     }
 
     layout.paddingRightState?.let { state ->
         state.onChange { value ->
             setPaddingSide(ViewNodeHandle.Side.Right, value)
+            requestRelayout()
         }
     }
 
     layout.marginTopState?.let { state ->
         state.onChange { value ->
             setMarginSide(ViewNodeHandle.Side.Top, value)
+            requestRelayout()
         }
     }
 
     layout.marginBottomState?.let { state ->
         state.onChange { value ->
             setMarginSide(ViewNodeHandle.Side.Bottom, value)
+            requestRelayout()
         }
     }
 
     layout.marginLeftState?.let { state ->
         state.onChange { value ->
             setMarginSide(ViewNodeHandle.Side.Left, value)
+            requestRelayout()
         }
     }
 
     layout.marginRightState?.let { state ->
         state.onChange { value ->
             setMarginSide(ViewNodeHandle.Side.Right, value)
+            requestRelayout()
         }
     }
 
     layout.widthState?.let { state ->
         state.onChange { value ->
             setWidth(value)
+            requestRelayout()
         }
     }
 
     layout.heightState?.let { state ->
         state.onChange { value ->
             setHeight(value)
+            requestRelayout()
         }
     }
 }

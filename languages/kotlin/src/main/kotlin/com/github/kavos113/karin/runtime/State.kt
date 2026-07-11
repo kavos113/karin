@@ -6,6 +6,10 @@ class State<T>(initialValue: T) {
 
     var value: T = initialValue
         set(value) {
+            if (field == value) {
+                return
+            }
+
             val snapshot = synchronized(lock) {
                 field = value
                 listeners.toList()
