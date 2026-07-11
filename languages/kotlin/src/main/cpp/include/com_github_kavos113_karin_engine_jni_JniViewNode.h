@@ -105,6 +105,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_req
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    requestRedraw
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRedraw
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    destroy
  * Signature: (J)V
  */

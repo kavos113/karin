@@ -25,6 +25,7 @@ class JniViewNode {
     static native void setPaddingSide(long nodePtr, int side, float value);
 
     static native void requestRelayout(long nodePtr);
+    static native void requestRedraw(long nodePtr);
 
     static native void destroy(long nodePtr);
 }

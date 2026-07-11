@@ -88,6 +88,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.requestRelayout(ptr)
     }
 
+    fun requestRedraw() {
+        JniViewNodeBridge.requestRedraw(ptr)
+    }
+
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
         onClick?.invoke()
