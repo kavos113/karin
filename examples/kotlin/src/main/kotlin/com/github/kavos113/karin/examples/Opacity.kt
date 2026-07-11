@@ -12,7 +12,7 @@ import com.github.kavos113.karin.ui.layout.LayoutWrap
 import com.github.kavos113.karin.ui.props.Event
 
 fun main() {
-    val win = Window("Hello Layout", 100, 100, 800, 600)
+    val win = Window("Opacity", 100, 100, 800, 600)
 
     win.setContent {
         Row(
@@ -37,8 +37,10 @@ fun main() {
                 layout = Layout.size(width = 200f, height = 200f),
                 event = Event.onClick {
                     if (opacity.value < 1.0f) {
+                        println("change opacity to 1.0f")
                         opacity.value = 1.0f
                     } else {
+                        println("change opacity to 0.2f")
                         opacity.value = 0.2f;
                     }
                 },

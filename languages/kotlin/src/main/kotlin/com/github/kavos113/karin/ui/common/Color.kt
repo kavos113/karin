@@ -14,10 +14,10 @@ data class Color(
     )
 
     constructor(rgba: Int) : this(
+        (rgba shr 24) and 0xFF,
         (rgba shr 16) and 0xFF,
         (rgba shr 8) and 0xFF,
-        rgba and 0xFF,
-        (rgba shr 24) and 0xFF
+        rgba and 0xFF
     )
 
     companion object {
