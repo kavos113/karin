@@ -65,6 +65,7 @@ public:
     void setPadding(Side side, float padding);
     void setBorder(Side side, float width, Color color, NodeBorder::LineStyle style);
     void setBackgroundColor(Color color);
+    void setOpacity(float opacity);
 
     YGNodeRef getYogaNode() const;
 
@@ -73,6 +74,8 @@ public:
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
+
+    float m_opacity = 1.0f;
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
