@@ -27,9 +27,9 @@ public:
     VulkanTextureResourceDescriptor& operator=(const VulkanTextureResourceDescriptor&) = delete;
 
     VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&& other) noexcept
-        : image(std::move(other.image)), descriptorSets(other.descriptorSets)
+        : m_image(std::move(other.m_image)), m_descriptorSets(other.m_descriptorSets)
     {
-        other.descriptorSets.clear();
+        other.m_descriptorSets.clear();
     }
 
     VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&& other) noexcept
@@ -38,17 +38,22 @@ public:
         {
             cleanup();
 
-            image = std::move(other.image);
-            descriptorSets = std::move(other.descriptorSets);
+            m_image = std::move(other.m_image);
+            m_descriptorSets = std::move(other.m_descriptorSets);
 
-            other.descriptorSets.clear();
+            other.m_descriptorSets.clear();
         }
         return *this;
     }
 
     VkDescriptorSet descriptorSet(uint32_t currentFrame) const
     {
-        return descriptorSets[currentFrame];
+        return m_descriptorSets[currentFrame];
+    }
+
+    const VulkanImage* image() const
+    {
+        return &m_image;
     }
 
 private:
@@ -59,22 +64,22 @@ private:
     explicit VulkanTextureResourceDescriptor(
         VulkanImage i,
         const std::vector<VkDescriptorSet>& ds
-    ) : image(std::move(i)), descriptorSets(ds)
+    ) : m_image(std::move(i)), m_descriptorSets(ds)
     {
     }
 
     void cleanup()
     {
-        image.cleanup();
+        m_image.cleanup();
     }
 
     bool valid() const
     {
-        return image.valid();
+        return m_image.valid();
     }
 
-    VulkanImage image;
-    std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
+    VulkanImage m_image;
+    std::vector<VkDescriptorSet> m_descriptorSets; // One per frame in flight
 };
 
 class VulkanDeviceResources

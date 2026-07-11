@@ -131,7 +131,8 @@ void VulkanRendererImpl::endDraw()
 
         if (batch.isOffscreenLayer)
         {
-            VulkanImage *image = m_deviceResources->offscreenImage(batch.layerID, {batch.viewport.width, batch.viewport.height}, m_frameContext->surfaceFormat());
+            const VulkanTextureResourceDescriptor *texture = m_deviceResources->offscreenImage(batch.layerID, {batch.viewport.width, batch.viewport.height}, m_frameContext->surfaceFormat());
+            const VulkanImage *image = texture->image();
 
             // TODO: poplayerのあとはUNDEFINEDではない
             transitionImageLayout(
@@ -335,97 +336,97 @@ void VulkanRendererImpl::endDraw()
                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
             );
 
-            VkRenderingAttachmentInfo attachmentInfo = {
-                .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-                .imageView = state.targetImageView,
-                .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
-                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-                .clearValue = {},
-            };
-            VkRenderingInfo rInfo = {
-                .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-                .renderArea = {
-                    .offset = {0, 0},
-                    .extent = state.targetExtent
-                },
-                .layerCount = 1,
-                .colorAttachmentCount = 1,
-                .pColorAttachments = &attachmentInfo
-            };
-            vkCmdBeginRendering(commandBuffer, &rInfo);
-
-            vkCmdSetViewport(commandBuffer, 0, 1, &state.viewport);
-            vkCmdSetScissor(commandBuffer, 0, 1, &state.scissor);
-
-            vkCmdBindPipeline(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[PipelineType::Geometry]->pipeline()
-            );
-
-            Rectangle uv = m_deviceResources->offscreenImageUv(batch.layerID, {batch.viewport.width, batch.viewport.height});
-            std::vector<VulkanPipeline::Vertex> vertices = {
-                {
-                    .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y},
-                    .uv = {uv.pos.x, uv.pos.y},
-                },
-                {
-                    .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y},
-                    .uv = {uv.pos.x + uv.size.width, uv.pos.y},
-                },
-                {
-                    .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y + batch.targetRect.extent.height},
-                    .uv = {uv.pos.x + uv.size.width, uv.pos.y + uv.size.height},
-                },
-                {
-                    .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y + batch.targetRect.extent.height},
-                    .uv = {uv.pos.x, uv.pos.y + uv.size.height},
-                }
-            };
-            std::vector<uint16_t> indices = {
-                0, 1, 2, 2, 3, 0
-            };
-            uint32_t indexOffset = m_geometryBuffer->append(vertices, indices);
-
-            VertexPushConstants vertData = {
-                .model = glm::mat4(1.0f)
-            };
-            FragPushConstants fragData = {
-                .shapeType = static_cast<uint32_t>(ShapeType::Nothing),
-                .patternType = static_cast<uint32_t>(PatternType::Image),
-                .patternParams = {batch.alpha, 0.0f, 0.0f, 0.0f}
-            };
-            VkDescriptorSet descriptorSet = m_deviceResources->offscreenImageDescriptorSet(renderTargetImageView);
-            vkCmdBindDescriptorSets(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                1, 1, &descriptorSet,
-                0, nullptr
-            );
-
-            m_viewContext->bind(
-                commandBuffer,
-                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                0, currentFrame
-            );
-
-            vkCmdPushConstants(
-                commandBuffer,
-                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                VK_SHADER_STAGE_FRAGMENT_BIT,
-                0, sizeof(FragPushConstants), &fragData
-            );
-            vkCmdPushConstants(
-                commandBuffer,
-                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                VK_SHADER_STAGE_VERTEX_BIT,
-                sizeof(FragPushConstants), sizeof(VertexPushConstants), &vertData
-            );
-
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, indexOffset, 0, 0);
-            vkCmdEndRendering(commandBuffer);
+            // VkRenderingAttachmentInfo attachmentInfo = {
+            //     .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+            //     .imageView = state.targetImageView,
+            //     .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            //     .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+            //     .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            //     .clearValue = {},
+            // };
+            // VkRenderingInfo rInfo = {
+            //     .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+            //     .renderArea = {
+            //         .offset = {0, 0},
+            //         .extent = state.targetExtent
+            //     },
+            //     .layerCount = 1,
+            //     .colorAttachmentCount = 1,
+            //     .pColorAttachments = &attachmentInfo
+            // };
+            // vkCmdBeginRendering(commandBuffer, &rInfo);
+            //
+            // vkCmdSetViewport(commandBuffer, 0, 1, &state.viewport);
+            // vkCmdSetScissor(commandBuffer, 0, 1, &state.scissor);
+            //
+            // vkCmdBindPipeline(
+            //     commandBuffer,
+            //     VK_PIPELINE_BIND_POINT_GRAPHICS,
+            //     m_pipelines[PipelineType::Geometry]->pipeline()
+            // );
+            //
+            // Rectangle uv = m_deviceResources->offscreenImageUv(batch.layerID, {batch.viewport.width, batch.viewport.height});
+            // std::vector<VulkanPipeline::Vertex> vertices = {
+            //     {
+            //         .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y},
+            //         .uv = {uv.pos.x, uv.pos.y},
+            //     },
+            //     {
+            //         .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y},
+            //         .uv = {uv.pos.x + uv.size.width, uv.pos.y},
+            //     },
+            //     {
+            //         .pos = {batch.targetRect.offset.x + batch.targetRect.extent.width, batch.targetRect.offset.y + batch.targetRect.extent.height},
+            //         .uv = {uv.pos.x + uv.size.width, uv.pos.y + uv.size.height},
+            //     },
+            //     {
+            //         .pos = {batch.targetRect.offset.x, batch.targetRect.offset.y + batch.targetRect.extent.height},
+            //         .uv = {uv.pos.x, uv.pos.y + uv.size.height},
+            //     }
+            // };
+            // std::vector<uint16_t> indices = {
+            //     0, 1, 2, 2, 3, 0
+            // };
+            // uint32_t indexOffset = m_geometryBuffer->append(vertices, indices);
+            //
+            // VertexPushConstants vertData = {
+            //     .model = glm::mat4(1.0f)
+            // };
+            // FragPushConstants fragData = {
+            //     .shapeType = static_cast<uint32_t>(ShapeType::Nothing),
+            //     .patternType = static_cast<uint32_t>(PatternType::Image),
+            //     .patternParams = {batch.alpha, 0.0f, 0.0f, 0.0f}
+            // };
+            // VkDescriptorSet descriptorSet = m_deviceResources->offscreenImageDescriptorSet(renderTargetImageView);
+            // vkCmdBindDescriptorSets(
+            //     commandBuffer,
+            //     VK_PIPELINE_BIND_POINT_GRAPHICS,
+            //     m_pipelines[PipelineType::Geometry]->pipelineLayout(),
+            //     1, 1, &descriptorSet,
+            //     0, nullptr
+            // );
+            //
+            // m_viewContext->bind(
+            //     commandBuffer,
+            //     m_pipelines[PipelineType::Geometry]->pipelineLayout(),
+            //     0, currentFrame
+            // );
+            //
+            // vkCmdPushConstants(
+            //     commandBuffer,
+            //     m_pipelines[PipelineType::Geometry]->pipelineLayout(),
+            //     VK_SHADER_STAGE_FRAGMENT_BIT,
+            //     0, sizeof(FragPushConstants), &fragData
+            // );
+            // vkCmdPushConstants(
+            //     commandBuffer,
+            //     m_pipelines[PipelineType::Geometry]->pipelineLayout(),
+            //     VK_SHADER_STAGE_VERTEX_BIT,
+            //     sizeof(FragPushConstants), sizeof(VertexPushConstants), &vertData
+            // );
+            //
+            // vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, indexOffset, 0, 0);
+            // vkCmdEndRendering(commandBuffer);
         }
     }
 
@@ -562,21 +563,67 @@ void VulkanRendererImpl::beginOffscreenLayer(const Rectangle& bounds, float alph
 
 void VulkanRendererImpl::endOffscreenLayer()
 {
+    RenderState currentState = m_renderCommandStack.back();
+
+    auto texture = m_deviceResources->offscreenImage(currentState.layerID, currentState.targetRect.size, m_frameContext->surfaceFormat());
+    Rectangle uv = m_deviceResources->offscreenImageUv(currentState.layerID, currentState.targetRect.size);
+    std::vector<VulkanPipeline::Vertex> vertices = {
+        {
+            .pos = {currentState.targetRect.pos.x, currentState.targetRect.pos.y},
+            .uv = {uv.pos.x, uv.pos.y},
+        },
+        {
+            .pos = {currentState.targetRect.pos.x + currentState.targetRect.size.width, currentState.targetRect.pos.y},
+            .uv = {uv.pos.x + uv.size.width, uv.pos.y},
+        },
+        {
+            .pos = {currentState.targetRect.pos.x + currentState.targetRect.size.width, currentState.targetRect.pos.y + currentState.targetRect.size.height},
+            .uv = {uv.pos.x + uv.size.width, uv.pos.y + uv.size.height},
+        },
+        {
+            .pos = {currentState.targetRect.pos.x, currentState.targetRect.pos.y + currentState.targetRect.size.height},
+            .uv = {uv.pos.x, uv.pos.y + uv.size.height},
+        }
+    };
+    std::vector<uint16_t> indices = {
+        0, 1, 2, 2, 3, 0
+    };
+    uint32_t indexOffset = m_geometryBuffer->append(vertices, indices);
+
+    VertexPushConstants vertData = {
+        .model = glm::mat4(1.0f)
+    };
+    FragPushConstants fragData = {
+        .shapeType = static_cast<uint32_t>(ShapeType::Nothing),
+        .patternType = static_cast<uint32_t>(PatternType::Image),
+        .patternParams = {currentState.alpha, 0.0f, 0.0f, 0.0f}
+    };
+
     m_renderCommandStack.pop_back();
     RenderState state = m_renderCommandStack.back();
 
     DrawBatch batch;
-    if (state.layerID == 0)
+    if (state.layerID == 0) // target is main window
     {
         batch = DrawBatch{
             .isOffscreenLayer = false,
             .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-            .clearValue = m_clearColor,
-            .commands = {},
+            .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+            .clearValue = {},
+            .commands = {
+                DrawCommand{
+                    .indexCount = static_cast<uint32_t>(indices.size()),
+                    .indexOffset = indexOffset,
+                    .fragData = fragData,
+                    .vertData = vertData,
+                    .pipelineType = PipelineType::Geometry,
+                    .scissor = std::nullopt,
+                    .textureResources = {texture}
+                }
+            },
         };
     }
-    else
+    else // target is also offscreen layer
     {
         VkViewport viewport = {
             .x = 0,
@@ -601,10 +648,8 @@ void VulkanRendererImpl::endOffscreenLayer()
             .alpha = state.alpha,
             .layerID = state.layerID,
             .renderTargetImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-            .clearValue = {
-                .color = {{0.0f, 0.0f, 0.0f, 0.0f}}
-            },
+            .loadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+            .clearValue = {},
             .targetRect = {
                 .offset = {
                     static_cast<int32_t>(state.targetRect.pos.x),
@@ -615,7 +660,17 @@ void VulkanRendererImpl::endOffscreenLayer()
                     static_cast<uint32_t>(state.targetRect.size.height)
                 }
             },
-            .commands = {},
+            .commands = {
+                DrawCommand{
+                    .indexCount = static_cast<uint32_t>(indices.size()),
+                    .indexOffset = indexOffset,
+                    .fragData = fragData,
+                    .vertData = vertData,
+                    .pipelineType = PipelineType::Geometry,
+                    .scissor = std::nullopt,
+                    .textureResources = {texture}
+                }
+            },
         };
     }
 
