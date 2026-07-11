@@ -143,11 +143,19 @@ void ViewNode::onDetachFromWindow()
     m_window = nullptr;
 }
 
-void ViewNode::requestRelayout()
+void ViewNode::requestRelayout() const
 {
     if (m_window)
     {
         m_window->requestRelayout();
+    }
+}
+
+void ViewNode::requestRedraw() const
+{
+    if (m_window)
+    {
+        m_window->requestRedraw();
     }
 }
 

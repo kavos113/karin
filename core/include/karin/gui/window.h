@@ -34,6 +34,7 @@ public:
 
     void setRootView(std::unique_ptr<ViewNode> rootView);
     void requestRelayout();
+    void requestRedraw() const;
 
     void dispatchEvent(const Event& event) const;
 

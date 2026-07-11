@@ -56,7 +56,8 @@ public:
 
     virtual void onAttachToWindow(Window* window);
     virtual void onDetachFromWindow();
-    void requestRelayout();
+    void requestRelayout() const;
+    void requestRedraw() const;
 
     void setSize(Size size);
     void setWidth(float width);

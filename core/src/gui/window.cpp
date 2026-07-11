@@ -77,4 +77,9 @@ void Window::requestRelayout()
     m_needRelayout = true;
     m_window->invalidate();
 }
+
+void Window::requestRedraw() const
+{
+    m_window->invalidate();
+}
 } // karin::gui
