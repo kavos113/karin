@@ -18,39 +18,69 @@
 
 namespace karin
 {
+class VulkanLayerPool;
+
 class VulkanTextureResourceDescriptor
 {
 public:
-    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&&) noexcept = default;
-    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&&) noexcept = default;
     VulkanTextureResourceDescriptor(const VulkanTextureResourceDescriptor&) = delete;
     VulkanTextureResourceDescriptor& operator=(const VulkanTextureResourceDescriptor&) = delete;
 
+    VulkanTextureResourceDescriptor(VulkanTextureResourceDescriptor&& other) noexcept
+        : m_image(std::move(other.m_image)), m_descriptorSets(other.m_descriptorSets)
+    {
+        other.m_descriptorSets.clear();
+    }
+
+    VulkanTextureResourceDescriptor& operator=(VulkanTextureResourceDescriptor&& other) noexcept
+    {
+        if (this != &other)
+        {
+            cleanup();
+
+            m_image = std::move(other.m_image);
+            m_descriptorSets = std::move(other.m_descriptorSets);
+
+            other.m_descriptorSets.clear();
+        }
+        return *this;
+    }
+
     VkDescriptorSet descriptorSet(uint32_t currentFrame) const
     {
-        return descriptorSets[currentFrame];
+        return m_descriptorSets[currentFrame];
+    }
+
+    const VulkanImage* image() const
+    {
+        return &m_image;
     }
 
 private:
     friend class VulkanDeviceResources;
+    friend class VulkanLayerPool;
 
     VulkanTextureResourceDescriptor() = default;
     explicit VulkanTextureResourceDescriptor(
-        VkImage i,
-        VmaAllocation a,
-        VkImageView iv,
+        VulkanImage i,
         const std::vector<VkDescriptorSet>& ds
-    ) : image(i), allocation(a), imageView(iv), descriptorSets(ds)
+    ) : m_image(std::move(i)), m_descriptorSets(ds)
     {
     }
 
-    VkImage image = VK_NULL_HANDLE;
-    VmaAllocation allocation = VK_NULL_HANDLE;
-    VkImageView imageView = VK_NULL_HANDLE;
-    std::vector<VkDescriptorSet> descriptorSets; // One per frame in flight
-};
+    void cleanup()
+    {
+        m_image.cleanup();
+    }
 
-class VulkanLayerPool;
+    bool valid() const
+    {
+        return m_image.valid();
+    }
+
+    VulkanImage m_image;
+    std::vector<VkDescriptorSet> m_descriptorSets; // One per frame in flight
+};
 
 class VulkanDeviceResources
 {
@@ -65,7 +95,7 @@ public:
     const VulkanTextureResourceDescriptor *gradientPointLut(const GradientPoints& points);
     const VulkanTextureResourceDescriptor *texture(Image image);
     const VulkanTextureResourceDescriptor *dummyTexture() const;
-    VkDescriptorSet offscreenImageDescriptorSet(VkImageView imageView);
+    const VulkanTextureResourceDescriptor *offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
 
     VkDescriptorSetLayout geometryDescriptorSetLayout() const
     {
@@ -73,7 +103,6 @@ public:
     }
 
     void clearOffscreenImages() const;
-    VulkanImage* offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const;
     Rectangle offscreenImageUv(uint16_t layerID, Size imageSize) const;
 
 private:
@@ -92,7 +121,6 @@ private:
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_gradientPointLutMap;
     std::unordered_map<size_t, VulkanTextureResourceDescriptor> m_textureMap;
     VulkanTextureResourceDescriptor m_dummyTexture; // 1 x 1 white pixel
-    std::unordered_map<uint16_t, VulkanImage> m_offscreenImages;
 
     VkSampler m_clampSampler = VK_NULL_HANDLE;
     VkSampler m_repeatSampler = VK_NULL_HANDLE;

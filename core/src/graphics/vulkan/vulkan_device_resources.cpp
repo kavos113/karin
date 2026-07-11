@@ -17,10 +17,10 @@ namespace karin
 class VulkanLayerPool
 {
 public:
-    VulkanLayerPool();
+    VulkanLayerPool(VkDescriptorSetLayout descriptorSetLayout, VkSampler sampler, uint16_t maxFramesInFlight);
     ~VulkanLayerPool() = default;
 
-    VulkanImage *layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
+    VulkanTextureResourceDescriptor* layer(uint16_t layerID, float width, float height, VkFormat imageFormat);
     Rectangle layerUv(uint16_t layerID, float width, float height) const;
 
     void cleanup();
@@ -29,23 +29,28 @@ public:
 private:
     struct Layer
     {
-        VulkanImage image;
+        VulkanTextureResourceDescriptor image;
         float width = 0.0f;
         float height = 0.0f;
     };
 
     std::vector<Layer> m_layers;
-    std::vector<VulkanImage> m_deletionQueue;
+    std::vector<VulkanTextureResourceDescriptor> m_deletionQueue;
+
+    VkDescriptorSetLayout m_descriptorSetLayout;
+    VkSampler m_sampler;
+    uint16_t m_maxFramesInFlight;
 
     static constexpr size_t DEFAULT_LAYERS_SIZE = 16;
 };
 
-VulkanLayerPool::VulkanLayerPool()
+VulkanLayerPool::VulkanLayerPool(VkDescriptorSetLayout descriptorSetLayout, VkSampler sampler, uint16_t maxFramesInFlight)
+    : m_descriptorSetLayout(descriptorSetLayout), m_sampler(sampler), m_maxFramesInFlight(maxFramesInFlight)
 {
     m_layers.resize(DEFAULT_LAYERS_SIZE);
 }
 
-VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height, VkFormat imageFormat)
+VulkanTextureResourceDescriptor* VulkanLayerPool::layer(uint16_t layerID, float width, float height, VkFormat imageFormat)
 {
     if (layerID >= m_layers.size())
     {
@@ -110,7 +115,40 @@ VulkanImage* VulkanLayerPool::layer(uint16_t layerID, float width, float height,
             throw std::runtime_error("failed to create offscreen image");
         }
 
-        layer.image = std::move(image);
+        std::vector layouts(m_maxFramesInFlight, m_descriptorSetLayout);
+        std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
+        VkDescriptorSetAllocateInfo allocInfo = {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+            .descriptorPool = VulkanContext::instance().descriptorPool(),
+            .descriptorSetCount = m_maxFramesInFlight,
+            .pSetLayouts = layouts.data(),
+        };
+        if (vkAllocateDescriptorSets(VulkanContext::instance().device(), &allocInfo, descriptorSets.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to allocate descriptor sets for dummy texture");
+        }
+
+        for (size_t i = 0; i < m_maxFramesInFlight; ++i)
+        {
+            VkDescriptorImageInfo descriptorImageInfo = {
+                .sampler = m_sampler,
+                .imageView = image.imageView,
+                .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            };
+
+            VkWriteDescriptorSet descriptorWrite = {
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = 0,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                .pImageInfo = &descriptorImageInfo,
+            };
+            vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+        }
+
+        layer.image = VulkanTextureResourceDescriptor(std::move(image), descriptorSets);
         layer.width = newWidth;
         layer.height = newHeight;
     }
@@ -156,35 +194,26 @@ VulkanDeviceResources::VulkanDeviceResources(size_t maxFramesInFlight)
     createDescriptorSetLayouts();
     createDummyTexture();
 
-    m_offscreenLayerPool = std::make_unique<VulkanLayerPool>();
+    m_offscreenLayerPool = std::make_unique<VulkanLayerPool>(m_geometryDescriptorSetLayout, m_clampSampler, m_maxFramesInFlight);
 }
 
 VulkanDeviceResources::~VulkanDeviceResources() = default;
 
 void VulkanDeviceResources::cleanup()
 {
-    for (auto& image : m_offscreenImages | std::views::values)
-    {
-        image.cleanup();
-    }
-    m_offscreenImages.clear();
-
     m_offscreenLayerPool->cleanup();
 
     for (auto& val : m_gradientPointLutMap | std::views::values)
     {
-        vmaDestroyImage(VulkanContext::instance().allocator(), val.image, val.allocation);
-        vkDestroyImageView(VulkanContext::instance().device(), val.imageView, nullptr);
+        val.cleanup();
     }
 
     for (auto& val : m_textureMap | std::views::values)
     {
-        vmaDestroyImage(VulkanContext::instance().allocator(), val.image, val.allocation);
-        vkDestroyImageView(VulkanContext::instance().device(), val.imageView, nullptr);
+        val.cleanup();
     }
 
-    vmaDestroyImage(VulkanContext::instance().allocator(), m_dummyTexture.image, m_dummyTexture.allocation);
-    vkDestroyImageView(VulkanContext::instance().device(), m_dummyTexture.imageView, nullptr);
+    m_dummyTexture.cleanup();
 
     m_gradientPointLutMap.clear();
     m_textureMap.clear();
@@ -234,7 +263,6 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     memcpy(mappedData, data.data(), data.size());
     vmaUnmapMemory(VulkanContext::instance().allocator(), stagingBufferMemory);
 
-
     VmaAllocationCreateInfo gradientPointLutAllocationInfo = {
         .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
         .usage = VMA_MEMORY_USAGE_AUTO,
@@ -252,14 +280,28 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage gradientPointLutImage;
-    VmaAllocation gradientPointLutImageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &gradientPointLutAllocationInfo, &gradientPointLutImage,
-        &gradientPointLutImageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage gradientPointLutImage;
+    if (gradientPointLutImage.create(imageInfo, gradientPointLutAllocationInfo, viewInfo) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create gradient point LUT image");
+        throw std::runtime_error("failed to create gradient point lut image");
     }
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
@@ -270,7 +312,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = gradientPointLutImage,
+        .image = gradientPointLutImage.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -301,7 +343,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .imageExtent = {LUT_WIDTH, 1, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, gradientPointLutImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, gradientPointLutImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -310,7 +352,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = gradientPointLutImage,
+        .image = gradientPointLutImage.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -330,31 +372,6 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     VulkanContext::instance().endSingleTimeCommands(commandBuffer);
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
-
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = gradientPointLutImage,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView gradientPointLutImageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &gradientPointLutImageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create gradient point LUT image view");
-    }
 
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
@@ -390,7 +407,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = gradientPointLutSampler,
-            .imageView = gradientPointLutImageView,
+            .imageView = gradientPointLutImage.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -407,9 +424,7 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     }
 
     VulkanTextureResourceDescriptor lutTexture(
-        gradientPointLutImage,
-        gradientPointLutImageAllocation,
-        gradientPointLutImageView,
+        (std::move(gradientPointLutImage)),
         descriptorSets
     );
     auto inserted = m_gradientPointLutMap.insert_or_assign(points.hash(), std::move(lutTexture));
@@ -559,11 +574,26 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage image;
-    VmaAllocation imageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &imageAllocationInfo, &image, &imageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage image;
+    if (image.create(imageInfo, imageAllocationInfo, viewInfo) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create image");
     }
@@ -576,7 +606,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -607,7 +637,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .imageExtent = {width, height, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -616,7 +646,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -636,31 +666,6 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
 
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView imageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create image view");
-    }
-
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
     VkDescriptorSetAllocateInfo allocInfo = {
@@ -678,7 +683,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = m_clampSampler,
-            .imageView = imageView,
+            .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -696,9 +701,7 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
 
 
     VulkanTextureResourceDescriptor texture(
-        image,
-        imageAllocation,
-        imageView,
+        (std::move(image)),
         descriptorSets
     );
 
@@ -783,13 +786,28 @@ void VulkanDeviceResources::createDummyTexture()
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     };
-    VkImage image;
-    VmaAllocation imageAllocation;
-    if (vmaCreateImage(
-        VulkanContext::instance().allocator(), &imageInfo, &imageAllocationInfo, &image, &imageAllocation, nullptr
-    ) != VK_SUCCESS)
+    VkImageViewCreateInfo viewInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .components = {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        },
+    };
+    VulkanImage image;
+    if (image.create(imageInfo, imageAllocationInfo, viewInfo) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to create dummy texture image");
+        throw std::runtime_error("failed to create image");
     }
 
     VkCommandBuffer commandBuffer = VulkanContext::instance().beginSingleTimeCommands();
@@ -800,7 +818,7 @@ void VulkanDeviceResources::createDummyTexture()
         .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -831,7 +849,7 @@ void VulkanDeviceResources::createDummyTexture()
         .imageExtent = {1, 1, 1},
     };
     vkCmdCopyBufferToImage(
-        commandBuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+        commandBuffer, stagingBuffer, image.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
     );
 
     barrier = {
@@ -840,7 +858,7 @@ void VulkanDeviceResources::createDummyTexture()
         .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-        .image = image,
+        .image = image.image,
         .subresourceRange = {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
@@ -860,31 +878,6 @@ void VulkanDeviceResources::createDummyTexture()
 
     vmaDestroyBuffer(VulkanContext::instance().allocator(), stagingBuffer, stagingBufferMemory);
 
-    VkImageViewCreateInfo viewInfo = {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .components = {
-            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-            .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-        },
-        .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-            .baseMipLevel = 0,
-            .levelCount = 1,
-            .baseArrayLayer = 0,
-            .layerCount = 1,
-        },
-    };
-    VkImageView imageView;
-    if (vkCreateImageView(VulkanContext::instance().device(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create image view for dummy texture");
-    }
-
     std::vector layouts(m_maxFramesInFlight, m_geometryDescriptorSetLayout);
     std::vector<VkDescriptorSet> descriptorSets(m_maxFramesInFlight);
     VkDescriptorSetAllocateInfo allocInfo = {
@@ -902,7 +895,7 @@ void VulkanDeviceResources::createDummyTexture()
     {
         VkDescriptorImageInfo descriptorImageInfo = {
             .sampler = m_clampSampler,
-            .imageView = imageView,
+            .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
 
@@ -919,9 +912,7 @@ void VulkanDeviceResources::createDummyTexture()
     }
 
     m_dummyTexture = VulkanTextureResourceDescriptor(
-        image,
-        imageAllocation,
-        imageView,
+        std::move(image),
         descriptorSets
     );
 }
@@ -931,7 +922,7 @@ void VulkanDeviceResources::clearOffscreenImages() const
     m_offscreenLayerPool->cleanOnFrame();
 }
 
-VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
+const VulkanTextureResourceDescriptor* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageSize, VkFormat imageFormat) const
 {
     return m_offscreenLayerPool->layer(layerID, imageSize.width, imageSize.height, imageFormat);
 }
@@ -939,38 +930,5 @@ VulkanImage* VulkanDeviceResources::offscreenImage(uint16_t layerID, Size imageS
 Rectangle VulkanDeviceResources::offscreenImageUv(uint16_t layerID, Size imageSize) const
 {
     return m_offscreenLayerPool->layerUv(layerID, imageSize.width, imageSize.height);
-}
-
-VkDescriptorSet VulkanDeviceResources::offscreenImageDescriptorSet(const VkImageView imageView)
-{
-    VkDescriptorSet descriptorSet;
-    VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .descriptorPool = VulkanContext::instance().descriptorPool(),
-        .descriptorSetCount = 1,
-        .pSetLayouts = &m_geometryDescriptorSetLayout,
-    };
-    if (vkAllocateDescriptorSets(VulkanContext::instance().device(), &allocInfo, &descriptorSet) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to allocate descriptor set for offscreen image");
-    }
-
-    VkDescriptorImageInfo descriptorImageInfo = {
-        .sampler = m_clampSampler,
-        .imageView = imageView,
-        .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-    };
-    VkWriteDescriptorSet descriptorWrite = {
-        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-        .dstSet = descriptorSet,
-        .dstBinding = 0,
-        .dstArrayElement = 0,
-        .descriptorCount = 1,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .pImageInfo = &descriptorImageInfo,
-    };
-    vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
-
-    return descriptorSet;
 }
 } // karin
