@@ -84,6 +84,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setPaddingSide(ptr, side.value, value)
     }
 
+    fun setBorder(side: Side, width: Float, color: Color, style: Int) {
+        JniViewNodeBridge.setBorder(ptr, side.value, width, color.r, color.g, color.b, color.a, style)
+    }
+
     fun requestRelayout() {
         JniViewNodeBridge.requestRelayout(ptr)
     }
@@ -129,6 +133,61 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.opacityState?.let { state ->
         state.onChange { opacity ->
             setOpacity(opacity)
+            requestRedraw()
+        }
+    }
+
+    style.border?.let {
+        setBorder(ViewNodeHandle.Side.All, it.width, it.color, it.style.value)
+    }
+
+    style.borderState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.All, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderTop?.let {
+        setBorder(ViewNodeHandle.Side.Top, it.width, it.color, it.style.value)
+    }
+
+    style.borderTopState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Top, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderBottom?.let {
+        setBorder(ViewNodeHandle.Side.Bottom, it.width, it.color, it.style.value)
+    }
+
+    style.borderBottomState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Bottom, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderLeft?.let {
+        setBorder(ViewNodeHandle.Side.Left, it.width, it.color, it.style.value)
+    }
+
+    style.borderLeftState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Left, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderRight?.let {
+        setBorder(ViewNodeHandle.Side.Right, it.width, it.color, it.style.value)
+    }
+
+    style.borderRightState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Right, border.width, border.color, border.style.value)
             requestRedraw()
         }
     }
