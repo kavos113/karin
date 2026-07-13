@@ -62,11 +62,20 @@ layout (push_constant) uniform TransformMatrix
 #endif
 
 #ifdef SLANG_VERTEX_SHADER
+#ifndef VERTEX_PUSH_CONSTANTS
+#define VERTEX_PUSH_CONSTANTS
+
 public struct TransformMatrix
 {
     float4x4 model;
 };
+
+#endif // VERTEX_PUSH_CONSTANTS
+
 #elif defined(SLANG_FRAGMENT_SHADER)
+#ifndef FRAG_PUSH_CONSTANTS
+#define FRAG_PUSH_CONSTANTS
+
 public struct PushConstants
 {
     float4 color;
@@ -75,9 +84,12 @@ public struct PushConstants
     uint   patternType;
     float4 patternParams;
 }
-#endif
 
-#endif
+#endif // FRAG_PUSH_CONSTANTS
+
+#endif // SLANG_VERTEX/FRAGMENT_SHADER
+
+#endif // glsl/__cplusplus
 
 
 #endif //GRAPHICS_VULKAN_SHADERS_PUSH_CONSTANTS_H

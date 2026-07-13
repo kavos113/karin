@@ -111,7 +111,7 @@ elseif (VULKAN)
             vulkan/glm_geometry.h
             vulkan/vma.h
             vulkan/shaders/shaders.h
-            vulkan/shaders/push_constants.h
+            vulkan/shaders/push_constants.slang
             text/freetype/freetype_font_face.h
     )
 
@@ -178,7 +178,7 @@ elseif (VULKAN)
             vulkan/shaders/geometry.vert
             vulkan/shaders/geometry.frag
             vulkan/shaders/text.frag
-            vulkan/shaders/push_constants.h
+            vulkan/shaders/push_constants.slang
             COMMENT "Compiling graphics shaders"
     )
     add_custom_target(

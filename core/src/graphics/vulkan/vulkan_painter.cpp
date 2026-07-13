@@ -3,7 +3,7 @@
 #include "glm_geometry.h"
 #include "vulkan_renderer_impl.h"
 #include "vulkan_tessellator.h"
-#include "shaders/push_constants.h"
+#include "shaders/push_constants.slang"
 
 #include <karin/common/color/color.h>
 #include <karin/common/geometry/point.h>

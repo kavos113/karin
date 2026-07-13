@@ -8,7 +8,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shaders/push_constants.h"
+#include "shaders/push_constants.slang"
 #include "shaders/shaders.h"
 #include "vulkan_context.h"
 #include "vulkan_helpers.h"
