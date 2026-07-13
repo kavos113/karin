@@ -84,6 +84,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setPaddingSide(ptr, side.value, value)
     }
 
+    fun setBorder(side: Side, width: Float, color: Color, style: Int) {
+        JniViewNodeBridge.setBorder(ptr, side.value, width, color.r, color.g, color.b, color.a, style)
+    }
+
     fun requestRelayout() {
         JniViewNodeBridge.requestRelayout(ptr)
     }
@@ -92,6 +96,7 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.requestRedraw(ptr)
     }
 
+    @SuppressWarnings("unused")
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
         onClick?.invoke()
@@ -131,6 +136,61 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
             requestRedraw()
         }
     }
+
+    style.border?.let {
+        setBorder(ViewNodeHandle.Side.All, it.width, it.color, it.style.value)
+    }
+
+    style.borderState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.All, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderTop?.let {
+        setBorder(ViewNodeHandle.Side.Top, it.width, it.color, it.style.value)
+    }
+
+    style.borderTopState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Top, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderBottom?.let {
+        setBorder(ViewNodeHandle.Side.Bottom, it.width, it.color, it.style.value)
+    }
+
+    style.borderBottomState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Bottom, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderLeft?.let {
+        setBorder(ViewNodeHandle.Side.Left, it.width, it.color, it.style.value)
+    }
+
+    style.borderLeftState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Left, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.borderRight?.let {
+        setBorder(ViewNodeHandle.Side.Right, it.width, it.color, it.style.value)
+    }
+
+    style.borderRightState?.let { state ->
+        state.onChange { border ->
+            setBorder(ViewNodeHandle.Side.Right, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
 }
 
 internal fun ViewNodeHandle.applyLayout(layout: Layout) {
@@ -141,22 +201,22 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     var right = 0f
 
     layout.paddingTop?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_TOP
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_TOP
         top = it
     }
 
     layout.paddingBottom?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_BOTTOM
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_BOTTOM
         bottom = it
     }
 
     layout.paddingLeft?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_LEFT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_LEFT
         left = it
     }
 
     layout.paddingRight?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_RIGHT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_RIGHT
         right = it
     }
 
@@ -171,22 +231,22 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     right = 0f
 
     layout.marginTop?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_TOP
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_TOP
         top = it
     }
 
     layout.marginBottom?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_BOTTOM
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_BOTTOM
         bottom = it
     }
 
     layout.marginLeft?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_LEFT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_LEFT
         left = it
     }
 
     layout.marginRight?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_RIGHT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_RIGHT
         right = it
     }
 

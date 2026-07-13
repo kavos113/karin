@@ -15,12 +15,12 @@ namespace karin::gui
 {
 struct NodeBorder
 {
-    enum class LineStyle
+    enum class LineStyle : uint8_t
     {
-        None,
-        Solid,
-        Dashed,
-        Dotted
+        None = 0,
+        Solid = 1,
+        Dashed = 2,
+        Dotted = 3
     };
 
     float width;

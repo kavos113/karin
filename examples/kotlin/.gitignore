@@ -1,3 +1,5 @@
 .gradle
 .idea
 hs_err_*.log
+bin
+build

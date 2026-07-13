@@ -84,22 +84,22 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
     {
         node->setMargin(ViewNode::Side::Left, left);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
     {
         node->setMargin(ViewNode::Side::Top, top);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
     {
         node->setMargin(ViewNode::Side::Right, right);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
     {
         node->setMargin(ViewNode::Side::Bottom, bottom);
     }
@@ -111,22 +111,22 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
     {
         node->setPadding(ViewNode::Side::Left, left);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
     {
         node->setPadding(ViewNode::Side::Top, top);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
     {
         node->setPadding(ViewNode::Side::Right, right);
     }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM)
+    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
     {
         node->setPadding(ViewNode::Side::Bottom, bottom);
     }
@@ -146,6 +146,18 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
     node->setPadding(static_cast<ViewNode::Side>(side), padding);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorder
+    (JNIEnv *env, jclass cls, jlong viewPtr, jint side, jfloat width, jfloat r, jfloat g, jfloat b, jfloat a, jint style)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
+    karin::Color color(r, g, b, a);
+
+    node->setBorder(static_cast<ViewNode::Side>(side), width, color, lineStyle);
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout

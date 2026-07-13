@@ -7,14 +7,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT
-#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_LEFT 1L
-#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP
-#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_TOP 2L
-#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT
-#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_RIGHT 4L
-#undef com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM
-#define com_github_kavos113_karin_engine_jni_JniViewNode_MARGIN_BOTTOM 8L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT
+#define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT 1L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP
+#define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP 2L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT
+#define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT 4L
+#undef com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM
+#define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM 8L
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setClickListener
@@ -94,6 +94,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPaddingSide
   (JNIEnv *, jclass, jlong, jint, jfloat);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setBorder
+ * Signature: (JIFFFFFI)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorder
+  (JNIEnv *, jclass, jlong, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jint);
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
