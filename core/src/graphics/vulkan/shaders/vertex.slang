@@ -1,7 +1,6 @@
 module vertex;
 
-#define SLANG_VERTEX_SHADER
-#include "push_constants.h"
+import push_constants;
 
 public struct VertexOutput
 {
@@ -23,7 +22,7 @@ public struct VertexInput
 };
 
 [shader("vertex")]
-public VertexOutput vertMain(
+public VertexOutput vert_main(
     VertexInput input, 
     uniform TransformMatrix push
 )
