@@ -92,6 +92,7 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.requestRedraw(ptr)
     }
 
+    @SuppressWarnings("unused")
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
         onClick?.invoke()
@@ -141,22 +142,22 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     var right = 0f
 
     layout.paddingTop?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_TOP
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_TOP
         top = it
     }
 
     layout.paddingBottom?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_BOTTOM
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_BOTTOM
         bottom = it
     }
 
     layout.paddingLeft?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_LEFT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_LEFT
         left = it
     }
 
     layout.paddingRight?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_RIGHT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_RIGHT
         right = it
     }
 
@@ -171,22 +172,22 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
     right = 0f
 
     layout.marginTop?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_TOP
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_TOP
         top = it
     }
 
     layout.marginBottom?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_BOTTOM
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_BOTTOM
         bottom = it
     }
 
     layout.marginLeft?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_LEFT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_LEFT
         left = it
     }
 
     layout.marginRight?.let {
-        flags = flags or JniViewNodeBridge.MARGIN_FLAG_RIGHT
+        flags = flags or JniViewNodeBridge.SIDE_FLAG_RIGHT
         right = it
     }
 

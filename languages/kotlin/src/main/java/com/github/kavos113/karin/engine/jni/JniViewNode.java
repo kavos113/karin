@@ -14,15 +14,21 @@ class JniViewNode {
     static native void setBackgroundColor(long nodePtr, float r, float g, float b, float a);
     static native void setOpacity(long nodePtr, float opacity);
 
-    static final char MARGIN_LEFT = 1;
-    static final char MARGIN_TOP = 2;
-    static final char MARGIN_RIGHT = 4;
-    static final char MARGIN_BOTTOM = 8;
+    @SuppressWarnings("unused")  static final char SIDE_LEFT = 1;
+    @SuppressWarnings("unused") static final char SIDE_TOP = 2;
+    @SuppressWarnings("unused") static final char SIDE_RIGHT = 4;
+    @SuppressWarnings("unused") static final char SIDE_BOTTOM = 8;
 
     static native void setMargin(long nodePtr, char flags, float left, float top, float right, float bottom);
     static native void setPadding(long nodePtr, char flags, float left, float top, float right, float bottom);
     static native void setMarginSide(long nodePtr, int side, float value);
     static native void setPaddingSide(long nodePtr, int side, float value);
+
+    static native void setBorder(long nodePtr, int side, float width, float r, float g, float b, float a, int style);
+    static native void setBorderTop(long nodePtr, float width, float r, float g, float b, float a, int style);
+    static native void setBorderBottom(long nodePtr, float width, float r, float g, float b, float a, int style);
+    static native void setBorderLeft(long nodePtr, float width, float r, float g, float b, float a, int style);
+    static native void setBorderRight(long nodePtr, float width, float r, float g, float b, float a, int style);
 
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);
