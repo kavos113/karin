@@ -198,142 +198,75 @@ void VulkanRendererImpl::endDraw()
         vkCmdSetViewport(commandBuffer, 0, 1, &batch.viewport);
         vkCmdSetScissor(commandBuffer, 0, 1, &batch.scissor);
 
-        std::vector<DrawCommand> m_geometryCommands;
-        std::vector<DrawCommand> m_textCommands;
+        PipelineType currentType = PipelineType::Geometry;
+        bool isFirstBind = true;
         for (const auto& command : batch.commands)
         {
-            switch (command.pipelineType)
+            if (isFirstBind || currentType != command.pipelineType)
             {
-            case PipelineType::Geometry:
-                m_geometryCommands.push_back(command);
-                break;
-            case PipelineType::Text:
-                m_textCommands.push_back(command);
-                break;
-            }
-        }
-
-        bool isBindProjMatrix = false;
-
-        if (!m_geometryCommands.empty())
-        {
-            vkCmdBindPipeline(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[PipelineType::Geometry]->pipeline()
-            );
-
-            m_viewContext->bind(
-                commandBuffer,
-                m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                batch.layerID,
-                currentFrame
-            );
-            isBindProjMatrix = true;
-
-            for (const auto& command : m_geometryCommands)
-            {
-                auto descriptorSets = command.textureResources
-                    | std::views::transform(
-                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
-                        {
-                            return resource->descriptorSet(currentFrame);
-                        })
-                    | std::ranges::to<std::vector>();
-
-                vkCmdBindDescriptorSets(
+                vkCmdBindPipeline(
                     commandBuffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                    1, descriptorSets.size(), descriptorSets.data(),
-                    0, nullptr
+                    m_pipelines[command.pipelineType]->pipeline()
                 );
 
-                vkCmdPushConstants(
-                    commandBuffer,
-                    m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                    VK_SHADER_STAGE_FRAGMENT_BIT,
-                    0, sizeof(FragPushConstants), &command.fragData
-                );
-                vkCmdPushConstants(
-                    commandBuffer,
-                    m_pipelines[PipelineType::Geometry]->pipelineLayout(),
-                    VK_SHADER_STAGE_VERTEX_BIT,
-                    sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
-                );
-
-                VkRect2D scissor = command.scissor.value_or(batch.scissor);
-                vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-                vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
+                if (command.pipelineType == PipelineType::Text)
+                {
+                    auto glyphAtlasSets = m_fontRenderer->glyphAtlasDescriptorSets();
+                    vkCmdBindDescriptorSets(
+                        commandBuffer,
+                        VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        m_pipelines[PipelineType::Text]->pipelineLayout(),
+                        2, 1, &glyphAtlasSets[currentFrame],
+                        0, nullptr
+                    );
+                }
             }
-        }
-
-        if (!m_textCommands.empty())
-        {
-            vkCmdBindPipeline(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[PipelineType::Text]->pipeline()
-            );
-
-            if (!isBindProjMatrix)
+            if (isFirstBind)
             {
                 m_viewContext->bind(
                     commandBuffer,
-                    m_pipelines[PipelineType::Text]->pipelineLayout(),
+                    m_pipelines[command.pipelineType]->pipelineLayout(),
                     batch.layerID,
                     currentFrame
                 );
-                isBindProjMatrix = true;
+
+                isFirstBind = false;
             }
 
-            auto glyphAtlasSets = m_fontRenderer->glyphAtlasDescriptorSets();
+            auto descriptorSets = command.textureResources
+                | std::views::transform(
+                    [currentFrame](const VulkanTextureResourceDescriptor *resource)
+                    {
+                        return resource->descriptorSet(currentFrame);
+                    })
+                | std::ranges::to<std::vector>();
+
             vkCmdBindDescriptorSets(
                 commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[PipelineType::Text]->pipelineLayout(),
-                2, 1, &glyphAtlasSets[currentFrame],
+                m_pipelines[command.pipelineType]->pipelineLayout(),
+                1, descriptorSets.size(), descriptorSets.data(),
                 0, nullptr
             );
 
-            for (const auto& command : m_textCommands)
-            {
-                auto descriptorSets = command.textureResources
-                    | std::views::transform(
-                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
-                        {
-                            return resource->descriptorSet(currentFrame);
-                        })
-                    | std::ranges::to<std::vector>();
+            vkCmdPushConstants(
+                commandBuffer,
+                m_pipelines[command.pipelineType]->pipelineLayout(),
+                VK_SHADER_STAGE_FRAGMENT_BIT,
+                0, sizeof(FragPushConstants), &command.fragData
+            );
+            vkCmdPushConstants(
+                commandBuffer,
+                m_pipelines[command.pipelineType]->pipelineLayout(),
+                VK_SHADER_STAGE_VERTEX_BIT,
+                sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
+            );
 
-                vkCmdBindDescriptorSets(
-                    commandBuffer,
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    m_pipelines[PipelineType::Text]->pipelineLayout(),
-                    1, descriptorSets.size(), descriptorSets.data(),
-                    0, nullptr
-                );
+            VkRect2D scissor = command.scissor.value_or(batch.scissor);
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-                vkCmdPushConstants(
-                    commandBuffer,
-                    m_pipelines[PipelineType::Text]->pipelineLayout(),
-                    VK_SHADER_STAGE_FRAGMENT_BIT,
-                    0, sizeof(FragPushConstants), &command.fragData
-                );
-                vkCmdPushConstants(
-                    commandBuffer,
-                    m_pipelines[PipelineType::Text]->pipelineLayout(),
-                    VK_SHADER_STAGE_VERTEX_BIT,
-                    sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
-                );
-
-
-                VkRect2D scissor = command.scissor.value_or(batch.scissor);
-                vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-                vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
-            }
+            vkCmdDrawIndexed(commandBuffer, command.indexCount, 1, command.indexOffset, 0, 0);
         }
 
         vkCmdEndRendering(commandBuffer);
