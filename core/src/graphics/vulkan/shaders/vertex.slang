@@ -4,9 +4,9 @@ import push_constants;
 
 public struct VertexOutput
 {
-    float4 pos : SV_Position;
-    float2 pixelPos;
-    float2 uv;
+    public float4 pos : SV_Position;
+    public float2 pixelPos;
+    public float2 uv;
 };
 
 struct UniformBuffer

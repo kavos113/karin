@@ -1,7 +1,6 @@
 implementing draw;
 
-#define SLANG_FRAGMENT_SHADER
-#include "push_constants.h"
+import push_constants;
 
 public float linear_gradient_t(PushConstants push, float2 pixelPos)
 {

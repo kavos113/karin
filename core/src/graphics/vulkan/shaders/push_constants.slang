@@ -66,16 +66,16 @@ layout (push_constant) uniform TransformMatrix
 module push_constants;
 public struct TransformMatrix
 {
-    float4x4 model;
+    public float4x4 model;
 };
 
 public struct PushConstants
 {
-    float4 color;
-    float2 shapeParams;
-    uint   shapeType;
-    uint   patternType;
-    float4 patternParams;
+    public float4 color;
+    public float2 shapeParams;
+    public uint   shapeType;
+    public uint   patternType;
+    public float4 patternParams;
 }
 
 #endif // __SLANG__
