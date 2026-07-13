@@ -61,6 +61,22 @@ layout (push_constant) uniform TransformMatrix
 
 #endif
 
+#ifdef SLANG_VERTEX_SHADER
+public struct TransformMatrix
+{
+    float4x4 model;
+};
+#elif defined(SLANG_FRAGMENT_SHADER)
+public struct PushConstants
+{
+    float4 color;
+    float2 shapeParams;
+    uint   shapeType;
+    uint   patternType;
+    float4 patternParams;
+}
+#endif
+
 #endif
 
 
