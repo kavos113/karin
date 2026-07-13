@@ -89,22 +89,23 @@ jobs:
         with:
           sparse-checkout: |
             .github
-            
+
       - name: Download build artifacts
         uses: actions/download-artifact@v8.0.1
         with:
           name: core-${{ env.CMAKE_PRESET }}-build
           path: .\${{ env.BUILD_DIR }}
 
-      - name: Setup Vulkan SDK
-        uses: ./.github/actions/setup-vulkan-windows
-        with:
-          vulkan-version: ${{ env.VULKAN_SDK_VERSION }}
+      - parallel:
+        - name: Setup Vulkan SDK
+          uses: ./.github/actions/setup-vulkan-windows
+          with:
+            vulkan-version: ${{ env.VULKAN_SDK_VERSION }}
 
-      - name: Setup SwiftShader
-        uses: ./.github/actions/setup-swiftshader
-        with:
-          build-os: windows-latest
+        - name: Setup SwiftShader
+          uses: ./.github/actions/setup-swiftshader
+          with:
+            build-os: windows-latest
 
       - name: add swiftshader to registry
         run: |
@@ -152,14 +153,20 @@ jobs:
           java-version: '25'
 
       - name: Build Kotlin Bindings
+        id: build-bindings
         working-directory: .\languages\kotlin
+        background: true
         run: |
           .\gradlew build
 
       - name: Build Kotlin Examples
         working-directory: .\examples\kotlin
+        background: true
         run: |
           .\gradlew build
+
+      - name: Wait build binding
+        wait: [build-bindings]
 
       - name: Run Kotlin Tests
         working-directory: .\languages\kotlin

@@ -150,14 +150,20 @@ jobs:
           chmod +x ./examples/kotlin/gradlew
 
       - name: Build Kotlin Bindings
+        id: build-bindings
         working-directory: ./languages/kotlin
+        background: true
         run: |
           ./gradlew build
 
       - name: Build Kotlin Examples
         working-directory: ./examples/kotlin
+        background: true
         run: |
           ./gradlew build
+
+      - name: Wait build binding
+        wait: [build-bindings]
 
       - name: Run Kotlin Tests
         working-directory: ./languages/kotlin
