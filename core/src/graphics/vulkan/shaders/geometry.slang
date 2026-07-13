@@ -9,8 +9,7 @@ SamplerState samp;
 [shader("fragment")]
 float4 frag_main(
     VertexOutput input,
-    uniform PushConstants push
-)
+    uniform PushConstants push)
 {
     float4 outColor;
 

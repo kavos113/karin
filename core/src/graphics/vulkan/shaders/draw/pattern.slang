@@ -68,9 +68,8 @@ public float4 image_color(
     PushConstants push,
     float2 pixelPos,
     Texture2D image,
-    SamplerState s, 
-    float2 uv
-)
+    SamplerState s,
+    float2 uv)
 {
     float4 color;
 

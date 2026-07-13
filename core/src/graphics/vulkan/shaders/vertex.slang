@@ -23,9 +23,8 @@ public struct VertexInput
 
 [shader("vertex")]
 public VertexOutput vert_main(
-    VertexInput input, 
-    uniform TransformMatrix push
-)
+    VertexInput input,
+    uniform TransformMatrix push)
 {
     VertexOutput output;
 
