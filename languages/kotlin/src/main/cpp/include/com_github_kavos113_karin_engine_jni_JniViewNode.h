@@ -105,38 +105,6 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setBorderTop
- * Signature: (JFFFFFI)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderTop
-  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jint);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setBorderBottom
- * Signature: (JFFFFFI)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderBottom
-  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jint);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setBorderLeft
- * Signature: (JFFFFFI)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderLeft
-  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jint);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setBorderRight
- * Signature: (JFFFFFI)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderRight
-  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jint);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    requestRelayout
  * Signature: (J)V
  */

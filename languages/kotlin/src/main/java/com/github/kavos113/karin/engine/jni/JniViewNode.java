@@ -25,10 +25,6 @@ class JniViewNode {
     static native void setPaddingSide(long nodePtr, int side, float value);
 
     static native void setBorder(long nodePtr, int side, float width, float r, float g, float b, float a, int style);
-    static native void setBorderTop(long nodePtr, float width, float r, float g, float b, float a, int style);
-    static native void setBorderBottom(long nodePtr, float width, float r, float g, float b, float a, int style);
-    static native void setBorderLeft(long nodePtr, float width, float r, float g, float b, float a, int style);
-    static native void setBorderRight(long nodePtr, float width, float r, float g, float b, float a, int style);
 
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);

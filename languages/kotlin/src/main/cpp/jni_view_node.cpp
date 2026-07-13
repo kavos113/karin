@@ -160,54 +160,6 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     node->setBorder(static_cast<ViewNode::Side>(side), width, color, lineStyle);
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderTop
-    (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width, jfloat r, jfloat g, jfloat b, jfloat a, jint style)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
-    karin::Color color(r, g, b, a);
-
-    node->setBorder(ViewNode::Side::Top, width, color, lineStyle);
-}
-
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderBottom
-    (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width, jfloat r, jfloat g, jfloat b, jfloat a, jint style)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
-    karin::Color color(r, g, b, a);
-
-    node->setBorder(ViewNode::Side::Bottom, width, color, lineStyle);
-}
-
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderLeft
-    (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width, jfloat r, jfloat g, jfloat b, jfloat a, jint style)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
-    karin::Color color(r, g, b, a);
-
-    node->setBorder(ViewNode::Side::Left, width, color, lineStyle);
-}
-
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorderRight
-    (JNIEnv *env, jclass cls, jlong viewPtr, jfloat width, jfloat r, jfloat g, jfloat b, jfloat a, jint style)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
-    karin::Color color(r, g, b, a);
-
-    node->setBorder(ViewNode::Side::Right, width, color, lineStyle);
-}
-
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout
     (JNIEnv *env, jclass cls, jlong viewPtr)
 {
