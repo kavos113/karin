@@ -4,8 +4,15 @@ project(slang_shader_compiler)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(slang_shader_compiler main.cpp)
+add_executable(slang_shader_compiler
+        main.cpp
+        print.cpp
+        print.h
+)
 
 find_package(Vulkan REQUIRED)
-target_link_libraries(slang_shader_compiler PRIVATE Vulkan::Vulkan)
-
+find_package(slang REQUIRED)
+target_link_libraries(slang_shader_compiler PRIVATE
+        Vulkan::Vulkan
+        slang::slang
+)
