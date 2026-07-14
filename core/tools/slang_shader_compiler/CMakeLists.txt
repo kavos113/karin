@@ -9,7 +9,7 @@ add_executable(slang_shader_compiler
         print.cpp
         print.h
         slang_context.h
-        module.h
+        shader_module.h
         util.h
 )
 

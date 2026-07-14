@@ -3,7 +3,7 @@
 
 #include "print.h"
 #include "slang_context.h"
-#include "module.h"
+#include "shader_module.h"
 
 void usage(char *program)
 {
