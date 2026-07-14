@@ -8,6 +8,9 @@ add_executable(slang_shader_compiler
         main.cpp
         print.cpp
         print.h
+        slang_context.h
+        module.h
+        util.h
 )
 
 find_package(Vulkan REQUIRED)
