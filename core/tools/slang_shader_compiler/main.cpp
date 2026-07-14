@@ -1,5 +1,6 @@
 #include <print>
 #include <string>
+#include <vector>
 
 #include "print.h"
 #include "slang_context.h"
@@ -7,7 +8,8 @@
 
 void usage(char *program)
 {
-    std::println("Usage: {} <.slang file>", program);
+    std::println("Compile shader per file.");
+    std::println("Usage: {} [.slang files...]", program);
 }
 
 int main(int argc, char **argv)
@@ -18,16 +20,23 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    auto fileName = std::string(argv[1]);
+    std::vector<std::string> files(argc - 1);
+    for (int i = 1; i < argc; i++)
+    {
+        files[i - 1] = argv[i];
+    }
 
     SlangContext ctx;
     CompileSession session(ctx);
 
-    ShaderModule module(fileName);
-    module.compile(session);
+    for (const auto& file : files)
+    {
+        ShaderModule module(file);
+        module.compile(session);
 
-    auto code = module.spirvCode();
-    std::println("code size: {} bytes", code->getBufferSize());
+        auto code = module.spirvCode();
+        std::println("compile {}, code size: {} bytes", file, code->getBufferSize());
+    }
 
     return 0;
 }
