@@ -11,6 +11,8 @@ add_executable(slang_shader_compiler
         slang_context.h
         shader_module.h
         util.h
+        generator.cpp
+        generator.h
 )
 
 find_package(Vulkan REQUIRED)

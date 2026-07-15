@@ -1,0 +1,97 @@
+#include "generator.h"
+
+#include <fstream>
+#include <format>
+
+CodeGenerator::CodeGenerator(const std::string& outFile)
+    : m_outFile(outFile)
+{
+}
+
+CodeGenerator::~CodeGenerator() = default;
+
+void CodeGenerator::generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard) const
+{
+    std::ofstream ofs{m_outFile};
+
+    writeHeader(ofs, includeGuard);
+
+    for (const auto& mod : modules)
+    {
+        writeCode(ofs, mod);
+    }
+
+    writeFooter(ofs, includeGuard);
+
+    ofs.close();
+}
+
+void CodeGenerator::writeHeader(std::ostream& os, const std::string& includeGuard)
+{
+    os << "#ifndef " << includeGuard << "\n"
+       << "#define " << includeGuard << "\n"
+       << "\n"
+       << "#include <cstddef>\n"
+       << "\n"
+       << "#include <array>\n"
+       << "\n"
+       << "namespace karin::gen {\n\n"
+       << "using b = std::byte;"
+       << "\n\n";
+}
+
+void CodeGenerator::writeFooter(std::ostream& os, const std::string& includeGuard)
+{
+    os << "\n"
+       << "} // karin::gen\n"
+       << "\n"
+       << "#endif // " << includeGuard << "\n";
+}
+
+void CodeGenerator::writeCode(std::ostream& os, const ShaderModule& module)
+{
+    auto buffer = module.spirvCode();
+
+    size_t size = buffer->getBufferSize();
+    std::string varName = module.identifier();
+
+    const char *buf = static_cast<const char*>(buffer->getBufferPointer());
+
+    os << "inline constexpr std::array<std::byte, " << size << "> " << varName << " = {\n";
+
+    for (int i = 0; i < size; i += CODE_WIDTH)
+    {
+        os << "   ";
+
+        for (int curr = i; i < std::min(curr + CODE_WIDTH, static_cast<int>(size)); i++)
+        {
+            const char byte = buf[curr];
+            os << std::format(" b{{0x{:02x}}},", byte);
+        }
+
+        os << "\n";
+    }
+
+    os << "};\n\n";
+}
+
+LayoutGenerator::LayoutGenerator(const std::string& outFile)
+    : m_outFile(outFile)
+{
+}
+
+LayoutGenerator::~LayoutGenerator()
+{
+}
+
+void LayoutGenerator::generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard)
+{
+}
+
+void LayoutGenerator::writeHeader(std::ostream& os, const std::string& includeGuard)
+{
+}
+
+void LayoutGenerator::writeFooter(std::ostream& os, const std::string& includeGuard)
+{
+}
