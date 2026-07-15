@@ -55,8 +55,10 @@ public:
 
             if (i == 0)
             {
-                m_entryPoint = entry->getFunctionReflection()->getName();
+                m_entryPointName = entry->getFunctionReflection()->getName();
             }
+
+            m_entryPoint = entry;
 
             components.emplace_back(entry.get());
         }
@@ -90,7 +92,7 @@ public:
         std::string path = m_filePath.stem().string()
             | std::views::transform([](unsigned char c) { return std::isalnum(c) ? std::tolower(c) : '_'; })
             | std::ranges::to<std::string>();
-        std::string entry = m_entryPoint
+        std::string entry = m_entryPointName
             | std::views::transform([](unsigned char c) { return std::tolower(c); })
             | std::ranges::to<std::string>();
 
@@ -101,10 +103,11 @@ public:
 
 private:
     std::filesystem::path m_filePath;
-    std::string m_entryPoint;
+    std::string m_entryPointName;
 
     Slang::ComPtr<slang::IBlob> m_spirvCode = nullptr;
     Slang::ComPtr<slang::IComponentType> m_program = nullptr;
+    Slang::ComPtr<slang::IEntryPoint> m_entryPoint = nullptr;
 };
 
 #endif //CORE_TOOLS_SLANG_SHADER_COMPILER_MODULE_H
