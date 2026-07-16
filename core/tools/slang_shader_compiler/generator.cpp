@@ -141,6 +141,8 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
         throw std::runtime_error("failed to get program layout");
     }
 
+    uint32_t maxSet = 0;
+
     uint32_t paramsCount = programLayout->getParameterCount();
 
     for (uint32_t i = 0; i < paramsCount; i++)
@@ -172,6 +174,8 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
 
                     os << "inline constexpr uint32_t " << structVar->getName() << "_" << var->getName() << "_set = " << set << ";\n"
                        << "inline constexpr uint32_t " << structVar->getName() << "_" << var->getName() << "_binding = " << binding << ";\n";
+
+                    maxSet = std::max(set, maxSet);
                 }
 
                 break;
@@ -223,6 +227,8 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
                        << "inline constexpr uint32_t " << var->getName() << "_binding = " << binding << ";\n";
                 }
 
+                maxSet = std::max(static_cast<uint32_t>(set), maxSet);
+
                 break;
             }
 
@@ -240,6 +246,8 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
                 os << "inline constexpr uint32_t " << var->getName() << "_set = " << set << ";\n"
                    << "inline constexpr uint32_t " << var->getName() << "_binding = " << binding << ";\n";
 
+                maxSet = std::max(set, maxSet);
+
                 break;
             }
         }
@@ -247,5 +255,5 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
         // printVariable(varLayout);
     }
 
-    os << "\n}\n";
+    os << "\ninline constexpr uint32_t max_set = " << maxSet << ";\n\n}\n";
 }

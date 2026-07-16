@@ -110,7 +110,8 @@ elseif (VULKAN)
             vulkan/vulkan_offscreen_frame_context.h
             vulkan/glm_geometry.h
             vulkan/vma.h
-            vulkan/shaders/shaders.h
+            vulkan/shaders/shader_code.h
+            vulkan/shaders/shader_layout.h
             vulkan/shaders/push_constants.slang
             text/freetype/freetype_font_face.h
     )

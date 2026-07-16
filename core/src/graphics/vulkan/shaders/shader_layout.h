@@ -11,6 +11,8 @@ namespace vertex_vert_main{
 inline constexpr uint32_t matrices_set = 0;
 inline constexpr uint32_t matrices_binding = 0;
 
+inline constexpr uint32_t max_set = 0;
+
 }
 namespace geometry_frag_main{
 
@@ -20,6 +22,8 @@ inline constexpr uint32_t tex_samp_set = 1;
 inline constexpr uint32_t tex_samp_binding = 1;
 inline constexpr uint32_t matrices_set = 0;
 inline constexpr uint32_t matrices_binding = 0;
+
+inline constexpr uint32_t max_set = 1;
 
 }
 namespace text_frag_main{
@@ -34,6 +38,8 @@ inline constexpr uint32_t glyphAtlas_samp_set = 2;
 inline constexpr uint32_t glyphAtlas_samp_binding = 1;
 inline constexpr uint32_t matrices_set = 0;
 inline constexpr uint32_t matrices_binding = 0;
+
+inline constexpr uint32_t max_set = 2;
 
 }
 
