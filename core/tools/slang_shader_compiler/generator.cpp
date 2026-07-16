@@ -63,7 +63,7 @@ void CodeGenerator::writeCode(std::ostream& os, const ShaderModule& module)
     auto buffer = module.spirvCode();
 
     size_t size = buffer->getBufferSize();
-    std::string varName = module.identifier();
+    std::string varName = std::format("{}_code", module.identifier());
 
     const char *buf = static_cast<const char*>(buffer->getBufferPointer());
 
