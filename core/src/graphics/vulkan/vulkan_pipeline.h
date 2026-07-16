@@ -13,8 +13,8 @@ class VulkanPipeline
 public:
     VulkanPipeline(
         VkFormat targetFormat,
-        const unsigned char* vertShaderCode, unsigned int vertShaderSize,
-        const unsigned char* fragShaderCode, unsigned int fragShaderSize,
+        const std::byte* vertShaderCode, unsigned int vertShaderSize,
+        const std::byte* fragShaderCode, unsigned int fragShaderSize,
         const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
         const std::vector<VkPushConstantRange>& pushConstantRanges
     );
@@ -77,8 +77,8 @@ public:
 private:
     void createPipeline(
         VkFormat targetFormat,
-        const unsigned char* vertShaderCode, unsigned int vertShaderSize,
-        const unsigned char* fragShaderCode, unsigned int fragShaderSize,
+        const std::byte* vertShaderCode, unsigned int vertShaderSize,
+        const std::byte* fragShaderCode, unsigned int fragShaderSize,
         const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,
         const std::vector<VkPushConstantRange>& pushConstantRanges
     );
