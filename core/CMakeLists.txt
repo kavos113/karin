@@ -25,8 +25,8 @@ if (MSVC)
     add_compile_options("/utf-8")
 endif ()
 
+add_subdirectory(tools/slang_shader_compiler)
+
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(test)
-
-add_subdirectory(tools/slang_shader_compiler)
