@@ -3,11 +3,11 @@ import vertex;
 import push_constants;
 
 // image: image, gradient: gradientLut
-Texture2D tex;
-SamplerState samp;
+[[vk::binding(0, 1)]] Texture2D tex;
+[[vk::binding(1, 1)]] SamplerState samp;
 
-Texture2D glyphAtlas;
-SamplerState glyphAtlasSamp;
+[[vk::binding(0, 2)]] Texture2D glyphAtlas;
+[[vk::binding(1, 2)]] SamplerState glyphAtlasSamp;
 
 [shader("fragment")]
 float4 frag_main(

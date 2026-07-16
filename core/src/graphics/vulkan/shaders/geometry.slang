@@ -3,8 +3,8 @@ import vertex;
 import push_constants;
 
 // image: image, gradient: gradientLut
-Texture2D tex;
-SamplerState samp;
+[[vk::binding(0, 1)]] Texture2D tex;
+[[vk::binding(1, 1)]] SamplerState samp;
 
 [shader("fragment")]
 float4 frag_main(
