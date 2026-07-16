@@ -3,11 +3,19 @@ import vertex;
 import push_constants;
 
 // image: image, gradient: gradientLut
-[[vk::binding(0, 1)]] Texture2D tex;
-[[vk::binding(1, 1)]] SamplerState samp;
+struct Texture
+{
+    Texture2D tex;
+    SamplerState samp;
+};
+ParameterBlock<Texture> tex;
 
-[[vk::binding(0, 2)]] Texture2D glyphAtlas;
-[[vk::binding(1, 2)]] SamplerState glyphAtlasSamp;
+struct GlyphAtlas
+{
+    Texture2D tex;
+    SamplerState samp;
+};
+ParameterBlock<GlyphAtlas> glyphAtlas;
 
 [shader("fragment")]
 float4 frag_main(
@@ -16,7 +24,7 @@ float4 frag_main(
 {
     float4 outColor;
 
-    float glyphAlpha = glyphAtlas.Sample(glyphAtlasSamp, input.uv).r;
+    float glyphAlpha = glyphAtlas.tex.Sample(glyphAtlas.samp, input.uv).r;
 
     if (glyphAlpha < 0.01)
     {
@@ -32,7 +40,7 @@ float4 frag_main(
     case 1: // linear gradient
     {
         float t = linear_gradient_t(push, input.pixelPos);
-        outColor = tex.Sample(samp, float2(t, 0.5));
+        outColor = tex.tex.Sample(tex.samp, float2(t, 0.5));
         break;
     }
 
@@ -41,7 +49,7 @@ float4 frag_main(
         float t = radial_gradient_t(push, input.pixelPos);
         if (t >= 0.0)
         {
-            outColor = tex.Sample(samp, float2(t, 0.5));
+            outColor = tex.tex.Sample(tex.samp, float2(t, 0.5));
         }
         else
         {
@@ -51,7 +59,7 @@ float4 frag_main(
     }
 
     case 3: // image
-        outColor = image_color(push, input.pixelPos, tex, samp, input.uv);
+        outColor = image_color(push, input.pixelPos, tex.tex, tex.samp, input.uv);
         break;
 
     default:
