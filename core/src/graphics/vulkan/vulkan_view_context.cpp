@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+#include "shaders/shader_layout.h"
+
 #define AlignmentSize(size, alignment) ((size + alignment - 1) & ~(alignment - 1))
 
 namespace karin
@@ -15,7 +17,7 @@ VulkanViewContext::VulkanViewContext(float width, float height)
     minUniformBufferOffsetAlignment = props.limits.minUniformBufferOffsetAlignment;
 
     VkDescriptorSetLayoutBinding projMatrixLayoutBinding = {
-        .binding = 0,
+        .binding = gen::vertex_vert_main::matrices_binding,
         .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
         .descriptorCount = 1,
         .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
@@ -93,7 +95,7 @@ VulkanViewContext::VulkanViewContext(float width, float height)
         VkWriteDescriptorSet descriptorWrite = {
             .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
             .dstSet = m_projMatrixDescriptorSets[i],
-            .dstBinding = 0,
+            .dstBinding = gen::vertex_vert_main::matrices_binding,
             .dstArrayElement = 0,
             .descriptorCount = 1,
             .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
