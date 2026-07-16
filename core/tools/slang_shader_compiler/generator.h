@@ -33,11 +33,12 @@ public:
     ~LayoutGenerator();
 
     // include guard: like "GRAPHICS_VULKAN_SHADERS_SHADER_H"
-    void generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard);
+    void generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard) const;
 
 private:
-    void writeHeader(std::ostream& os, const std::string& includeGuard);
-    void writeFooter(std::ostream& os, const std::string& includeGuard);
+    static void writeHeader(std::ostream& os, const std::string& includeGuard);
+    static void writeFooter(std::ostream& os, const std::string& includeGuard);
+    static void writeLayout(std::ostream& os, const ShaderModule& module);
 
     std::string m_outFile;
 };

@@ -100,5 +100,8 @@ int main(int argc, char **argv)
     CodeGenerator gen(codeOutFile);
     gen.generate(modules, codeInclude);
 
+    LayoutGenerator layoutGen(layoutOutFile);
+    layoutGen.generate(modules, layoutInclude);
+
     return 0;
 }

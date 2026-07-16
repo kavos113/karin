@@ -58,8 +58,6 @@ public:
                 m_entryPointName = entry->getFunctionReflection()->getName();
             }
 
-            m_entryPoint = entry;
-
             components.emplace_back(entry.get());
         }
 
@@ -85,6 +83,11 @@ public:
         return m_spirvCode;
     }
 
+    Slang::ComPtr<slang::IComponentType> program() const
+    {
+        return m_program;
+    }
+
     std::string identifier() const
     {
         std::stringstream ss;
@@ -107,7 +110,6 @@ private:
 
     Slang::ComPtr<slang::IBlob> m_spirvCode = nullptr;
     Slang::ComPtr<slang::IComponentType> m_program = nullptr;
-    Slang::ComPtr<slang::IEntryPoint> m_entryPoint = nullptr;
 };
 
 #endif //CORE_TOOLS_SLANG_SHADER_COMPILER_MODULE_H
