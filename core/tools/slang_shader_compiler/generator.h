@@ -23,7 +23,7 @@ private:
 
     std::string m_outFile;
 
-    static constexpr int CODE_WIDTH = 10;
+    static constexpr size_t CODE_WIDTH = 10;
 };
 
 class LayoutGenerator

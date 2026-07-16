@@ -69,11 +69,11 @@ void CodeGenerator::writeCode(std::ostream& os, const ShaderModule& module)
 
     os << "inline constexpr std::array<std::byte, " << size << "> " << varName << " = {\n";
 
-    for (int i = 0; i < size; i += CODE_WIDTH)
+    for (uint32_t i = 0; i < size; i += CODE_WIDTH)
     {
         os << "   ";
 
-        for (int curr = i; i < std::min(curr + CODE_WIDTH, static_cast<int>(size)); i++)
+        for (size_t curr = i; curr < std::min(i + CODE_WIDTH, size); curr++)
         {
             const char byte = buf[curr];
             os << std::format(" b{{0x{:02x}}},", byte);
