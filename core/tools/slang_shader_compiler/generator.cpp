@@ -20,7 +20,8 @@ CodeGenerator::~CodeGenerator() = default;
 
 void CodeGenerator::generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard) const
 {
-    std::ofstream ofs{m_outFile};
+    // mark binary to force LF
+    std::ofstream ofs(m_outFile, std::ios::binary);
 
     writeHeader(ofs, includeGuard);
 
@@ -93,7 +94,8 @@ LayoutGenerator::~LayoutGenerator() = default;
 
 void LayoutGenerator::generate(const std::vector<ShaderModule>& modules, const std::string& includeGuard) const
 {
-    std::ofstream ofs{m_outFile};
+    // mark binary to force LF
+    std::ofstream ofs(m_outFile, std::ios::binary);
 
     writeHeader(ofs, includeGuard);
 
