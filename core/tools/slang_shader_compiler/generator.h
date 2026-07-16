@@ -10,7 +10,7 @@
 class CodeGenerator
 {
 public:
-    explicit CodeGenerator(const std::string& outFile);
+    explicit CodeGenerator(std::string  outFile);
     ~CodeGenerator();
 
     // include guard: like "GRAPHICS_VULKAN_SHADERS_SHADER_H"

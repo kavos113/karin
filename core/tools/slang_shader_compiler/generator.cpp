@@ -4,14 +4,15 @@
 
 #include <fstream>
 #include <format>
+#include <utility>
 
 #include <slang.h>
 #include <slang-com-ptr.h>
 
 #include "util.h"
 
-CodeGenerator::CodeGenerator(const std::string& outFile)
-    : m_outFile(outFile)
+CodeGenerator::CodeGenerator(std::string  outFile)
+    : m_outFile(std::move(outFile))
 {
 }
 
@@ -112,6 +113,8 @@ void LayoutGenerator::writeHeader(std::ostream& os, const std::string& includeGu
        << "#ifndef " << includeGuard << "\n"
        << "#define " << includeGuard << "\n"
        << "\n"
+       << "#include <cstdint>\n"
+       << "\n"
        << "namespace karin::gen {\n"
        << "\n";
 }
@@ -126,6 +129,8 @@ void LayoutGenerator::writeFooter(std::ostream& os, const std::string& includeGu
 
 void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
 {
+    os << "namespace " << module.identifier() << "{\n\n";
+
     Slang::ComPtr<slang::IBlob> diagnosticBlob;
     slang::ProgramLayout *programLayout = module.program()->getLayout(0, diagnosticBlob.writeRef()); // target = 0
     diagnose(diagnosticBlob);
@@ -134,22 +139,111 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
         throw std::runtime_error("failed to get program layout");
     }
 
-    std::println("--------");
-
     uint32_t paramsCount = programLayout->getParameterCount();
 
     for (uint32_t i = 0; i < paramsCount; i++)
     {
         slang::VariableLayoutReflection *varLayout = programLayout->getParameterByIndex(i);
-        slang::VariableReflection *var = varLayout->getVariable();
+        slang::TypeLayoutReflection *typeLayout = varLayout->getTypeLayout();
 
-        slang::TypeReflection *varType = var->getType();
+        switch (typeLayout->getKind())
+        {
+            using enum slang::TypeReflection::Kind;
 
-        std::println("[var] {}: type {}", var->getName(), varType->getName());
+        case Struct:
+            {
+                slang::VariableReflection *structVar = varLayout->getVariable();
 
-        uint32_t set = varLayout->getBindingSpace();
-        uint32_t binding = varLayout->getBindingIndex();
+                uint32_t paramCount = typeLayout->getFieldCount();
 
-        std::println("  [var layout] set {}, binding {}", set, binding);
+                for (uint32_t j = 0; j < paramCount; j++)
+                {
+                    slang::VariableLayoutReflection *childVarLayout = typeLayout->getFieldByIndex(j);
+                    slang::VariableReflection *var = childVarLayout->getVariable();
+                    if (var == nullptr)
+                    {
+                        continue;
+                    }
+
+                    uint32_t set = childVarLayout->getBindingSpace();
+                    uint32_t binding = childVarLayout->getBindingIndex();
+
+                    os << "inline constexpr uint32_t " << structVar->getName() << "_" << var->getName() << "_set = " << set << ";\n"
+                       << "inline constexpr uint32_t " << structVar->getName() << "_" << var->getName() << "_binding = " << binding << ";\n";
+                }
+
+                break;
+            }
+
+        case ParameterBlock:
+            {
+                uint32_t categoryCount = varLayout->getCategoryCount();
+                assert(categoryCount > 0);
+
+                slang::ParameterCategory category = varLayout->getCategoryByIndex(0);
+                size_t set = varLayout->getOffset(category);
+
+                slang::VariableReflection *blockVar = varLayout->getVariable();
+
+                slang::VariableLayoutReflection *insideBlock = typeLayout->getElementVarLayout();
+                slang::TypeLayoutReflection *insideType = insideBlock->getTypeLayout();
+
+                if (insideType->getKind() == Struct)
+                {
+                    uint32_t paramCount = insideType->getFieldCount();
+
+                    for (uint32_t j = 0; j < paramCount; j++)
+                    {
+                        slang::VariableLayoutReflection *layout = insideType->getFieldByIndex(j);
+                        slang::VariableReflection *var = layout->getVariable();
+                        if (var == nullptr)
+                        {
+                            continue;
+                        }
+
+                        uint32_t binding = layout->getBindingIndex();
+
+                        os << "inline constexpr uint32_t " << blockVar->getName() << "_" << var->getName() << "_set = " << set << ";\n"
+                           << "inline constexpr uint32_t " << blockVar->getName() << "_" << var->getName() << "_binding = " << binding << ";\n";
+                    }
+                }
+                else
+                {
+                    slang::VariableReflection *var = insideBlock->getVariable();
+                    if (var == nullptr)
+                    {
+                        continue;
+                    }
+
+                    uint32_t binding = insideBlock->getBindingIndex();
+
+                    os << "inline constexpr uint32_t " << var->getName() << "_set = " << set << ";\n"
+                       << "inline constexpr uint32_t " << var->getName() << "_binding = " << binding << ";\n";
+                }
+
+                break;
+            }
+
+        default:
+            {
+                slang::VariableReflection *var = varLayout->getVariable();
+                if (var == nullptr)
+                {
+                    continue;
+                }
+
+                uint32_t set = varLayout->getBindingSpace();
+                uint32_t binding = varLayout->getBindingIndex();
+
+                os << "inline constexpr uint32_t " << var->getName() << "_set = " << set << ";\n"
+                   << "inline constexpr uint32_t " << var->getName() << "_binding = " << binding << ";\n";
+
+                break;
+            }
+        }
+
+        // printVariable(varLayout);
     }
+
+    os << "\n}\n";
 }
