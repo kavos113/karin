@@ -2,7 +2,7 @@ implementing draw;
 
 import push_constants;
 
-public float linear_gradient_t(PushConstants push, float2 pixelPos)
+public float linear_gradient_t(FragPushConstants push, float2 pixelPos)
 {
     float2 startPoint = push.color.xy;
     float2 endPoint = push.color.zw;
@@ -24,7 +24,7 @@ public float linear_gradient_t(PushConstants push, float2 pixelPos)
     return t;
 }
 
-public float radial_gradient_t(PushConstants push, float2 pixelPos)
+public float radial_gradient_t(FragPushConstants push, float2 pixelPos)
 {
     float2 center = push.color.xy;
     float2 offset = push.color.zw;
@@ -65,7 +65,7 @@ public float radial_gradient_t(PushConstants push, float2 pixelPos)
 }
 
 public float4 image_color(
-    PushConstants push,
+    FragPushConstants push,
     float2 pixelPos,
     Texture2D image,
     SamplerState s,

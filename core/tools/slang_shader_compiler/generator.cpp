@@ -150,6 +150,16 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
         slang::VariableLayoutReflection *varLayout = programLayout->getParameterByIndex(i);
         slang::TypeLayoutReflection *typeLayout = varLayout->getTypeLayout();
 
+        uint32_t categoryCount = varLayout->getCategoryCount();
+        assert(categoryCount > 0);
+
+        slang::ParameterCategory category = varLayout->getCategoryByIndex(0);
+
+        if (category == slang::ParameterCategory::PushConstantBuffer)
+        {
+            continue;
+        }
+
         switch (typeLayout->getKind())
         {
             using enum slang::TypeReflection::Kind;
@@ -183,10 +193,6 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
 
         case ParameterBlock:
             {
-                uint32_t categoryCount = varLayout->getCategoryCount();
-                assert(categoryCount > 0);
-
-                slang::ParameterCategory category = varLayout->getCategoryByIndex(0);
                 size_t set = varLayout->getOffset(category);
 
                 slang::VariableReflection *blockVar = varLayout->getVariable();
@@ -251,8 +257,6 @@ void LayoutGenerator::writeLayout(std::ostream& os, const ShaderModule& module)
                 break;
             }
         }
-
-        // printVariable(varLayout);
     }
 
     os << "\ninline constexpr uint32_t max_set = " << maxSet << ";\n\n}\n";

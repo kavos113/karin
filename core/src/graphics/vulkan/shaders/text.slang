@@ -38,14 +38,14 @@ float4 frag_main(
 
     case 1: // linear gradient
     {
-        float t = linear_gradient_t(push, input.pixelPos);
+        float t = linear_gradient_t(push.f, input.pixelPos);
         outColor = tex.tex.Sample(tex.samp, float2(t, 0.5));
         break;
     }
 
     case 2: // radial gradient
     {
-        float t = radial_gradient_t(push, input.pixelPos);
+        float t = radial_gradient_t(push.f, input.pixelPos);
         if (t >= 0.0)
         {
             outColor = tex.tex.Sample(tex.samp, float2(t, 0.5));
@@ -58,7 +58,7 @@ float4 frag_main(
     }
 
     case 3: // image
-        outColor = image_color(push, input.pixelPos, tex.tex, tex.samp, input.uv);
+        outColor = image_color(push.f, input.pixelPos, tex.tex, tex.samp, input.uv);
         break;
 
     default:
