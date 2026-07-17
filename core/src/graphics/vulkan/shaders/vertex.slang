@@ -27,7 +27,7 @@ public VertexOutput vert_main(
 {
     VertexOutput output;
 
-    output.pos = mul(matrices.proj, mul(push.v.model, float4(input.pos, 0.0, 1.0)));
+    output.pos = mul(mul(float4(input.pos, 0.0, 1.0), push.v.model), matrices.proj);
     output.uv = input.uv;
     output.pixelPos = mul(push.v.model, float4(input.pos, 0.0, 1.0)).xy;
 
