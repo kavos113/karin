@@ -251,17 +251,12 @@ void VulkanRendererImpl::endDraw()
                 0, nullptr
             );
 
+            PushConstant push = {command.vertData, command.fragData};
             vkCmdPushConstants(
                 commandBuffer,
                 m_pipelines[command.pipelineType]->pipelineLayout(),
-                VK_SHADER_STAGE_FRAGMENT_BIT,
-                0, sizeof(FragPushConstants), &command.fragData
-            );
-            vkCmdPushConstants(
-                commandBuffer,
-                m_pipelines[command.pipelineType]->pipelineLayout(),
-                VK_SHADER_STAGE_VERTEX_BIT,
-                sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0, sizeof(PushConstant), &push
             );
 
             VkRect2D scissor = command.scissor.value_or(batch.scissor);
@@ -538,15 +533,10 @@ void VulkanRendererImpl::createPipeline()
 {
     std::vector pushConstantRanges = {
         VkPushConstantRange{
-            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             .offset = 0,
-            .size = sizeof(FragPushConstants)
+            .size = sizeof(PushConstant)
         },
-        VkPushConstantRange{
-            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-            .offset = sizeof(FragPushConstants),
-            .size = sizeof(VertexPushConstants)
-        }
     };
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts(gen::geometry_frag_main::max_set + 1);
