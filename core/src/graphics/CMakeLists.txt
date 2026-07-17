@@ -110,8 +110,9 @@ elseif (VULKAN)
             vulkan/vulkan_offscreen_frame_context.h
             vulkan/glm_geometry.h
             vulkan/vma.h
-            vulkan/shaders/shaders.h
-            vulkan/shaders/push_constants.h
+            vulkan/shaders/shader_code.h
+            vulkan/shaders/shader_layout.h
+            vulkan/shaders/push_constants.slang
             text/freetype/freetype_font_face.h
     )
 
@@ -159,31 +160,28 @@ if (DIRECTX)
     target_compile_definitions(karin_graphics PUBLIC NOMINMAX)
     target_compile_definitions(karin_graphics PUBLIC WIN32_LEAN_AND_MEAN)
 elseif (VULKAN)
-    if (WIN32)
-        find_program(
-                BASH_EXECUTABLE bash
-                HINTS "C:\\Program Files\\Git\\bin" "C:\\Program Files (x86)\\Git\\bin"
-        )
-
-        if (NOT BASH_EXECUTABLE)
-            message(FATAL_ERROR "git bash has not found.")
-        endif ()
-    endif ()
+    set(SHADER_CODE_OUT_FILE vulkan/shaders/shader_code.h)
+    set(SHADER_LAYOUT_OUT_FILE vulkan/shaders/shader_layout.h)
 
     add_custom_command(
-            OUTPUT vulkan/shaders/shaders.h
+            OUTPUT ${SHADER_CODE_OUT_FILE} ${SHADER_LAYOUT_OUT_FILE}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            COMMAND ${BASH_EXECUTABLE} ${SCRIPTS_DIR}/shader.sh vulkan/shaders SRC_GRAPHICS_VULKAN_SHADERS_SHADER_H
+            COMMAND slang_shader_compiler
+                    ${SHADER_CODE_OUT_FILE} ${SHADER_LAYOUT_OUT_FILE} ${SOURCE_DIR}
+                    vulkan/shaders/vertex.slang
+                    vulkan/shaders/geometry.slang
+                    vulkan/shaders/text.slang
             DEPENDS
-            vulkan/shaders/geometry.vert
-            vulkan/shaders/geometry.frag
-            vulkan/shaders/text.frag
-            vulkan/shaders/push_constants.h
+                    slang_shader_compiler
+                    vulkan/shaders/vertex.slang
+                    vulkan/shaders/geometry.slang
+                    vulkan/shaders/text.slang
+                    vulkan/shaders/push_constants.slang
             COMMENT "Compiling graphics shaders"
     )
     add_custom_target(
             shaders_graphics ALL
-            DEPENDS vulkan/shaders/shaders.h
+            DEPENDS ${SHADER_CODE_OUT_FILE} ${SHADER_LAYOUT_OUT_FILE}
     )
 
     add_dependencies(karin_graphics shaders_graphics)

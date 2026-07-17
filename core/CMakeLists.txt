@@ -25,6 +25,10 @@ if (MSVC)
     add_compile_options("/utf-8")
 endif ()
 
+if (VULKAN)
+    add_subdirectory(tools/slang_shader_compiler)
+endif ()
+
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(test)

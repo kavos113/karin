@@ -8,8 +8,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shaders/push_constants.h"
-#include "shaders/shaders.h"
+#include "shaders/push_constants.slang"
+#include "shaders/shader_code.h"
+#include "shaders/shader_layout.h"
 #include "vulkan_context.h"
 #include "vulkan_helpers.h"
 
@@ -250,17 +251,12 @@ void VulkanRendererImpl::endDraw()
                 0, nullptr
             );
 
+            PushConstant push = {command.vertData, command.fragData};
             vkCmdPushConstants(
                 commandBuffer,
                 m_pipelines[command.pipelineType]->pipelineLayout(),
-                VK_SHADER_STAGE_FRAGMENT_BIT,
-                0, sizeof(FragPushConstants), &command.fragData
-            );
-            vkCmdPushConstants(
-                commandBuffer,
-                m_pipelines[command.pipelineType]->pipelineLayout(),
-                VK_SHADER_STAGE_VERTEX_BIT,
-                sizeof(FragPushConstants), sizeof(VertexPushConstants), &command.vertData
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0, sizeof(PushConstant), &push
             );
 
             VkRect2D scissor = command.scissor.value_or(batch.scissor);
@@ -535,38 +531,33 @@ void VulkanRendererImpl::endOffscreenLayer()
 
 void VulkanRendererImpl::createPipeline()
 {
-    std::vector descriptorSetLayouts = {
-        m_viewContext->descriptorSetLayout(),
-        m_deviceResources->geometryDescriptorSetLayout(),
-    };
     std::vector pushConstantRanges = {
         VkPushConstantRange{
-            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             .offset = 0,
-            .size = sizeof(FragPushConstants)
+            .size = sizeof(PushConstant)
         },
-        VkPushConstantRange{
-            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-            .offset = sizeof(FragPushConstants),
-            .size = sizeof(VertexPushConstants)
-        }
     };
+
+    std::vector<VkDescriptorSetLayout> descriptorSetLayouts(gen::geometry_frag_main::max_set + 1);
+    descriptorSetLayouts[gen::geometry_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
+    descriptorSetLayouts[gen::geometry_frag_main::tex_tex_set] = m_deviceResources->geometryDescriptorSetLayout();
+
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
         m_frameContext->surfaceFormat(),
-        geometry_vert_spv, geometry_vert_spv_len,
-        geometry_frag_spv, geometry_frag_spv_len,
+        gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
+        gen::geometry_frag_main_code.data(), gen::geometry_frag_main_code.size(),
         descriptorSetLayouts, pushConstantRanges
     );
 
-    std::vector textDescriptorSetLayouts = {
-        m_viewContext->descriptorSetLayout(),
-        m_deviceResources->geometryDescriptorSetLayout(),
-        m_fontRenderer->atlasDescriptorSetLayout(),
-    };
+    std::vector<VkDescriptorSetLayout> textDescriptorSetLayouts(gen::text_frag_main::max_set + 1);
+    textDescriptorSetLayouts[gen::text_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
+    textDescriptorSetLayouts[gen::text_frag_main::tex_tex_set] = m_deviceResources->geometryDescriptorSetLayout();
+    textDescriptorSetLayouts[gen::text_frag_main::glyphAtlas_tex_set] = m_fontRenderer->atlasDescriptorSetLayout();
     m_pipelines[PipelineType::Text] = std::make_unique<VulkanPipeline>(
         m_frameContext->surfaceFormat(),
-        geometry_vert_spv, geometry_vert_spv_len,
-        text_frag_spv, text_frag_spv_len,
+        gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
+        gen::text_frag_main_code.data(), gen::text_frag_main_code.size(),
         textDescriptorSetLayouts, pushConstantRanges
     );
 }

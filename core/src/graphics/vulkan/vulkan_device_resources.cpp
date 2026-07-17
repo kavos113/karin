@@ -11,6 +11,7 @@
 
 #include <karin/common/color/color.h>
 #include "vulkan_context.h"
+#include "shaders/shader_layout.h"
 
 namespace karin
 {
@@ -131,21 +132,34 @@ VulkanTextureResourceDescriptor* VulkanLayerPool::layer(uint16_t layerID, float 
         for (size_t i = 0; i < m_maxFramesInFlight; ++i)
         {
             VkDescriptorImageInfo descriptorImageInfo = {
-                .sampler = m_sampler,
                 .imageView = image.imageView,
                 .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
             };
-
-            VkWriteDescriptorSet descriptorWrite = {
-                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                .dstSet = descriptorSets[i],
-                .dstBinding = 0,
-                .dstArrayElement = 0,
-                .descriptorCount = 1,
-                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                .pImageInfo = &descriptorImageInfo,
+            VkDescriptorImageInfo samplerInfo = {
+                .sampler = m_sampler,
             };
-            vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+            std::array descriptorWrites = {
+                VkWriteDescriptorSet{
+                    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                    .dstSet = descriptorSets[i],
+                    .dstBinding = gen::geometry_frag_main::tex_tex_binding,
+                    .dstArrayElement = 0,
+                    .descriptorCount = 1,
+                    .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                    .pImageInfo = &descriptorImageInfo,
+                },
+                VkWriteDescriptorSet{
+                    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                    .dstSet = descriptorSets[i],
+                    .dstBinding = gen::geometry_frag_main::tex_samp_binding,
+                    .dstArrayElement = 0,
+                    .descriptorCount = 1,
+                    .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+                    .pImageInfo = &samplerInfo,
+                },
+            };
+            vkUpdateDescriptorSets(VulkanContext::instance().device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
         }
 
         layer.image = VulkanTextureResourceDescriptor(std::move(image), descriptorSets);
@@ -406,21 +420,35 @@ const VulkanTextureResourceDescriptor *VulkanDeviceResources::gradientPointLut(
     for (size_t i = 0; i < m_maxFramesInFlight; ++i)
     {
         VkDescriptorImageInfo descriptorImageInfo = {
-            .sampler = gradientPointLutSampler,
             .imageView = gradientPointLutImage.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
-
-        VkWriteDescriptorSet descriptorWrite = {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = descriptorSets[i],
-            .dstBinding = 0,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .pImageInfo = &descriptorImageInfo,
+        VkDescriptorImageInfo samplerInfo = {
+            .sampler = gradientPointLutSampler,
         };
-        vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+        std::array descriptorWrites = {
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_tex_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                .pImageInfo = &descriptorImageInfo,
+            },
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_samp_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+                .pImageInfo = &samplerInfo,
+            }
+
+        };
+        vkUpdateDescriptorSets(VulkanContext::instance().device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
     }
 
     VulkanTextureResourceDescriptor lutTexture(
@@ -682,21 +710,34 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
     for (size_t i = 0; i < m_maxFramesInFlight; ++i)
     {
         VkDescriptorImageInfo descriptorImageInfo = {
-            .sampler = m_clampSampler,
             .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
-
-        VkWriteDescriptorSet descriptorWrite = {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = descriptorSets[i],
-            .dstBinding = 0,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .pImageInfo = &descriptorImageInfo,
+        VkDescriptorImageInfo samplerInfo = {
+            .sampler = m_clampSampler,
         };
-        vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+        std::array descriptorWrites = {
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_tex_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                .pImageInfo = &descriptorImageInfo,
+            },
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_samp_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+                .pImageInfo = &samplerInfo,
+            }
+        };
+        vkUpdateDescriptorSets(VulkanContext::instance().device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
     }
 
 
@@ -714,17 +755,26 @@ Image VulkanDeviceResources::createImage(const std::vector<std::byte>& data, uin
 
 void VulkanDeviceResources::createDescriptorSetLayouts()
 {
-    VkDescriptorSetLayoutBinding binding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1,
-        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .pImmutableSamplers = nullptr
+    std::array bindings = {
+        VkDescriptorSetLayoutBinding{
+            .binding = gen::geometry_frag_main::tex_tex_binding,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .pImmutableSamplers = nullptr
+        },
+        VkDescriptorSetLayoutBinding{
+            .binding = gen::geometry_frag_main::tex_samp_binding,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .pImmutableSamplers = nullptr
+        },
     };
     VkDescriptorSetLayoutCreateInfo layoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = 1,
-        .pBindings = &binding
+        .bindingCount = bindings.size(),
+        .pBindings = bindings.data()
     };
     if (vkCreateDescriptorSetLayout(
         VulkanContext::instance().device(), &layoutInfo, nullptr, &m_geometryDescriptorSetLayout
@@ -894,21 +944,34 @@ void VulkanDeviceResources::createDummyTexture()
     for (size_t i = 0; i < m_maxFramesInFlight; ++i)
     {
         VkDescriptorImageInfo descriptorImageInfo = {
-            .sampler = m_clampSampler,
             .imageView = image.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
-
-        VkWriteDescriptorSet descriptorWrite = {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = descriptorSets[i],
-            .dstBinding = 0,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .pImageInfo = &descriptorImageInfo,
+        VkDescriptorImageInfo samplerInfo = {
+            .sampler = m_clampSampler,
         };
-        vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+        std::array descriptorWrites = {
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_tex_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                .pImageInfo = &descriptorImageInfo,
+            },
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = descriptorSets[i],
+                .dstBinding = gen::geometry_frag_main::tex_samp_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+                .pImageInfo = &samplerInfo,
+            }
+        };
+        vkUpdateDescriptorSets(VulkanContext::instance().device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
     }
 
     m_dummyTexture = VulkanTextureResourceDescriptor(

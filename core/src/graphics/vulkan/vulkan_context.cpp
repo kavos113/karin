@@ -437,9 +437,13 @@ void VulkanContext::createDescriptorPool()
             .descriptorCount = DESCRIPTOR_POOL_SIZE,
         },
         VkDescriptorPoolSize{
-            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
             .descriptorCount = DESCRIPTOR_POOL_SIZE,
-        }
+        },
+        VkDescriptorPoolSize{
+            .type = VK_DESCRIPTOR_TYPE_SAMPLER,
+            .descriptorCount = DESCRIPTOR_POOL_SIZE,
+        },
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {

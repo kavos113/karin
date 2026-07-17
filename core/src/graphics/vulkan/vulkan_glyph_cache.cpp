@@ -4,10 +4,12 @@
 #include <cstring>
 
 #include <stdexcept>
+#include <array>
 
 #include <utils/hash.h>
 #include "vulkan_helpers.h"
 #include "vulkan_context.h"
+#include "shaders/shader_layout.h"
 
 namespace karin
 {
@@ -292,37 +294,60 @@ void VulkanGlyphCache::createAtlas()
 
     for (size_t i = 0; i < m_maxFramesInFlight; i++)
     {
-        VkDescriptorImageInfo imageInfo = {
-            .sampler = m_atlasSampler,
+        VkDescriptorImageInfo descriptorImageInfo = {
             .imageView = m_atlas.imageView,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         };
-        VkWriteDescriptorSet descriptorWrite = {
-            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-            .dstSet = m_atlasDescriptorSets[i],
-            .dstBinding = 0,
-            .dstArrayElement = 0,
-            .descriptorCount = 1,
-            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .pImageInfo = &imageInfo,
+        VkDescriptorImageInfo samplerInfo = {
+            .sampler = m_atlasSampler,
         };
-        vkUpdateDescriptorSets(VulkanContext::instance().device(), 1, &descriptorWrite, 0, nullptr);
+
+        std::array descriptorWrites = {
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = m_atlasDescriptorSets[i],
+                .dstBinding = gen::text_frag_main::glyphAtlas_tex_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                .pImageInfo = &descriptorImageInfo,
+            },
+            VkWriteDescriptorSet{
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = m_atlasDescriptorSets[i],
+                .dstBinding = gen::text_frag_main::glyphAtlas_samp_binding,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+                .pImageInfo = &samplerInfo,
+            }
+        };
+        vkUpdateDescriptorSets(VulkanContext::instance().device(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
     }
 }
 
 void VulkanGlyphCache::createDescriptorSetLayout()
 {
-    VkDescriptorSetLayoutBinding samplerLayoutBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .descriptorCount = 1,
-        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .pImmutableSamplers = nullptr,
+    std::array bindings = {
+        VkDescriptorSetLayoutBinding{
+            .binding = gen::text_frag_main::glyphAtlas_tex_binding,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .pImmutableSamplers = nullptr
+        },
+        VkDescriptorSetLayoutBinding{
+            .binding = gen::text_frag_main::glyphAtlas_samp_binding,
+            .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .pImmutableSamplers = nullptr
+        },
     };
     VkDescriptorSetLayoutCreateInfo layoutInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = 1,
-        .pBindings = &samplerLayoutBinding,
+        .bindingCount = bindings.size(),
+        .pBindings = bindings.data(),
     };
     if (vkCreateDescriptorSetLayout(
         VulkanContext::instance().device(), &layoutInfo, nullptr, &m_atlasDescriptorSetLayout

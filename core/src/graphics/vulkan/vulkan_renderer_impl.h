@@ -21,7 +21,7 @@
 #include "vulkan_geometry_buffer.h"
 #include "vulkan_view_context.h"
 #include "vulkan_frame_context.h"
-#include "shaders/push_constants.h"
+#include "shaders/push_constants.slang"
 
 namespace karin
 {

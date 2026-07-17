@@ -37,31 +37,44 @@ struct VertexPushConstants
 {
     glm::mat4 model;
 };
+
+struct PushConstant
+{
+    VertexPushConstants v;
+    FragPushConstants f;
+};
 }
 
-#else // glsl
+#else
+#ifdef __SLANG__
 
-#ifdef FRAGMENT_SHADER
-
-layout (push_constant) uniform PushConstants
+module push_constants;
+public struct TransformMatrix
 {
-    vec4 color;
-    vec2 shapeParams;
-    uint shapeType;
-    uint patternType;
-    vec4 patternParams;
-} push;
+    public float4x4 model;
+};
 
-#elif defined(VERTEX_SHADER)
-
-layout (push_constant) uniform TransformMatrix
+public struct FragPushConstants
 {
-    layout(offset = 48) mat4 model;
-} push;
+    public float4 color;
+    public float2 shapeParams;
+    public uint   shapeType;
+    public uint   patternType;
+    public float4 patternParams;
+};
 
-#endif
+public struct PushConstants
+{
+    public TransformMatrix v;
+    public FragPushConstants f;
+};
 
-#endif
+[[vk::push_constant]]
+public ConstantBuffer<PushConstants> push;
+
+#endif // __SLANG__
+
+#endif // __cplusplus
 
 
 #endif //GRAPHICS_VULKAN_SHADERS_PUSH_CONSTANTS_H
