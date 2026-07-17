@@ -23,14 +23,13 @@ public struct VertexInput
 
 [shader("vertex")]
 public VertexOutput vert_main(
-    VertexInput input,
-    uniform TransformMatrix push)
+    VertexInput input)
 {
     VertexOutput output;
 
-    output.pos = mul(matrices.proj, mul(push.model, float4(input.pos, 0.0, 1.0)));
+    output.pos = mul(matrices.proj, mul(push.v.model, float4(input.pos, 0.0, 1.0)));
     output.uv = input.uv;
-    output.pixelPos = mul(push.model, float4(input.pos, 0.0, 1.0)).xy;
+    output.pixelPos = mul(push.v.model, float4(input.pos, 0.0, 1.0)).xy;
 
     return output;
 }

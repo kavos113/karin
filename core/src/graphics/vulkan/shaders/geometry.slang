@@ -12,22 +12,21 @@ ParameterBlock<Texture> tex;
 
 [shader("fragment")]
 float4 frag_main(
-    VertexOutput input,
-    uniform PushConstants push)
+    VertexOutput input)
 {
     float4 outColor;
 
-    float sdis = sdf(input.uv, push.shapeType, push.shapeParams);
+    float sdis = sdf(input.uv, push.f.shapeType, push.f.shapeParams);
 
     if (sdis > 0.0)
     {
         discard;
     }
 
-    switch (push.patternType)
+    switch (push.f.patternType)
     {
     case 0: // solid
-        outColor = push.color;
+        outColor = push.f.color;
         break;
 
     case 1: // linear gradient
@@ -59,7 +58,7 @@ float4 frag_main(
         discard;
     }
 
-    outColor.a *= push.patternParams.x;
+    outColor.a *= push.f.patternParams.x;
 
     return outColor;
 }

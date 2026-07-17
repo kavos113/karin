@@ -19,8 +19,7 @@ ParameterBlock<GlyphAtlas> glyphAtlas;
 
 [shader("fragment")]
 float4 frag_main(
-    VertexOutput input,
-    uniform PushConstants push)
+    VertexOutput input)
 {
     float4 outColor;
 
@@ -31,10 +30,10 @@ float4 frag_main(
         discard;
     }
 
-    switch (push.patternType)
+    switch (push.f.patternType)
     {
     case 0: // solid
-        outColor = push.color;
+        outColor = push.f.color;
         break;
 
     case 1: // linear gradient
@@ -66,7 +65,7 @@ float4 frag_main(
         discard;
     }
 
-    outColor.a *= glyphAlpha * push.patternParams.x;
+    outColor.a *= glyphAlpha * push.f.patternParams.x;
 
     return outColor;
 }

@@ -37,6 +37,12 @@ struct VertexPushConstants
 {
     glm::mat4 model;
 };
+
+struct PushConstant
+{
+    VertexPushConstants v;
+    FragPushConstants f;
+};
 }
 
 #else // glsl
@@ -69,14 +75,23 @@ public struct TransformMatrix
     public float4x4 model;
 };
 
-public struct PushConstants
+public struct FragPushConstants
 {
     public float4 color;
     public float2 shapeParams;
     public uint   shapeType;
     public uint   patternType;
     public float4 patternParams;
-}
+};
+
+public struct PushConstants
+{
+    public TransformMatrix v;
+    public FragPushConstants f;
+};
+
+[[vk::push_constant]]
+public ConstantBuffer<PushConstants> push;
 
 #endif // __SLANG__
 
