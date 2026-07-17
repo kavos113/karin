@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(gui_${EXAMPLE_NAME} main.cpp)
 add_dependencies(gui_${EXAMPLE_NAME}
+        karin_gui
         karin_system
         karin_graphics
-        karin_gui
 )
 
 target_link_libraries(gui_${EXAMPLE_NAME} PRIVATE
+        karin_gui
         karin_system
         karin_graphics
-        karin_gui
 )
 
 target_include_directories(gui_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
