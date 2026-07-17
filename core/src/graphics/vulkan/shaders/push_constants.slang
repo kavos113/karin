@@ -45,28 +45,7 @@ struct PushConstant
 };
 }
 
-#else // glsl
-
-#ifdef FRAGMENT_SHADER
-
-layout (push_constant) uniform PushConstants
-{
-    vec4 color;
-    vec2 shapeParams;
-    uint shapeType;
-    uint patternType;
-    vec4 patternParams;
-} push;
-
-#elif defined(VERTEX_SHADER)
-
-layout (push_constant) uniform TransformMatrix
-{
-    layout(offset = 48) mat4 model;
-} push;
-
-#endif
-
+#else
 #ifdef __SLANG__
 
 module push_constants;
@@ -95,7 +74,7 @@ public ConstantBuffer<PushConstants> push;
 
 #endif // __SLANG__
 
-#endif // glsl/__cplusplus
+#endif // __cplusplus
 
 
 #endif //GRAPHICS_VULKAN_SHADERS_PUSH_CONSTANTS_H
