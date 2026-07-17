@@ -1,18 +1,27 @@
 cmake_minimum_required(VERSION 3.28)
-project(karin_examples_gui_border)
+
+set(EXAMPLE_NAME border)
+
+project(gui_${EXAMPLE_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(karin_examples_gui_border main.cpp)
-add_dependencies(karin_examples_gui_border
-        karin_gui
+add_executable(gui_${EXAMPLE_NAME} main.cpp)
+add_dependencies(gui_${EXAMPLE_NAME}
         karin_system
-        karin_graphics)
-target_link_libraries(karin_examples_gui_border PRIVATE
+        karin_graphics
         karin_gui
+)
+
+target_link_libraries(gui_${EXAMPLE_NAME} PRIVATE
         karin_system
-        karin_graphics)
-target_include_directories(karin_examples_gui_border PRIVATE ${INCLUDE_DIR})
+        karin_graphics
+        karin_gui
+)
+
+target_include_directories(gui_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
+
+set_target_properties(gui_${EXAMPLE_NAME} PROPERTIES FOLDER examples/gui)
 
 find_package(yoga CONFIG REQUIRED)
-target_link_libraries(karin_examples_gui_border PRIVATE yoga::yogacore)
+target_link_libraries(gui_${EXAMPLE_NAME} PRIVATE yoga::yogacore)

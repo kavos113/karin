@@ -1,9 +1,22 @@
 cmake_minimum_required(VERSION 3.28)
-project(karin_examples_radial_gradient_pattern)
+
+set(EXAMPLE_NAME radial_gradient_pattern)
+
+project(graphics_${EXAMPLE_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(karin_examples_radial_gradient_pattern main.cpp)
-add_dependencies(karin_examples_radial_gradient_pattern karin_system karin_graphics)
-target_link_libraries(karin_examples_radial_gradient_pattern PRIVATE karin_system karin_graphics)
-target_include_directories(karin_examples_radial_gradient_pattern PRIVATE ${INCLUDE_DIR})
+add_executable(graphics_${EXAMPLE_NAME} main.cpp)
+add_dependencies(graphics_${EXAMPLE_NAME}
+        karin_system
+        karin_graphics
+)
+
+target_link_libraries(graphics_${EXAMPLE_NAME} PRIVATE
+        karin_system
+        karin_graphics
+)
+
+target_include_directories(graphics_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
+
+set_target_properties(graphics_${EXAMPLE_NAME} PROPERTIES FOLDER examples/graphics)

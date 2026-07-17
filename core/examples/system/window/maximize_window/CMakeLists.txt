@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.28)
-project(karin_examples_maximize_window)
+
+set(EXAMPLE_NAME maximize_window)
+
+project(system_${EXAMPLE_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(karin_examples_maximize_window main.cpp)
-add_dependencies(karin_examples_maximize_window karin_system)
-target_link_libraries(karin_examples_maximize_window PRIVATE karin_system)
-target_include_directories(karin_examples_maximize_window PRIVATE ${INCLUDE_DIR})
+add_executable(system_${EXAMPLE_NAME} main.cpp)
+add_dependencies(system_${EXAMPLE_NAME} karin_system)
+
+target_link_libraries(system_${EXAMPLE_NAME} PRIVATE karin_system)
+target_include_directories(system_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
+
+set_target_properties(system_${EXAMPLE_NAME} PROPERTIES FOLDER examples/system)
