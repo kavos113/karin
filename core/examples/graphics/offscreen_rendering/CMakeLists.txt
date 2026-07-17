@@ -1,9 +1,22 @@
 cmake_minimum_required(VERSION 3.28)
-project(karin_examples_offscreen_rendering)
+
+set(EXAMPLE_NAME offscreen_rendering)
+
+project(graphics_${EXAMPLE_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(karin_examples_offscreen_rendering main.cpp ${THIRD_PARTY_DIR}/stb_image/stb_image_write_impl.cpp)
-add_dependencies(karin_examples_offscreen_rendering karin_graphics)
-target_link_libraries(karin_examples_offscreen_rendering PRIVATE karin_graphics)
-target_include_directories(karin_examples_offscreen_rendering PRIVATE ${INCLUDE_DIR} ${THIRD_PARTY_DIR})
+add_executable(graphics_${EXAMPLE_NAME} main.cpp)
+add_dependencies(graphics_${EXAMPLE_NAME}
+        karin_system
+        karin_graphics
+)
+
+target_link_libraries(graphics_${EXAMPLE_NAME} PRIVATE
+        karin_system
+        karin_graphics
+)
+
+target_include_directories(graphics_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
+
+set_target_properties(graphics_${EXAMPLE_NAME} PROPERTIES FOLDER examples/graphics)

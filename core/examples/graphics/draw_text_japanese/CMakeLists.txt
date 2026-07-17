@@ -1,13 +1,26 @@
 cmake_minimum_required(VERSION 3.28)
-project(karin_examples_draw_text_japanese)
+
+set(EXAMPLE_NAME draw_text_japanese)
+
+project(graphics_${EXAMPLE_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(karin_examples_draw_text_japanese main.cpp)
-add_dependencies(karin_examples_draw_text_japanese karin_system karin_graphics)
-target_link_libraries(karin_examples_draw_text_japanese PRIVATE karin_system karin_graphics)
-target_include_directories(karin_examples_draw_text_japanese PRIVATE ${INCLUDE_DIR})
+add_executable(graphics_${EXAMPLE_NAME} main.cpp)
+add_dependencies(graphics_${EXAMPLE_NAME}
+        karin_system
+        karin_graphics
+)
+
+target_link_libraries(graphics_${EXAMPLE_NAME} PRIVATE
+        karin_system
+        karin_graphics
+)
+
+target_include_directories(graphics_${EXAMPLE_NAME} PRIVATE ${INCLUDE_DIR})
+
+set_target_properties(graphics_${EXAMPLE_NAME} PROPERTIES FOLDER examples/graphics)
 
 if (MSVC)
-    target_compile_options(karin_examples_draw_text_japanese PRIVATE /utf-8)
+    target_compile_options(graphics_${EXAMPLE_NAME} PRIVATE /utf-8)
 endif ()
