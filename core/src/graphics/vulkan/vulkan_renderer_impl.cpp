@@ -542,7 +542,6 @@ void VulkanRendererImpl::createPipeline()
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts(gen::geometry_frag_main::max_set + 1);
     descriptorSetLayouts[gen::geometry_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
     descriptorSetLayouts[gen::geometry_frag_main::tex_tex_set] = m_deviceResources->geometryDescriptorSetLayout();
-
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
         m_frameContext->surfaceFormat(),
         gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
@@ -559,6 +558,15 @@ void VulkanRendererImpl::createPipeline()
         gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
         gen::text_frag_main_code.data(), gen::text_frag_main_code.size(),
         textDescriptorSetLayouts, pushConstantRanges
+    );
+
+    std::vector<VkDescriptorSetLayout> shadowDescriptorSetLayouts(gen::shadow_frag_main::max_set + 1);
+    shadowDescriptorSetLayouts[gen::shadow_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
+    m_pipelines[PipelineType::Shadow] = std::make_unique<VulkanPipeline>(
+        m_frameContext->surfaceFormat(),
+        gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
+        gen::shadow_frag_main_code.data(), gen::shadow_frag_main_code.size(),
+        descriptorSetLayouts, pushConstantRanges
     );
 }
 } // karin

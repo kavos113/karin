@@ -40,6 +40,7 @@ public:
     {
         Geometry,
         Text,
+        Shadow,
     };
 
     VulkanRendererImpl(std::unique_ptr<VulkanFrameContext> frameContext);
