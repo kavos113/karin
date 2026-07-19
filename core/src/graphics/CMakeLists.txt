@@ -171,12 +171,14 @@ elseif (VULKAN)
                     vulkan/shaders/vertex.slang
                     vulkan/shaders/geometry.slang
                     vulkan/shaders/text.slang
+                    vulkan/shaders/shadow.slang
             DEPENDS
                     slang_shader_compiler
                     vulkan/shaders/vertex.slang
                     vulkan/shaders/geometry.slang
                     vulkan/shaders/text.slang
                     vulkan/shaders/push_constants.slang
+                    vulkan/shaders/shadow.slang
             COMMENT "Compiling graphics shaders"
     )
     add_custom_target(

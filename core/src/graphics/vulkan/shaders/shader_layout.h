@@ -42,6 +42,14 @@ inline constexpr uint32_t matrices_binding = 0;
 inline constexpr uint32_t max_set = 2;
 
 }
+namespace shadow_frag_main{
+
+inline constexpr uint32_t matrices_set = 0;
+inline constexpr uint32_t matrices_binding = 0;
+
+inline constexpr uint32_t max_set = 0;
+
+}
 
 } // karin::gen
 
