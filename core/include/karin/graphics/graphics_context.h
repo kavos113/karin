@@ -74,6 +74,7 @@ public:
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern) const;
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern) const;
     void fillPath(Path path, const Pattern& pattern) const;
+    void fillBoxShadow(Rectangle rect, Color color, float blurRadius = 0.0f, float spreadRadius = 0.0f) const;
 
     void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;
     void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle = StrokeStyle()) const;

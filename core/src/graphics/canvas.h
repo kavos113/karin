@@ -27,6 +27,7 @@ public:
     void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);
     void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state);
     void fillPath(Path path, const Pattern& pattern, const GraphicsContext::State& state);
+    void fillBoxShadow(Rectangle rect, Color color, float blurRadius, float spreadRadius, const GraphicsContext::State& state);
     void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
     void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);
     void drawEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state);

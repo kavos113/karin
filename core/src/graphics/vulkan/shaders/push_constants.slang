@@ -17,7 +17,7 @@ enum class ShapeType : uint32_t
 
 struct FragPushConstants
 {
-    // color(vec4) in solid color
+    // color(vec4) in solid color, shadow
     // start(vec2) + end(vec2) in linear gradient
     // center(vec2) + offset(vec2) in radial gradient
     // offset(vec2) + scale(vec2) in image
@@ -30,6 +30,7 @@ struct FragPushConstants
     // x: alpha
     // radiusX(float) (=y) + radiusY(float) (=z) in radial gradient
     // imageSize(vec2) (=yz) + uvMode(float) (=w) in image (0 = uv(image), 1 = window coordinates(image pattern))
+    // blur radius(x) in shadow
     glm::vec4 patternParams;
 
     // radius (vec2): ellipse

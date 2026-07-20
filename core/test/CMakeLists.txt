@@ -27,6 +27,7 @@ set(TEST_SRCS
         graphics/visual/example_test_opacity.cpp
         graphics/visual/example_test_layer.cpp
         graphics/visual/example_test_multiple_layer.cpp
+        graphics/visual/example_test_box_shadow.cpp
 
         graphics/visual/visual_tester.cpp
 )

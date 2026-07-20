@@ -222,6 +222,8 @@ void VulkanRendererImpl::endDraw()
                         0, nullptr
                     );
                 }
+
+                currentType = command.pipelineType;
             }
             if (isFirstBind)
             {
@@ -235,21 +237,24 @@ void VulkanRendererImpl::endDraw()
                 isFirstBind = false;
             }
 
-            auto descriptorSets = command.textureResources
-                | std::views::transform(
-                    [currentFrame](const VulkanTextureResourceDescriptor *resource)
-                    {
-                        return resource->descriptorSet(currentFrame);
-                    })
-                | std::ranges::to<std::vector>();
+            if (command.pipelineType != PipelineType::Shadow)
+            {
+                auto descriptorSets = command.textureResources
+                    | std::views::transform(
+                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
+                        {
+                            return resource->descriptorSet(currentFrame);
+                        })
+                    | std::ranges::to<std::vector>();
 
-            vkCmdBindDescriptorSets(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[command.pipelineType]->pipelineLayout(),
-                1, descriptorSets.size(), descriptorSets.data(),
-                0, nullptr
-            );
+                vkCmdBindDescriptorSets(
+                    commandBuffer,
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    m_pipelines[command.pipelineType]->pipelineLayout(),
+                    1, descriptorSets.size(), descriptorSets.data(),
+                    0, nullptr
+                );
+            }
 
             PushConstant push = {command.vertData, command.fragData};
             vkCmdPushConstants(
@@ -313,6 +318,12 @@ void VulkanRendererImpl::addCommand(
         .pipelineType = pipelineType,
         .scissor = clipRect.has_value() ? std::make_optional(toVkRect(clipRect.value())) : std::nullopt,
     };
+
+    if (pipelineType == PipelineType::Shadow)
+    {
+        m_drawBatches.back().commands.push_back(drawCommand);
+        return;
+    }
 
     std::visit(
         [this, &drawCommand]<typename T0>(const T0& p)
@@ -542,7 +553,6 @@ void VulkanRendererImpl::createPipeline()
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts(gen::geometry_frag_main::max_set + 1);
     descriptorSetLayouts[gen::geometry_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
     descriptorSetLayouts[gen::geometry_frag_main::tex_tex_set] = m_deviceResources->geometryDescriptorSetLayout();
-
     m_pipelines[PipelineType::Geometry] = std::make_unique<VulkanPipeline>(
         m_frameContext->surfaceFormat(),
         gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
@@ -559,6 +569,15 @@ void VulkanRendererImpl::createPipeline()
         gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
         gen::text_frag_main_code.data(), gen::text_frag_main_code.size(),
         textDescriptorSetLayouts, pushConstantRanges
+    );
+
+    std::vector<VkDescriptorSetLayout> shadowDescriptorSetLayouts(gen::shadow_frag_main::max_set + 1);
+    shadowDescriptorSetLayouts[gen::shadow_frag_main::matrices_set] = m_viewContext->descriptorSetLayout();
+    m_pipelines[PipelineType::Shadow] = std::make_unique<VulkanPipeline>(
+        m_frameContext->surfaceFormat(),
+        gen::vertex_vert_main_code.data(), gen::vertex_vert_main_code.size(),
+        gen::shadow_frag_main_code.data(), gen::shadow_frag_main_code.size(),
+        descriptorSetLayouts, pushConstantRanges
     );
 }
 } // karin

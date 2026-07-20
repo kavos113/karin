@@ -151,6 +151,7 @@ if (DIRECTX)
     target_link_libraries(karin_graphics PRIVATE dxgi.lib)
     target_link_libraries(karin_graphics PRIVATE d3d11.lib)
     target_link_libraries(karin_graphics PRIVATE dwrite.lib)
+    target_link_libraries(karin_graphics PRIVATE dxguid.lib)
 
     find_package(harfbuzz CONFIG REQUIRED)
     target_link_libraries(karin_graphics PRIVATE harfbuzz::harfbuzz)
@@ -171,12 +172,14 @@ elseif (VULKAN)
                     vulkan/shaders/vertex.slang
                     vulkan/shaders/geometry.slang
                     vulkan/shaders/text.slang
+                    vulkan/shaders/shadow.slang
             DEPENDS
                     slang_shader_compiler
                     vulkan/shaders/vertex.slang
                     vulkan/shaders/geometry.slang
                     vulkan/shaders/text.slang
                     vulkan/shaders/push_constants.slang
+                    vulkan/shaders/shadow.slang
             COMMENT "Compiling graphics shaders"
     )
     add_custom_target(

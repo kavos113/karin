@@ -32,8 +32,14 @@ void Canvas::fillPath(Path path, const Pattern& pattern, const GraphicsContext::
     m_drawInstructions.emplace_back(state, instruction);
 }
 
+void Canvas::fillBoxShadow(Rectangle rect, Color color, float blurRadius, float spreadRadius, const GraphicsContext::State& state)
+{
+    DrawInstructionFillBoxShadow instruction{rect, color, blurRadius, spreadRadius};
+    m_drawInstructions.emplace_back(state, instruction);
+}
+
 void Canvas::drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle,
-    const GraphicsContext::State& state)
+                      const GraphicsContext::State& state)
 {
     DrawInstructionDrawLine instruction{start, end, pattern, strokeStyle};
     m_drawInstructions.emplace_back(state, instruction);
@@ -111,6 +117,10 @@ void Canvas::paint(IPainter* painter, IFontRendererImpl* fontRenderer)
                 else if constexpr (std::is_same_v<T, DrawInstructionFillPath>)
                 {
                     painter->fillPath(*inst.path.impl(), inst.pattern, instruction.state);
+                }
+                else if constexpr (std::is_same_v<T, DrawInstructionFillBoxShadow>)
+                {
+                    painter->fillBoxShadow(inst.rect, inst.color, inst.blurRadius, inst.spreadRadius, instruction.state);
                 }
                 else if constexpr (std::is_same_v<T, DrawInstructionDrawLine>)
                 {
