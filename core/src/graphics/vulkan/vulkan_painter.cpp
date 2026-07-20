@@ -123,9 +123,13 @@ void VulkanPainter::fillRect(Rectangle rect, const Pattern& pattern, const Graph
         0, 1, 2, 2, 3, 0
     };
 
+    FragPushConstants fragData = createFragPushConstantData(pattern, state.alpha);
+    fragData.shapeParams = {rect.size.width / 2.0f, rect.size.height * 2.0f, 0.0f, 0.0f};
+    fragData.shapeType = static_cast<uint32_t>(ShapeType::Rectangle);
+
     m_renderer->addCommand(
         vertices, indices,
-        createFragPushConstantData(pattern, state.alpha),
+        fragData,
         createVertexPushConstantData(state, Point(
                                          rect.pos.x + rect.size.width / 2.0f,
                                          rect.pos.y + rect.size.height / 2.0f
@@ -164,6 +168,7 @@ void VulkanPainter::fillEllipse(
     };
 
     auto fragData = createFragPushConstantData(pattern, state.alpha);
+    fragData.shapeParams = {radiusX, radiusY, 0.0f, 0.0f};
     fragData.shapeType = static_cast<uint32_t>(ShapeType::Ellipse);
 
     m_renderer->addCommand(
@@ -204,8 +209,8 @@ void VulkanPainter::fillRoundedRect(
     };
 
     auto fragData = createFragPushConstantData(pattern, state.alpha);
+    fragData.shapeParams = {rect.size.width / 2.0f, rect.size.height / 2.0f, radiusX, radiusY};
     fragData.shapeType = static_cast<uint32_t>(ShapeType::RoundedRectangle);
-    fragData.shapeParams = glm::vec2(radiusX / rect.size.width * 2.0f, radiusY / rect.size.height * 2.0f);
 
     m_renderer->addCommand(
         vertices, indices,

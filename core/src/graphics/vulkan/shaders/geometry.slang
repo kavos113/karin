@@ -16,7 +16,7 @@ float4 frag_main(
 {
     float4 outColor;
 
-    float sdis = sdf(input.uv, push.f.shapeType, push.f.shapeParams);
+    float sdis = sdf(input.localPos, push.f.shapeType, push.f.shapeParams);
 
     if (sdis > 0.0)
     {
