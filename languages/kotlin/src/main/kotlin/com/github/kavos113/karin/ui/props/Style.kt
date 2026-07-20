@@ -4,6 +4,7 @@ import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.style.Border
 import com.github.kavos113.karin.ui.style.LineStyle
+import com.github.kavos113.karin.ui.style.Shadow
 
 @ConsistentCopyVisibility
 data class Style private constructor(
@@ -22,6 +23,9 @@ data class Style private constructor(
     val borderLeftState: State<Border>? = null,
     val borderRight: Border? = null,
     val borderRightState: State<Border>? = null,
+
+    val shadow: Shadow? = null,
+    val shadowState: State<Shadow>? = null,
 ) {
     fun background(color: Color) = copy(backgroundColor = color)
     fun background(state: State<Color>) = copy(backgroundColorState = state)
@@ -40,6 +44,9 @@ data class Style private constructor(
     fun borderRight(width: Float, color: Color, style: LineStyle) = copy(borderRight = Border(width, color, style))
     fun borderRightState(state: State<Border>) = copy(borderRightState = state)
 
+    fun shadow(offsetX: Float, offsetY: Float, color: Color, blurRadius: Float = 0.0f, spreadRadius: Float = 0.0f) = copy(shadow = Shadow(offsetX, offsetY, color, blurRadius, spreadRadius))
+    fun shadowState(state: State<Shadow>) = copy(shadowState = state)
+
     companion object {
         val Default = Style()
 
@@ -57,5 +64,7 @@ data class Style private constructor(
         fun borderLeftState(state: State<Border>) = Style().borderLeftState(state)
         fun borderRight(width: Float, color: Color, style: LineStyle) = Style().borderRight(width, color, style)
         fun borderRightState(state: State<Border>) = Style().borderRightState(state)
+        fun shadow(offsetX: Float, offsetY: Float, color: Color, blurRadius: Float = 0.0f, spreadRadius: Float = 0.0f) = Style().shadow(offsetX, offsetY, color, blurRadius, spreadRadius)
+        fun shadowState(state: State<Shadow>) = Style().shadowState(state)
     }
 }

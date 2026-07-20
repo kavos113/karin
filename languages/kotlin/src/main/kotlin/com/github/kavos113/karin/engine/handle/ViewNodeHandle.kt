@@ -88,6 +88,10 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setBorder(ptr, side.value, width, color.r, color.g, color.b, color.a, style)
     }
 
+    fun setShadow(offsetX: Float, offsetY: Float, color: Color, blurRadius: Float, spreadRadius: Float) {
+        JniViewNodeBridge.setShadow(ptr, offsetX, offsetY, color.r, color.g, color.b, color.a, blurRadius, spreadRadius)
+    }
+
     fun requestRelayout() {
         JniViewNodeBridge.requestRelayout(ptr)
     }
@@ -188,6 +192,17 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.borderRightState?.let { state ->
         state.onChange { border ->
             setBorder(ViewNodeHandle.Side.Right, border.width, border.color, border.style.value)
+            requestRedraw()
+        }
+    }
+
+    style.shadow?.let {
+        setShadow(it.offsetX, it.offsetY, it.color, it.blurRadius, it.spreadRadius)
+    }
+
+    style.shadowState?.let { state ->
+        state.onChange { shadow ->
+            setShadow(shadow.offsetX, shadow.offsetY, shadow.color, shadow.blurRadius, shadow.spreadRadius)
             requestRedraw()
         }
     }
