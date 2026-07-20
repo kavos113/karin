@@ -20,6 +20,7 @@ public:
     virtual void fillEllipse(Point center, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) = 0;
     virtual void fillRoundedRect(Rectangle rect, float radiusX, float radiusY, const Pattern& pattern, const GraphicsContext::State& state) = 0;
     virtual void fillPath(const PathImpl& path, const Pattern& pattern, const GraphicsContext::State& state) = 0;
+    virtual void fillBoxShadow(Rectangle rect, Color color, float blurRadius, float spreadRadius, const GraphicsContext::State& state) = 0;
 
     virtual void drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;
     virtual void drawRect(Rectangle rect, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state) = 0;

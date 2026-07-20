@@ -138,6 +138,19 @@ void GraphicsContext::fillRoundedRect(Rectangle rect, float radiusX, float radiu
     }
 }
 
+void GraphicsContext::fillBoxShadow(Rectangle rect, Color color, float blurRadius, float spreadRadius) const
+{
+    if (!m_layerStack.empty())
+    {
+        const Layer& currentLayer = m_layerStack.back();
+        currentLayer.canvas->fillBoxShadow(rect, color, blurRadius, spreadRadius, m_currentState);
+    }
+    else
+    {
+        m_canvas->fillBoxShadow(rect, color, blurRadius, spreadRadius, m_currentState);
+    }
+}
+
 void GraphicsContext::drawLine(Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle) const
 {
     if (!m_layerStack.empty())

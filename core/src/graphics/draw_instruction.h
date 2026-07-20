@@ -46,6 +46,14 @@ struct DrawInstructionFillPath
     Pattern pattern;
 };
 
+struct DrawInstructionFillBoxShadow
+{
+    Rectangle rect;
+    Color color;
+    float blurRadius;
+    float spreadRadius;
+};
+
 struct DrawInstructionDrawLine
 {
     Point start;
@@ -116,6 +124,7 @@ struct DrawInstruction
         DrawInstructionFillEllipse,
         DrawInstructionFillRoundedRect,
         DrawInstructionFillPath,
+        DrawInstructionFillBoxShadow,
         DrawInstructionDrawLine,
         DrawInstructionDrawRect,
         DrawInstructionDrawEllipse,
