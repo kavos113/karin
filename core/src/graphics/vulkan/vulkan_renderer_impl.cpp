@@ -235,21 +235,24 @@ void VulkanRendererImpl::endDraw()
                 isFirstBind = false;
             }
 
-            auto descriptorSets = command.textureResources
-                | std::views::transform(
-                    [currentFrame](const VulkanTextureResourceDescriptor *resource)
-                    {
-                        return resource->descriptorSet(currentFrame);
-                    })
-                | std::ranges::to<std::vector>();
+            if (command.pipelineType != PipelineType::Shadow)
+            {
+                auto descriptorSets = command.textureResources
+                    | std::views::transform(
+                        [currentFrame](const VulkanTextureResourceDescriptor *resource)
+                        {
+                            return resource->descriptorSet(currentFrame);
+                        })
+                    | std::ranges::to<std::vector>();
 
-            vkCmdBindDescriptorSets(
-                commandBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                m_pipelines[command.pipelineType]->pipelineLayout(),
-                1, descriptorSets.size(), descriptorSets.data(),
-                0, nullptr
-            );
+                vkCmdBindDescriptorSets(
+                    commandBuffer,
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    m_pipelines[command.pipelineType]->pipelineLayout(),
+                    1, descriptorSets.size(), descriptorSets.data(),
+                    0, nullptr
+                );
+            }
 
             PushConstant push = {command.vertData, command.fragData};
             vkCmdPushConstants(
@@ -313,6 +316,12 @@ void VulkanRendererImpl::addCommand(
         .pipelineType = pipelineType,
         .scissor = clipRect.has_value() ? std::make_optional(toVkRect(clipRect.value())) : std::nullopt,
     };
+
+    if (pipelineType == PipelineType::Shadow)
+    {
+        m_drawBatches.back().commands.push_back(drawCommand);
+        return;
+    }
 
     std::visit(
         [this, &drawCommand]<typename T0>(const T0& p)
