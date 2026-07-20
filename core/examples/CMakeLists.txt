@@ -19,6 +19,7 @@ add_subdirectory(graphics/z-index)
 add_subdirectory(graphics/opacity)
 add_subdirectory(graphics/layer)
 add_subdirectory(graphics/multiple_layer)
+add_subdirectory(graphics/box_shadow)
 
 add_subdirectory(gui/hello_layout)
 add_subdirectory(gui/text_node)
