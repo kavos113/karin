@@ -222,6 +222,8 @@ void VulkanRendererImpl::endDraw()
                         0, nullptr
                     );
                 }
+
+                currentType = command.pipelineType;
             }
             if (isFirstBind)
             {

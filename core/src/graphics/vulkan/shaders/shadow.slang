@@ -11,5 +11,7 @@ float4 frag_main(
 
     float dis = sdf(input.localPos, push.f.shapeType, push.f.shapeParams);
 
-    return outColor.a * (1 - saturate(dis / blurRadius));
+    outColor.a *= (1 - saturate(dis / blurRadius));
+
+    return outColor;
 }

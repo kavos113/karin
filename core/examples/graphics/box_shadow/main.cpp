@@ -18,7 +18,7 @@ int main()
     renderer.addDrawCommand(
         [&greyPattern](karin::GraphicsContext& gc)
         {
-            gc.fillBoxShadow(karin::Rectangle(100, 100, 300, 200), karin::Color(karin::Color::Red), 15.0f, 15.0f);
+            gc.fillBoxShadow(karin::Rectangle(100, 100, 300, 200), karin::Color(karin::Color::Red), 15.0f, 0.0f);
             gc.fillRect(karin::Rectangle(100, 100, 300, 200), greyPattern);
         }
     );

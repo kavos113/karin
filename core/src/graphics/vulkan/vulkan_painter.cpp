@@ -259,7 +259,7 @@ void VulkanPainter::fillBoxShadow(
 
     SolidColorPattern pattern(color);
     FragPushConstants fragData = createFragPushConstantData(pattern, state.alpha);
-    fragData.shapeParams = {fillRect.size.width / 2.0f, fillRect.size.height * 2.0f, 0.0f, 0.0f};
+    fragData.shapeParams = {fillRect.size.width / 2.0f, fillRect.size.height / 2.0f, 0.0f, 0.0f};
     fragData.shapeType = static_cast<uint32_t>(ShapeType::Rectangle);
     fragData.patternParams.x = blurRadius;
 
