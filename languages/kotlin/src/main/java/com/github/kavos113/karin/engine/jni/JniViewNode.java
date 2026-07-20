@@ -25,6 +25,7 @@ class JniViewNode {
     static native void setPaddingSide(long nodePtr, int side, float value);
 
     static native void setBorder(long nodePtr, int side, float width, float r, float g, float b, float a, int style);
+    static native void setShadow(long nodePtr, float offsetX, float offsetY, float r, float g, float b, float a, float blurRadius, float spreadRadius);
 
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);

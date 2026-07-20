@@ -160,6 +160,17 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     node->setBorder(static_cast<ViewNode::Side>(side), width, color, lineStyle);
 }
 
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setShadow
+    (JNIEnv *env, jclass cls, jlong viewPtr, jfloat offsetX, jfloat offsetY, jfloat r, jfloat g, jfloat b, jfloat a, jfloat blurRadius, jfloat spreadRadius)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    karin::Color color(r, g, b, a);
+
+    node->setShadow(offsetX, offsetY, color, blurRadius, spreadRadius);
+}
+
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout
     (JNIEnv *env, jclass cls, jlong viewPtr)
 {
