@@ -30,7 +30,7 @@ struct FragPushConstants
     // x: alpha
     // radiusX(float) (=y) + radiusY(float) (=z) in radial gradient
     // imageSize(vec2) (=yz) + uvMode(float) (=w) in image (0 = uv(image), 1 = window coordinates(image pattern))
-    // top / bottom / left / right in shadow (rect = outer rect. blur is inside, spread is inside)
+    // blur radius(x) in shadow
     glm::vec4 patternParams;
 
     // radius (vec2): ellipse
