@@ -43,6 +43,7 @@ public:
     Microsoft::WRL::ComPtr<ID2D1StrokeStyle> strokeStyle(const StrokeStyle& style);
     Microsoft::WRL::ComPtr<ID2D1PathGeometry> pathGeometry(const PathImpl& path);
     Microsoft::WRL::ComPtr<ID2D1Bitmap> bitmap(const Image& image);
+    Microsoft::WRL::ComPtr<ID2D1Effect> effect(GUID guid);
 
 private:
     // TODO: create before starting draw calls?
@@ -55,6 +56,7 @@ private:
     std::unordered_map<size_t, Microsoft::WRL::ComPtr<ID2D1Bitmap>> m_bitmaps;
     std::unordered_map<size_t, Microsoft::WRL::ComPtr<IDWriteTextFormat>> m_textFormats;
     std::unordered_map<size_t, Microsoft::WRL::ComPtr<IDWriteTextLayout>> m_textLayouts;
+    std::unordered_map<size_t, Microsoft::WRL::ComPtr<ID2D1Effect>> m_effects;
 
     Microsoft::WRL::ComPtr<ID2D1DeviceContext> m_deviceContext;
 };

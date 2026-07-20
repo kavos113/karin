@@ -151,6 +151,7 @@ if (DIRECTX)
     target_link_libraries(karin_graphics PRIVATE dxgi.lib)
     target_link_libraries(karin_graphics PRIVATE d3d11.lib)
     target_link_libraries(karin_graphics PRIVATE dwrite.lib)
+    target_link_libraries(karin_graphics PRIVATE dxguid.lib)
 
     find_package(harfbuzz CONFIG REQUIRED)
     target_link_libraries(karin_graphics PRIVATE harfbuzz::harfbuzz)

@@ -1,14 +1,6 @@
 #include "d2d_device_resources.h"
 
-#include "d2d_geometry.h"
-#include "d2d_color.h"
-#include "d2d_consts.h"
-#include "d2d_context.h"
-
-#include <wincodec.h>
-
 #include <cmath>
-#include <utils/string.h>
 #include <fstream>
 #include <numbers>
 #include <ranges>
@@ -16,6 +8,17 @@
 #include <variant>
 #include <functional>
 #include <string_view>
+
+#include <wincodec.h>
+
+#include <utils/string.h>
+#include <utils/hash.h>
+
+#include "d2d_geometry.h"
+#include "d2d_color.h"
+#include "d2d_consts.h"
+#include "d2d_context.h"
+#include "karin/gui/view_node.h"
 
 namespace
 {
@@ -66,6 +69,21 @@ D2D1_EXTEND_MODE toD2DExtendMode(ExtendMode extendMode)
     default:
         throw std::invalid_argument("Unknown extend mode");
     }
+}
+
+size_t hashGuid(GUID guid)
+{
+    size_t seed = 0;
+
+    hash_combine(seed, guid.Data1);
+    hash_combine(seed, guid.Data2);
+    hash_combine(seed, guid.Data3);
+    for (int i = 0; i < 8; i++)
+    {
+        hash_combine(seed, guid.Data4[i]);
+    }
+
+    return seed;
 }
 }
 
@@ -434,5 +452,23 @@ Microsoft::WRL::ComPtr<ID2D1Bitmap> D2DDeviceResources::bitmap(const Image& imag
     }
 
     throw std::runtime_error("Bitmap creation not implemented");
+}
+
+Microsoft::WRL::ComPtr<ID2D1Effect> D2DDeviceResources::effect(GUID guid)
+{
+    if (auto it = m_effects.find(hashGuid(guid)); it != m_effects.end())
+    {
+        return it->second;
+    }
+
+    Microsoft::WRL::ComPtr<ID2D1Effect> eff;
+    HRESULT hr = m_deviceContext->CreateEffect(guid, &eff);
+    if (FAILED(hr))
+    {
+        throw std::runtime_error("failed to create effect");
+    }
+
+    m_effects[hashGuid(guid)] = eff;
+    return eff;
 }
 } // karin

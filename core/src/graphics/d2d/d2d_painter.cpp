@@ -1,9 +1,11 @@
 #include "d2d_painter.h"
 
-#include "d2d_geometry.h"
-
 #include <algorithm>
 #include <stdexcept>
+
+#include <d2d1effects.h>
+
+#include "d2d_geometry.h"
 #include <d2d/matrix_converter.h>
 
 namespace
@@ -156,6 +158,83 @@ void D2DPainter::fillRoundedRect(
         roundedRect,
         brush.Get()
     );
+
+    if (hasClip)
+    {
+        m_deviceContext->PopAxisAlignedClip();
+    }
+}
+
+void D2DPainter::fillBoxShadow(
+    Rectangle rect, Color color, float blurRadius, float spreadRadius, const GraphicsContext::State& state
+)
+{
+    m_deviceContext->EndDraw();
+
+    Microsoft::WRL::ComPtr<ID2D1Effect> effect = m_deviceResources->effect(CLSID_D2D1Shadow);
+
+    Microsoft::WRL::ComPtr<ID2D1Image> target;
+    m_deviceContext->GetTarget(&target);
+
+    Microsoft::WRL::ComPtr<ID2D1CommandList> shape;
+    HRESULT hr = m_deviceContext->CreateCommandList(&shape);
+    if (FAILED(hr))
+    {
+        return;
+    }
+    m_deviceContext->SetTarget(shape.Get());
+
+    m_deviceContext->BeginDraw();
+
+    float pad = blurRadius + spreadRadius;
+    Rectangle fillRect(rect.pos.x - spreadRadius, rect.pos.x - spreadRadius, rect.size.width + 2 * spreadRadius, rect.size.height + 2 * spreadRadius);
+    Rectangle allRect(rect.pos.x - pad, rect.pos.y - pad, rect.size.width + 2 * pad, rect.size.height + 2 * pad);
+
+    float centerX = rect.pos.x + rect.size.width / 2;
+    float centerY = rect.pos.y + rect.size.height / 2;
+
+
+    SolidColorPattern pattern(color);
+    auto brush = m_deviceResources->brush(pattern);
+    if (!brush)
+    {
+        throw std::runtime_error("Failed to get brush for pattern");
+    }
+
+    D2D1_MATRIX_3X2_F brushTransform = D2D1::Matrix3x2F::Translation(-centerX, -centerY);
+    brush->SetTransform(brushTransform);
+    brush->SetOpacity(state.alpha);
+
+    m_deviceContext->FillRectangle(
+        D2D1::RectF(-fillRect.size.width / 2.0f, -fillRect.size.height / 2.0f, fillRect.size.width / 2.0f, fillRect.size.height / 2.0f),
+        brush.Get()
+    );
+
+    m_deviceContext->EndDraw();
+
+    shape->Close();
+    m_deviceContext->SetTarget(target.Get());
+
+    effect->SetInput(0, shape.Get());
+    effect->SetValue(D2D1_SHADOW_PROP_BLUR_STANDARD_DEVIATION, blurRadius);
+    effect->SetValue(D2D1_SHADOW_PROP_COLOR, D2D1::Vector4F(color.r, color.g, color.b, color.a));
+
+    m_deviceContext->BeginDraw();
+
+    D2D1_MATRIX_3X2_F transitionMatrix = D2D1::Matrix3x2F::Translation(centerX, centerY);
+    m_deviceContext->SetTransform(transitionMatrix);
+    bool hasClip = state.clipRect.has_value();
+    if (hasClip)
+    {
+        D2D1_RECT_F clipRect = toD2DRect(state.clipRect.value().move({-centerX, -centerY}));
+        m_deviceContext->PushAxisAlignedClip(
+            clipRect,
+            D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+        );
+    }
+
+    m_deviceContext->SetTransform(toD2DMatrix(state.transform) * transitionMatrix);
+    m_deviceContext->DrawImage(effect.Get());
 
     if (hasClip)
     {
