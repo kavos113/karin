@@ -9,9 +9,10 @@ float4 frag_main(
     float4 outColor = push.f.color;
     float blurRadius = push.f.patternParams.x;
 
-    float dis = sdf(input.localPos, push.f.shapeType, push.f.shapeParams);
+    float d = saturate(sdf(input.localPos, push.f.shapeType, push.f.shapeParams) / blurRadius);
 
-    outColor.a *= (1 - saturate(dis / blurRadius));
+    float alpha = exp(-4.0 * d * d);
+    alpha = max((alpha - 0.018) / (1.0 - 0.018), 0.0);
 
-    return outColor;
+    return float4(outColor.xyz, alpha);
 }
