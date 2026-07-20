@@ -6,6 +6,7 @@ public struct VertexOutput
 {
     public float4 pos : SV_Position;
     public float2 pixelPos;
+    public float2 localPos;
     public float2 uv;
 };
 
@@ -30,6 +31,7 @@ public VertexOutput vert_main(
     output.pos = mul(mul(float4(input.pos, 0.0, 1.0), push.v.model), matrices.proj);
     output.uv = input.uv;
     output.pixelPos = mul(float4(input.pos, 0.0, 1.0), push.v.model).xy;
+    output.localPos = input.pos;
 
     return output;
 }
