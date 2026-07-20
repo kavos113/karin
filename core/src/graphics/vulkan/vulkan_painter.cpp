@@ -225,6 +225,57 @@ void VulkanPainter::fillRoundedRect(
     );
 }
 
+void VulkanPainter::fillBoxShadow(
+    Rectangle rect, Color color, float blurRadius, float spreadRadius, const GraphicsContext::State& state
+)
+{
+    float pad = blurRadius + spreadRadius;
+
+    Rectangle fillRect(rect.pos.x - spreadRadius, rect.pos.x - spreadRadius, rect.size.width + 2 * spreadRadius, rect.size.height + 2 * spreadRadius);
+    Rectangle allRect(rect.pos.x - pad, rect.pos.y - pad, rect.size.width + 2 * pad, rect.size.height + 2 * pad);
+
+    std::vector<VulkanPipeline::Vertex> vertices = {
+        {
+            .pos = {-allRect.size.width / 2.0f, -allRect.size.height / 2.0f},
+            .uv = {-1.0f, -1.0f},
+        },
+        {
+            .pos = {allRect.size.width / 2.0f, -allRect.size.height / 2.0f},
+            .uv = {1.0f, -1.0f},
+        },
+        {
+            .pos = {allRect.size.width / 2.0f, allRect.size.height / 2.0f},
+            .uv = {1.0f, 1.0f},
+        },
+        {
+            .pos = { -allRect.size.width / 2.0f, allRect.size.height / 2.0f},
+            .uv = {-1.0f, 1.0f},
+        }
+    };
+
+    std::vector<uint16_t> indices = {
+        0, 1, 2, 2, 3, 0
+    };
+
+    SolidColorPattern pattern(color);
+    FragPushConstants fragData = createFragPushConstantData(pattern, state.alpha);
+    fragData.shapeParams = {fillRect.size.width / 2.0f, fillRect.size.height * 2.0f, 0.0f, 0.0f};
+    fragData.shapeType = static_cast<uint32_t>(ShapeType::Rectangle);
+    fragData.patternParams.x = blurRadius;
+
+    m_renderer->addCommand(
+        vertices, indices,
+        fragData,
+        createVertexPushConstantData(state, Point(
+                                         allRect.pos.x + allRect.size.width / 2.0f,
+                                         allRect.pos.y + allRect.size.height / 2.0f
+                                     )),
+        pattern,
+        VulkanRendererImpl::PipelineType::Shadow,
+        state.clipRect
+    );
+}
+
 void VulkanPainter::drawLine(
     Point start, Point end, const Pattern& pattern, const StrokeStyle& strokeStyle, const GraphicsContext::State& state
 )
