@@ -63,7 +63,7 @@ public struct FragPushConstants
 {
     public float4 color;
     public uint   shapeType;
-    public uint patternType;
+    public uint   patternType;
     public float2 padd;
     public float4 patternParams;
     public float4 shapeParams;
