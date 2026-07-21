@@ -93,8 +93,8 @@ void ViewNode::draw(GraphicsContext& gc) const
             {
                 gc.setAlpha(m_opacity);
 
-                drawBackgroundColor(gc);
                 drawShadow(gc);
+                drawBackgroundColor(gc);
                 gc.withSave([&gc, this]
                 {
                     drawInternal(gc);
@@ -109,8 +109,8 @@ void ViewNode::draw(GraphicsContext& gc) const
         {
             gc.setAlpha(m_opacity);
 
-            drawBackgroundColor(gc);
             drawShadow(gc);
+            drawBackgroundColor(gc);
             gc.withSave([&gc, this]
             {
                 drawInternal(gc);
