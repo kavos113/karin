@@ -21,6 +21,7 @@ internal object JniViewNodeBridge {
     fun setPaddingSide(nodePtr: Long, side: Int, value: Float) = JniViewNode.setPaddingSide(nodePtr, side, value)
 
     fun setBorder(nodePtr: Long, side: Int, width: Float, r: Float, g: Float, b: Float, a: Float, style: Int) = JniViewNode.setBorder(nodePtr, side, width, r, g, b, a, style)
+    fun setShadow(nodePtr: Long, offsetX: Float, offsetY: Float, r: Float, g: Float, b: Float, a: Float, blurRadius: Float, spreadRadius: Float) = JniViewNode.setShadow(nodePtr, offsetX, offsetY, r, g, b, a, blurRadius, spreadRadius)
 
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)

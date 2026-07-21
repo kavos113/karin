@@ -93,6 +93,7 @@ void ViewNode::draw(GraphicsContext& gc) const
             {
                 gc.setAlpha(m_opacity);
 
+                drawShadow(gc);
                 drawBackgroundColor(gc);
                 gc.withSave([&gc, this]
                 {
@@ -108,6 +109,7 @@ void ViewNode::draw(GraphicsContext& gc) const
         {
             gc.setAlpha(m_opacity);
 
+            drawShadow(gc);
             drawBackgroundColor(gc);
             gc.withSave([&gc, this]
             {
@@ -230,6 +232,11 @@ void ViewNode::setOpacity(float opacity)
     m_opacity = opacity;
 }
 
+void ViewNode::setShadow(float offsetX, float offsetY, Color color, float blurRadius, float spreadRadius)
+{
+    m_shadow = ShadowParams{offsetX, offsetY, color, blurRadius, spreadRadius};
+}
+
 YGNodeRef ViewNode::getYogaNode() const
 {
     return m_yogaNode;
@@ -315,6 +322,19 @@ void ViewNode::drawBackgroundColor(GraphicsContext& gc) const
         Pattern pattern = SolidColorPattern(m_backgroundColor.value());
 
         gc.fillRect(layout, pattern);
+    }
+}
+
+void ViewNode::drawShadow(GraphicsContext& gc) const
+{
+    if (m_shadow.has_value())
+    {
+        ShadowParams param = m_shadow.value();
+
+        Rectangle layout = getLayout();
+        layout.pos = Point(layout.pos.x + param.offsetX, layout.pos.y + param.offsetY);
+
+        gc.fillBoxShadow(layout, param.color, param.blurRadius, param.spreadRadius);
     }
 }
 

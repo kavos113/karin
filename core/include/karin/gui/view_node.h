@@ -28,6 +28,15 @@ struct NodeBorder
     LineStyle style;
 };
 
+struct ShadowParams
+{
+    float offsetX;
+    float offsetY;
+    Color color;
+    float blurRadius = 0.0f;
+    float spreadRadius = 0.0f;
+};
+
 class Window;
 
 class ViewNode
@@ -67,6 +76,7 @@ public:
     void setBorder(Side side, float width, Color color, NodeBorder::LineStyle style);
     void setBackgroundColor(Color color);
     void setOpacity(float opacity);
+    void setShadow(float offsetX, float offsetY, Color color, float blurRadius = 0.0f, float spreadRadius = 0.0f);
 
     YGNodeRef getYogaNode() const;
 
@@ -83,9 +93,11 @@ protected:
 private:
     void drawBorder(GraphicsContext& gc) const;
     void drawBackgroundColor(GraphicsContext& gc) const;
+    void drawShadow(GraphicsContext& gc) const;
 
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;
+    std::optional<ShadowParams> m_shadow = std::nullopt;
     std::function<void(Point point)> m_onClick;
     float m_opacity = 1.0f;
 };
