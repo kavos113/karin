@@ -1,8 +1,9 @@
-package com.github.kavos113.karin.examples.state
+package com.github.kavos113.karin.examples.computedstate
 
 import com.github.kavos113.karin.app.Karin
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.app.Window
+import com.github.kavos113.karin.runtime.computedState
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.component.Box
 import com.github.kavos113.karin.ui.component.Row
@@ -28,18 +29,25 @@ fun main() {
             gap = 10f,
         ) {
             val text: State<String> = State("Hello, Karin!")
+            val count: State<Int> = State(0)
+            val count2: State<Int> = State(1)
 
             Box(
                 style = Style.background(randomColor()),
                 layout = Layout.size(width = 100f, height = 100f),
                 event = Event.onClick {
-                    println("Box clicked!")
-                    println("text: ${text.value}")
                     text.value = "Clicked at ${System.currentTimeMillis()}"
+                    count.value++
+                    count2.value += count.value
                 }
             )
             Text(
-                text = text,
+                text = computedState {
+                    if ((count.value + count2.value) % 5 == 0) {
+                        return@computedState "oooo ${count.value + count2.value}"
+                    }
+                    return@computedState "count1: ${count.value}, count2: ${count2.value}"
+                },
                 fontSize = 24f
             )
         }
