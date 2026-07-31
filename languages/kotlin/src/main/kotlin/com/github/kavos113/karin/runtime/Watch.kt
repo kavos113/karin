@@ -1,13 +1,12 @@
 package com.github.kavos113.karin.runtime
 
-import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.ui.UiBuilder
 
 fun <T> UiBuilder.Watch(
     state: State<T>,
     block: UiBuilder.(T) -> Unit
 ) {
-    val containerNodeHandle = ContainerNodeHandle()
+    val containerNodeHandle = newContainerNodeHandle()
 
     var childBuilder: UiBuilder? = null
 

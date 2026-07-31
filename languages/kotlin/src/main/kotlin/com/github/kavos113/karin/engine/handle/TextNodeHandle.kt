@@ -7,9 +7,9 @@ import com.github.kavos113.karin.ui.text.TextStyle
 internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
 
     constructor(
-        text: String = "",
-        style: TextStyle = TextStyle(),
-        paragraphStyle: ParagraphStyle = ParagraphStyle(),
+        text: String ,
+        style: TextStyle,
+        paragraphStyle: ParagraphStyle,
     ) : this(
         JniTextNodeBridge.create(
             text,
