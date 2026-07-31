@@ -9,20 +9,22 @@ internal class ContainerNodeWithChildren private constructor(
     constructor(): this(ContainerNodeHandle())
     constructor(size: Size): this(ContainerNodeHandle(size = size))
 
-    private val children = mutableListOf<ViewNodeHandle>()
+    private val _children = mutableListOf<ViewNodeHandle>()
+    internal val children: List<ViewNodeHandle>
+        get() = _children
 
     override fun addChild(child: ViewNodeHandle) {
-        children.add(child)
+        _children.add(child)
         handle.addChild(child)
     }
 
     override fun removeChild(child: ViewNodeHandle) {
-        children.remove(child)
+        _children.remove(child)
         handle.addChild(child)
     }
 
     override fun clearChildren() {
-        children.clear()
+        _children.clear()
         handle.clearChildren()
     }
 }
