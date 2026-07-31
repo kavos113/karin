@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui
 
+import com.github.kavos113.karin.engine.handle.ContainerNode
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.engine.handle.TextNodeHandle
 import com.github.kavos113.karin.ui.common.Size
@@ -7,7 +8,7 @@ import com.github.kavos113.karin.ui.text.ParagraphStyle
 import com.github.kavos113.karin.ui.text.TextStyle
 
 abstract class UiBuilder {
-    internal abstract val parentContainer: ContainerNodeHandle
+    internal abstract val parentContainer: ContainerNode
 
     private val disposables = mutableListOf<() -> Unit>()
 
@@ -20,8 +21,12 @@ abstract class UiBuilder {
         disposables.clear()
     }
 
-    internal open fun newContainerNodeHandle() = ContainerNodeHandle()
-    internal open fun newContainerNodeHandle(size: Size) = ContainerNodeHandle(size)
+    internal open fun newContainerNodeHandle(): ContainerNode
+        = ContainerNodeHandle()
+
+    internal open fun newContainerNodeHandle(size: Size): ContainerNode
+        = ContainerNodeHandle(size)
+
     internal open fun newTextNodeHandle(
         text: String = "",
         textStyle: TextStyle = TextStyle(),

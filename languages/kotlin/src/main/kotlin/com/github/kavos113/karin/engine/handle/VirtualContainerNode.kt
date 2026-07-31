@@ -1,13 +1,13 @@
 package com.github.kavos113.karin.engine.handle
 
 import com.github.kavos113.karin.ui.common.Size
+import com.github.kavos113.karin.ui.layout.LayoutDirection
+import com.github.kavos113.karin.ui.layout.LayoutWrap
 
-internal class ContainerNodeWithChildren private constructor(
-    private val handle: ContainerNodeHandle
-) : ContainerNode by handle {
+internal class VirtualContainerNode : ContainerNode {
 
-    constructor(): this(ContainerNodeHandle())
-    constructor(size: Size): this(ContainerNodeHandle(size = size))
+    constructor()
+    constructor(size: Size)
 
     private val _children = mutableListOf<ViewNodeHandle>()
     internal val children: List<ViewNodeHandle>
@@ -15,16 +15,29 @@ internal class ContainerNodeWithChildren private constructor(
 
     override fun addChild(child: ViewNodeHandle) {
         _children.add(child)
-        handle.addChild(child)
     }
 
     override fun removeChild(child: ViewNodeHandle) {
         _children.remove(child)
-        handle.addChild(child)
     }
 
     override fun clearChildren() {
         _children.clear()
-        handle.clearChildren()
+    }
+
+    override fun setLayoutDirection(direction: LayoutDirection) {
+
+    }
+
+    override fun setLayoutWrap(layoutWrap: LayoutWrap) {
+
+    }
+
+    override fun setGap(gap: Float) {
+
+    }
+
+    override fun setEnableClip(enableClip: Boolean) {
+
     }
 }
