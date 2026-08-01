@@ -36,6 +36,7 @@ public:
     void onDetachFromWindow() override;
 
     void addChild(std::unique_ptr<ViewNode> child);
+    void insertChild(std::unique_ptr<ViewNode> child, int index);
     void removeChild(ViewNode* child);
     void clearChildren();
     void setLayoutDirection(LayoutDirection direction);

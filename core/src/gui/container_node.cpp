@@ -101,6 +101,18 @@ void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
     m_children.push_back(std::move(child));
 }
 
+void ContainerNode::insertChild(std::unique_ptr<ViewNode> child, int index)
+{
+    if (m_window)
+    {
+        child->onAttachToWindow(m_window);
+    }
+
+    YGNodeInsertChild(m_yogaNode, child->getYogaNode(), index);
+
+    m_children.insert(m_children.begin() + index, std::move(child));
+}
+
 void ContainerNode::removeChild(ViewNode* child)
 {
     auto it = std::ranges::find_if(m_children,
