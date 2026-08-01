@@ -25,4 +25,18 @@ fun <T, K> UiBuilder.ForEach(
     for ((_, v) in components) {
         v.forEach { parentContainer.addChild(it) }
     }
+
+    items.onChange { newItems ->
+        val newKeys = newItems.map(keySelector).toSet()
+
+        // remove
+        val keysToRemove = components.keys.filter { it !in newKeys }
+
+        for (key in keysToRemove) {
+            val nodesToRemove = components[key] ?: continue
+            for (node in nodesToRemove) {
+                parentContainer.removeChild(node)
+            }
+        }
+    }
 }

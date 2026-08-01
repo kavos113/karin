@@ -4,6 +4,7 @@ import com.github.kavos113.karin.engine.handle.ContainerNode
 
 abstract class UiBuilder {
     internal abstract val parentContainer: ContainerNode
+    internal var childrenCount = 0
 
     private val disposables = mutableListOf<() -> Unit>()
 

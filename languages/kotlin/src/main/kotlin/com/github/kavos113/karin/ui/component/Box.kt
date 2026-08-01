@@ -29,4 +29,5 @@ fun UiBuilder.Box(
     }
 
     parentContainer.addChild(handle)
+    childrenCount++
 }

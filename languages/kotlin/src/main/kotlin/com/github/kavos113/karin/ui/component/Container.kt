@@ -37,6 +37,7 @@ fun UiBuilder.Container(
     builder.content()
 
     parentContainer.addChild(handle)
+    childrenCount++
 }
 
 fun UiBuilder.Column(
