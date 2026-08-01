@@ -8,6 +8,7 @@ internal interface ContainerNode {
     fun insertChild(child: ViewNodeHandle, index: Int)
     fun removeChild(child: ViewNodeHandle)
     fun clearChildren()
+    fun childIndexOf(child: ViewNodeHandle): Int
 
     fun setLayoutDirection(direction: LayoutDirection)
     fun setLayoutWrap(layoutWrap: LayoutWrap)

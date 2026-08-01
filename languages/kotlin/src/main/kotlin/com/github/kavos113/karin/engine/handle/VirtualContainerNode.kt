@@ -1,6 +1,5 @@
 package com.github.kavos113.karin.engine.handle
 
-import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.ui.layout.LayoutDirection
 import com.github.kavos113.karin.ui.layout.LayoutWrap
 
@@ -26,6 +25,10 @@ internal class VirtualContainerNode : ContainerNode {
 
     override fun clearChildren() {
         _children.clear()
+    }
+
+    override fun childIndexOf(child: ViewNodeHandle): Int {
+        return _children.indexOf(child)
     }
 
     override fun setLayoutDirection(direction: LayoutDirection) {

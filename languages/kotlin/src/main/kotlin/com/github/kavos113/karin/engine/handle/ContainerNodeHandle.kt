@@ -10,11 +10,15 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr), Contai
     constructor(): this(JniContainerNodeBridge.create())
     constructor(size: Size): this(JniContainerNodeBridge.create(size.width, size.height))
 
+    private val children = mutableListOf<ViewNodeHandle>()
+
     override fun addChild(child: ViewNodeHandle) {
         val childPtr = child.ptr
         JniContainerNodeBridge.addChild(this.ptr, childPtr)
 
         child.transferOwnership()
+
+        children.add(child)
     }
 
     override fun insertChild(child: ViewNodeHandle, index: Int) {
@@ -22,6 +26,25 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr), Contai
         JniContainerNodeBridge.insertChild(this.ptr, childPtr, index)
 
         child.transferOwnership()
+
+        children.add(index, child)
+    }
+
+    override fun removeChild(child: ViewNodeHandle) {
+        val childPtr = child.ptr
+        JniContainerNodeBridge.removeChild(this.ptr, childPtr)
+
+        children.remove(child)
+    }
+
+    override fun clearChildren() {
+        JniContainerNodeBridge.clearChildren(this.ptr)
+
+        children.clear()
+    }
+
+    override fun childIndexOf(child: ViewNodeHandle): Int {
+        return children.indexOf(child)
     }
 
     override fun setLayoutDirection(direction: LayoutDirection) {
@@ -38,14 +61,5 @@ internal open class ContainerNodeHandle(ptr: Long) : ViewNodeHandle(ptr), Contai
 
     override fun setEnableClip(enableClip: Boolean) {
         JniContainerNodeBridge.setEnableClip(this.ptr, enableClip)
-    }
-
-    override fun removeChild(child: ViewNodeHandle) {
-        val childPtr = child.ptr
-        JniContainerNodeBridge.removeChild(this.ptr, childPtr)
-    }
-
-    override fun clearChildren() {
-        JniContainerNodeBridge.clearChildren(this.ptr)
     }
 }
