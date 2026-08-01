@@ -30,14 +30,14 @@ internal open class ViewNodeHandle(ptr: Long) {
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
-                "ownership of this handle already transferred to C++ side (or destroyed), cannot access it anymore"
+                "this object is already destroyed, cannot access it anymore"
             }
             return internalPtr
         }
 
     fun transferOwnership() {
         check(internalPtr != 0L) {
-            "ownership of this handle already transferred to C++ side (or destroyed), cannot transfer ownership again"
+            "this object is already destroyed, cannot transfer ownership again"
         }
 
         cleanupTask.isOwnershipTransferred = true
@@ -107,6 +107,7 @@ internal open class ViewNodeHandle(ptr: Long) {
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
+        // if true, ptr is "weak_ptr" for c++ object
         @Volatile
         var isOwnershipTransferred: Boolean = false
 

@@ -7,7 +7,6 @@ import com.github.kavos113.karin.ui.layout.LayoutWrap
 internal class VirtualContainerNode : ContainerNode {
 
     constructor()
-    constructor(size: Size)
 
     private val _children = mutableListOf<ViewNodeHandle>()
     internal val children: List<ViewNodeHandle>
