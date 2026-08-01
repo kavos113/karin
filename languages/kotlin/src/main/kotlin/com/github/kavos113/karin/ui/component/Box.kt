@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui.component
 
+import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
 import com.github.kavos113.karin.engine.handle.applyEvent
 import com.github.kavos113.karin.engine.handle.applyLayout
 import com.github.kavos113.karin.engine.handle.applyStyle
@@ -14,7 +15,7 @@ fun UiBuilder.Box(
     event: Event = Event.Default,
     content: (UiBuilder.() -> Unit)? = null
 ) {
-    val handle = newContainerNodeHandle()
+    val handle = ContainerNodeHandle()
 
     handle.applyStyle(style)
     handle.applyLayout(layout)

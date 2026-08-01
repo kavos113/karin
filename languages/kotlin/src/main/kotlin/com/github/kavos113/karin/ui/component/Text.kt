@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui.component
 
+import com.github.kavos113.karin.engine.handle.TextNodeHandle
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
@@ -25,7 +26,7 @@ fun UiBuilder.Text(
     val finalParagraphStyle = paragraphStyle.copy(
         textAlign = textAlign ?: paragraphStyle.textAlign
     )
-    val handle = newTextNodeHandle(text, finalStyle, finalParagraphStyle)
+    val handle = TextNodeHandle(text, finalStyle, finalParagraphStyle)
     parentContainer.addChild(handle)
 }
 
@@ -46,7 +47,7 @@ fun UiBuilder.Text(
     val finalParagraphStyle = paragraphStyle.copy(
         textAlign = textAlign ?: paragraphStyle.textAlign
     )
-    val handle = newTextNodeHandle(text.value, finalStyle, finalParagraphStyle)
+    val handle = TextNodeHandle(text.value, finalStyle, finalParagraphStyle)
     parentContainer.addChild(handle)
 
     val disposable = text.onChange { newText ->
