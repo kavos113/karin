@@ -12,6 +12,7 @@ import io.mockk.runs
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -67,5 +68,6 @@ class TextTest {
         verify(exactly = 1) {
             JniTextNodeBridge.setText(123L, "Updated Text")
         }
+        assertEquals(1, builder.childrenCount)
     }
 }

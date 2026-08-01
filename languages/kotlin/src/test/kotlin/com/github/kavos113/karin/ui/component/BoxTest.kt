@@ -16,6 +16,7 @@ import io.mockk.runs
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -70,6 +71,7 @@ class BoxTest {
         verify(atLeast = 1) {
             JniViewNodeBridge.setBackgroundColor(123L, 1f, 0f, 0f, 1f)
         }
+        assertEquals(1, builder.childrenCount)
     }
 
     @Test
@@ -91,6 +93,7 @@ class BoxTest {
             JniViewNodeBridge.setBackgroundColor(123L, 0f, 1f, 0f, 1f)
             JniViewNodeBridge.requestRedraw(123L)
         }
+        assertEquals(1, builder.childrenCount)
     }
 
     @Test
@@ -110,5 +113,6 @@ class BoxTest {
             JniViewNodeBridge.setWidth(123L, 100f)
             JniViewNodeBridge.setHeight(123L, 50f)
         }
+        assertEquals(1, builder.childrenCount)
     }
 }
