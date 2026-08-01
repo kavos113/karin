@@ -5,6 +5,7 @@ import com.github.kavos113.karin.ui.layout.LayoutWrap
 
 internal interface ContainerNode {
     fun addChild(child: ViewNodeHandle)
+    fun insertChild(child: ViewNodeHandle, index: Int)
     fun removeChild(child: ViewNodeHandle)
     fun clearChildren()
 

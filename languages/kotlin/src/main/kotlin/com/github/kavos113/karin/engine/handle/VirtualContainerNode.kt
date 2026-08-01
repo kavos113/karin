@@ -17,6 +17,10 @@ internal class VirtualContainerNode : ContainerNode {
         _children.add(child)
     }
 
+    override fun insertChild(child: ViewNodeHandle, index: Int) {
+        _children.add(index, child)
+    }
+
     override fun removeChild(child: ViewNodeHandle) {
         _children.remove(child)
     }
