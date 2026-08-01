@@ -3,12 +3,14 @@ package com.github.kavos113.karin.engine.jni
 internal object JniContainerNodeBridge {
     fun create(): Long = JniContainerNode.create()
     fun create(width: Float, height: Float): Long = JniContainerNode.create(width, height)
+
     fun addChild(containerPtr: Long, childPtr: Long) = JniContainerNode.addChild(containerPtr, childPtr)
+    fun removeChild(containerPtr: Long, childPtr: Long) = JniContainerNode.removeChild(containerPtr, childPtr)
+    fun clearChildren(containerPtr: Long) = JniContainerNode.clearChildren(containerPtr)
+    fun insertChild(containerPtr: Long, childPtr: Long, index: Int) = JniContainerNode.insertChild(containerPtr, childPtr, index)
+
     fun setLayoutDirection(containerPtr: Long, direction: Int) = JniContainerNode.setLayoutDirection(containerPtr, direction)
     fun setGap(containerPtr: Long, gap: Float) = JniContainerNode.setGap(containerPtr, gap)
     fun setWrapMode(containerPtr: Long, wrapMode: Int) = JniContainerNode.setWrapMode(containerPtr, wrapMode)
     fun setEnableClip(containerPtr: Long, enableClip: Boolean) = JniContainerNode.setEnableClip(containerPtr, enableClip)
-
-    fun removeChild(containerPtr: Long, childPtr: Long) = JniContainerNode.removeChild(containerPtr, childPtr)
-    fun clearChildren(containerPtr: Long) = JniContainerNode.clearChildren(containerPtr)
 }

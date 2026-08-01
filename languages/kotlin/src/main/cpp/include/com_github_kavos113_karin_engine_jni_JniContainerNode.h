@@ -33,6 +33,30 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    insertChild
+ * Signature: (JJI)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_insertChild
+  (JNIEnv *, jclass, jlong, jlong, jint);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    removeChild
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_removeChild
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
+ * Method:    clearChildren
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_clearChildren
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
  * Method:    setLayoutDirection
  * Signature: (JI)V
  */
@@ -62,22 +86,6 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setEnableClip
   (JNIEnv *, jclass, jlong, jboolean);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
- * Method:    removeChild
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_removeChild
-  (JNIEnv *, jclass, jlong, jlong);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniContainerNode
- * Method:    clearChildren
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_clearChildren
-  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
