@@ -89,7 +89,7 @@ bool ContainerNode::needLayer() const
     return ViewNode::needLayer() && !m_children.empty();
 }
 
-void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
+void ContainerNode::addChild(ViewNode* child)
 {
     if (m_window)
     {
@@ -98,10 +98,10 @@ void ContainerNode::addChild(std::unique_ptr<ViewNode> child)
 
     YGNodeInsertChild(m_yogaNode, child->getYogaNode(), YGNodeGetChildCount(m_yogaNode));
 
-    m_children.push_back(std::move(child));
+    m_children.push_back(child);
 }
 
-void ContainerNode::insertChild(std::unique_ptr<ViewNode> child, int index)
+void ContainerNode::insertChild(ViewNode* child, int index)
 {
     if (m_window)
     {
@@ -110,13 +110,13 @@ void ContainerNode::insertChild(std::unique_ptr<ViewNode> child, int index)
 
     YGNodeInsertChild(m_yogaNode, child->getYogaNode(), index);
 
-    m_children.insert(m_children.begin() + index, std::move(child));
+    m_children.insert(m_children.begin() + index, child);
 }
 
 void ContainerNode::removeChild(ViewNode* child)
 {
     auto it = std::ranges::find_if(m_children,
-        [child](const std::unique_ptr<ViewNode>& ptr) { return ptr.get() == child; });
+        [child](const ViewNode* ptr) { return ptr == child; });
 
     if (it != m_children.end())
     {
