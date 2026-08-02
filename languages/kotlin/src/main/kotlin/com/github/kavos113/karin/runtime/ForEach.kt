@@ -81,5 +81,7 @@ fun <T> UiBuilder.ForEach(
                 }
             }
         }
+
+        redrawRequester.requestRedraw()
     }
 }
