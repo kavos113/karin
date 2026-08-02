@@ -108,6 +108,11 @@ void ContainerNode::insertChild(ViewNode* child, int index)
         child->onAttachToWindow(m_window);
     }
 
+    if (index < 0 || index > m_children.size())
+    {
+        return;
+    }
+
     YGNodeInsertChild(m_yogaNode, child->getYogaNode(), index);
 
     m_children.insert(m_children.begin() + index, child);
