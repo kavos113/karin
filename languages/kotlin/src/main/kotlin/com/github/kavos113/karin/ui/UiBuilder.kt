@@ -1,11 +1,11 @@
 package com.github.kavos113.karin.ui
 
 import com.github.kavos113.karin.engine.handle.ContainerNode
-import com.github.kavos113.karin.engine.handle.RedrawRequester
+import com.github.kavos113.karin.engine.handle.ViewUpdateRequester
 
 abstract class UiBuilder {
     internal abstract val parentContainer: ContainerNode
-    internal abstract val redrawRequester: RedrawRequester
+    internal abstract val viewUpdateRequester: ViewUpdateRequester
     internal var childrenCount = 0
 
     private val disposables = mutableListOf<() -> Unit>()

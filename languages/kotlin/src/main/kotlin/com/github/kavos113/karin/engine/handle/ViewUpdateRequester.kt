@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.engine.handle
 
-interface RedrawRequester {
+interface ViewUpdateRequester {
     fun requestRedraw()
+    fun requestRelayout()
 }

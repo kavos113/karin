@@ -9,7 +9,7 @@ import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
-internal open class ViewNodeHandle(ptr: Long) : RedrawRequester {
+internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)

@@ -24,7 +24,7 @@ fun UiBuilder.Box(
     if (content != null) {
         val builder = object : UiBuilder() {
             override val parentContainer = handle
-            override val redrawRequester = handle
+            override val viewUpdateRequester = handle
         }
         builder.content()
     }
