@@ -92,7 +92,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         JniViewNodeBridge.setShadow(ptr, offsetX, offsetY, color.r, color.g, color.b, color.a, blurRadius, spreadRadius)
     }
 
-    fun requestRelayout() {
+    override fun requestRelayout() {
         JniViewNodeBridge.requestRelayout(ptr)
     }
 
