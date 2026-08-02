@@ -33,7 +33,7 @@ fun <T : Any> UiBuilder.ForEach(
         }
     }
 
-    items.onChange { newItems ->
+    val disposable = items.onChange { newItems ->
         val newKeys = newItems.map(keySelector).toSet()
 
         // remove
@@ -85,4 +85,6 @@ fun <T : Any> UiBuilder.ForEach(
 
         viewUpdateRequester.requestRelayout()
     }
+
+    registerDisposable(disposable)
 }
