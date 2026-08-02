@@ -21,7 +21,7 @@ int main()
             karin::Size(100, 100),
             karin::Color(dis(gen), dis(gen), dis(gen))
         );
-        rootView->addChild(std::move(rect));
+        rootView->addChild(rect.get());
     }
 
     auto bigRect = std::make_unique<karin::gui::RectangleNode>(
@@ -34,13 +34,13 @@ int main()
             karin::Size(50, 50),
             karin::Color(dis(gen), dis(gen), dis(gen))
         );
-        bigRect->addChild(std::move(rect));
+        bigRect->addChild(rect.get());
     }
     bigRect->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Column);
     bigRect->setGap(5.0f);
     bigRect->setPadding(karin::gui::ViewNode::Side::All, 10.0f);
     bigRect->setEnableClip(true);
-    rootView->addChild(std::move(bigRect));
+    rootView->addChild(bigRect.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
     rootView->setGap(10.0f);

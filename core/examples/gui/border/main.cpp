@@ -20,7 +20,7 @@ int main()
         karin::Color(dis(gen), dis(gen), dis(gen))
     );
     rect->setBorder(karin::gui::ViewNode::Side::All, 5.0f, karin::Color(dis(gen), dis(gen), dis(gen)), karin::gui::NodeBorder::LineStyle::Solid);
-    rootView->addChild(std::move(rect));
+    rootView->addChild(rect.get());
 
     auto rect2 = std::make_unique<karin::gui::RectangleNode>(
         karin::Size(100, 100),

@@ -21,7 +21,7 @@ int main()
             karin::Size(100, 100),
             karin::Color(dis(gen), dis(gen), dis(gen))
         );
-        rootView->addChild(std::move(rect));
+        rootView->addChild(rect.get());
     }
 
     karin::SolidColorPattern pattern(karin::Color(0, 0, 255));
