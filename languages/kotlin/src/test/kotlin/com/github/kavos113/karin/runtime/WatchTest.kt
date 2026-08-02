@@ -77,6 +77,7 @@ class WatchTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val state = State("initial")

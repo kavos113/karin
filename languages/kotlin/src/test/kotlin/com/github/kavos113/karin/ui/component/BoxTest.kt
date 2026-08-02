@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.handle.RedrawRequester
 import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.runtime.State
@@ -61,6 +62,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val redrawRequester: RedrawRequester = mockContainer
         }
 
         val style = Style.Default
@@ -79,6 +81,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val redrawRequester: RedrawRequester = mockContainer
         }
 
         val backgroundColorState = State(Color(1f, 0f, 0f, 1f))
@@ -101,6 +104,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val redrawRequester: RedrawRequester = mockContainer
         }
 
         val layout = Layout.Default

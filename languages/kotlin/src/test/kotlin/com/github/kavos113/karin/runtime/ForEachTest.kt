@@ -85,6 +85,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -105,6 +106,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -133,6 +135,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -161,6 +164,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -189,6 +193,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -218,6 +223,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf("first", "second", "third"))
@@ -256,6 +262,7 @@ class ForEachTest {
 
         val builder = object : UiBuilder() {
             override val parentContainer = mockContainer
+            override val redrawRequester = mockContainer
         }
 
         val list = State(listOf(3, 1, 5, 2, 4, 6))

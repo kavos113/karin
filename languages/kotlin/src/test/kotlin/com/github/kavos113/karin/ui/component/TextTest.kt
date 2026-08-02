@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.handle.RedrawRequester
 import com.github.kavos113.karin.engine.jni.JniTextNodeBridge
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
@@ -58,6 +59,7 @@ class TextTest {
         val mockParentContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockParentContainer
+            override val redrawRequester: RedrawRequester = mockParentContainer
         }
 
         val textState = State("Initial Text")
