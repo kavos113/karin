@@ -40,7 +40,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
             "this object is already destroyed, cannot transfer ownership again"
         }
 
-        cleanupTask.isOwnershipTransferred = true
+        cleanupTask.isOwnedByCore = true
     }
 
     fun setOnClickListener(listener: () -> Unit) {
@@ -107,12 +107,12 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
-        // if true, ptr is "weak_ptr" for c++ object
+        // if true, ptr also owned by c++ vector<ViewNode*> (ownership is kotlin)
         @Volatile
-        var isOwnershipTransferred: Boolean = false
+        var isOwnedByCore: Boolean = false
 
         override fun run() {
-            if (ptr != 0L && !isOwnershipTransferred) {
+            if (ptr != 0L && !isOwnedByCore) {
                 JniViewNodeBridge.destroy(ptr)
             }
         }
