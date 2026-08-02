@@ -33,6 +33,7 @@ fun UiBuilder.Container(
 
     val builder = object : UiBuilder() {
         override val parentContainer = handle
+        override val redrawRequester = handle
     }
     builder.content()
 

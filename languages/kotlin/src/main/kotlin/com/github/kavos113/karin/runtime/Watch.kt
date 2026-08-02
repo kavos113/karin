@@ -17,6 +17,7 @@ fun <T> UiBuilder.Watch(
 
         val builder = object : UiBuilder() {
             override val parentContainer = containerNodeHandle
+            override val redrawRequester = containerNodeHandle
         }
         childBuilder = builder
 

@@ -20,6 +20,7 @@ class Window(
 
         val builder = object : UiBuilder() {
             override val parentContainer = root
+            override val redrawRequester = root
         }
         builder.content()
 

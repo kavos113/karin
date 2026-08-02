@@ -9,7 +9,7 @@ import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
-internal open class ViewNodeHandle(ptr: Long) {
+internal open class ViewNodeHandle(ptr: Long) : RedrawRequester {
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
@@ -96,7 +96,7 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.requestRelayout(ptr)
     }
 
-    fun requestRedraw() {
+    override fun requestRedraw() {
         JniViewNodeBridge.requestRedraw(ptr)
     }
 

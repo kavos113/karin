@@ -2,6 +2,7 @@ package com.github.kavos113.karin.runtime
 
 import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 import com.github.kavos113.karin.engine.handle.VirtualContainerNode
+import com.github.kavos113.karin.engine.handle.VirtualRedrawRequester
 import com.github.kavos113.karin.ui.UiBuilder
 
 fun <T> UiBuilder.ForEach(
@@ -16,6 +17,7 @@ fun <T> UiBuilder.ForEach(
 
         val virtualBuilder = object : UiBuilder() {
             override val parentContainer = VirtualContainerNode()
+            override val redrawRequester = VirtualRedrawRequester()
         }
         virtualBuilder.block(item)
 
@@ -55,6 +57,7 @@ fun <T> UiBuilder.ForEach(
             if (nodes == null) {
                 val virtualBuilder = object : UiBuilder() {
                     override val parentContainer = VirtualContainerNode()
+                    override val redrawRequester = VirtualRedrawRequester()
                 }
                 virtualBuilder.block(item)
 
