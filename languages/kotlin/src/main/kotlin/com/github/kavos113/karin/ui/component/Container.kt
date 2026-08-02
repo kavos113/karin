@@ -33,10 +33,12 @@ fun UiBuilder.Container(
 
     val builder = object : UiBuilder() {
         override val parentContainer = handle
+        override val viewUpdateRequester = handle
     }
     builder.content()
 
     parentContainer.addChild(handle)
+    childrenCount++
 }
 
 fun UiBuilder.Column(

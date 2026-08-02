@@ -1,7 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
-import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.engine.handle.TextNodeHandle
+import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.text.FontWeight
@@ -28,6 +28,7 @@ fun UiBuilder.Text(
     )
     val handle = TextNodeHandle(text, finalStyle, finalParagraphStyle)
     parentContainer.addChild(handle)
+    childrenCount++
 }
 
 fun UiBuilder.Text(
@@ -49,6 +50,7 @@ fun UiBuilder.Text(
     )
     val handle = TextNodeHandle(text.value, finalStyle, finalParagraphStyle)
     parentContainer.addChild(handle)
+    childrenCount++
 
     val disposable = text.onChange { newText ->
         handle.setText(newText)

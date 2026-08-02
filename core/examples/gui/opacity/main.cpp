@@ -20,7 +20,7 @@ int main()
 
         rect->setOpacity(1.0 - 0.07 * i);
 
-        rootView->addChild(std::move(rect));
+        rootView->addChild(rect.get());
     }
 
     auto bigRect = std::make_unique<karin::gui::RectangleNode>(
@@ -33,14 +33,14 @@ int main()
             karin::Size(50, 50),
             karin::Color(0.0f, 1.0f, 0.0f)
         );
-        bigRect->addChild(std::move(rect));
+        bigRect->addChild(rect.get());
     }
     bigRect->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Column);
     bigRect->setGap(5.0f);
     bigRect->setWrapMode(karin::gui::ContainerNode::WrapMode::Wrap);
     bigRect->setPadding(karin::gui::ViewNode::Side::All, 10.0f);
     bigRect->setOpacity(0.2f);
-    rootView->addChild(std::move(bigRect));
+    rootView->addChild(bigRect.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
     rootView->setGap(10.0f);

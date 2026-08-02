@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.handle.ViewUpdateRequester
 import com.github.kavos113.karin.engine.jni.JniContainerNodeBridge
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.runtime.State
@@ -16,6 +17,7 @@ import io.mockk.runs
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -60,6 +62,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val viewUpdateRequester: ViewUpdateRequester = mockContainer
         }
 
         val style = Style.Default
@@ -70,6 +73,7 @@ class BoxTest {
         verify(atLeast = 1) {
             JniViewNodeBridge.setBackgroundColor(123L, 1f, 0f, 0f, 1f)
         }
+        assertEquals(1, builder.childrenCount)
     }
 
     @Test
@@ -77,6 +81,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val viewUpdateRequester: ViewUpdateRequester = mockContainer
         }
 
         val backgroundColorState = State(Color(1f, 0f, 0f, 1f))
@@ -91,6 +96,7 @@ class BoxTest {
             JniViewNodeBridge.setBackgroundColor(123L, 0f, 1f, 0f, 1f)
             JniViewNodeBridge.requestRedraw(123L)
         }
+        assertEquals(1, builder.childrenCount)
     }
 
     @Test
@@ -98,6 +104,7 @@ class BoxTest {
         val mockContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockContainer
+            override val viewUpdateRequester: ViewUpdateRequester = mockContainer
         }
 
         val layout = Layout.Default
@@ -110,5 +117,6 @@ class BoxTest {
             JniViewNodeBridge.setWidth(123L, 100f)
             JniViewNodeBridge.setHeight(123L, 50f)
         }
+        assertEquals(1, builder.childrenCount)
     }
 }

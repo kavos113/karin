@@ -17,6 +17,7 @@ fun <T> UiBuilder.Watch(
 
         val builder = object : UiBuilder() {
             override val parentContainer = containerNodeHandle
+            override val viewUpdateRequester = containerNodeHandle
         }
         childBuilder = builder
 
@@ -25,6 +26,7 @@ fun <T> UiBuilder.Watch(
     }
 
     parentContainer.addChild(containerNodeHandle)
+    childrenCount++
     registerDisposable {
         disposable()
         childBuilder?.dispose()

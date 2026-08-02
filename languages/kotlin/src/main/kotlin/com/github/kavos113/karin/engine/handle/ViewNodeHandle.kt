@@ -9,7 +9,7 @@ import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
-internal open class ViewNodeHandle(ptr: Long) {
+internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
@@ -30,17 +30,17 @@ internal open class ViewNodeHandle(ptr: Long) {
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
-                "ownership of this handle already transferred to C++ side (or destroyed), cannot access it anymore"
+                "this object is already destroyed, cannot access it anymore"
             }
             return internalPtr
         }
 
     fun transferOwnership() {
         check(internalPtr != 0L) {
-            "ownership of this handle already transferred to C++ side (or destroyed), cannot transfer ownership again"
+            "this object is already destroyed, cannot transfer ownership again"
         }
 
-        cleanupTask.isOwnershipTransferred = true
+        cleanupTask.isOwnedByCore = true
     }
 
     fun setOnClickListener(listener: () -> Unit) {
@@ -92,11 +92,11 @@ internal open class ViewNodeHandle(ptr: Long) {
         JniViewNodeBridge.setShadow(ptr, offsetX, offsetY, color.r, color.g, color.b, color.a, blurRadius, spreadRadius)
     }
 
-    fun requestRelayout() {
+    override fun requestRelayout() {
         JniViewNodeBridge.requestRelayout(ptr)
     }
 
-    fun requestRedraw() {
+    override fun requestRedraw() {
         JniViewNodeBridge.requestRedraw(ptr)
     }
 
@@ -107,11 +107,12 @@ internal open class ViewNodeHandle(ptr: Long) {
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
+        // if true, ptr also owned by c++ vector<ViewNode*> (ownership is kotlin)
         @Volatile
-        var isOwnershipTransferred: Boolean = false
+        var isOwnedByCore: Boolean = false
 
         override fun run() {
-            if (ptr != 0L && !isOwnershipTransferred) {
+            if (ptr != 0L && !isOwnedByCore) {
                 JniViewNodeBridge.destroy(ptr)
             }
         }

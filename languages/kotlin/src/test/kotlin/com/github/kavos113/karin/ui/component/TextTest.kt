@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.ui.component
 
 import com.github.kavos113.karin.engine.handle.ContainerNodeHandle
+import com.github.kavos113.karin.engine.handle.ViewUpdateRequester
 import com.github.kavos113.karin.engine.jni.JniTextNodeBridge
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
@@ -12,6 +13,7 @@ import io.mockk.runs
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -57,6 +59,7 @@ class TextTest {
         val mockParentContainer = mockk<ContainerNodeHandle>(relaxed = true)
         val builder = object : UiBuilder() {
             override val parentContainer: ContainerNodeHandle = mockParentContainer
+            override val viewUpdateRequester: ViewUpdateRequester = mockParentContainer
         }
 
         val textState = State("Initial Text")
@@ -67,5 +70,6 @@ class TextTest {
         verify(exactly = 1) {
             JniTextNodeBridge.setText(123L, "Updated Text")
         }
+        assertEquals(1, builder.childrenCount)
     }
 }

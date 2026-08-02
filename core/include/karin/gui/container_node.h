@@ -35,7 +35,8 @@ public:
     void onAttachToWindow(Window* window) override;
     void onDetachFromWindow() override;
 
-    void addChild(std::unique_ptr<ViewNode> child);
+    void addChild(ViewNode* child);
+    void insertChild(ViewNode* child, int index);
     void removeChild(ViewNode* child);
     void clearChildren();
     void setLayoutDirection(LayoutDirection direction);
@@ -52,7 +53,7 @@ protected:
     virtual void drawBackground(GraphicsContext& gc) const {}
     virtual void drawForeground(GraphicsContext& gc) const {}
 
-    std::vector<std::unique_ptr<ViewNode>> m_children;
+    std::vector<ViewNode*> m_children;
 
     bool m_enableClip = false;
 };
