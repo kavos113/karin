@@ -83,6 +83,6 @@ fun <T> UiBuilder.ForEach(
             }
         }
 
-        viewUpdateRequester.requestRedraw()
+        viewUpdateRequester.requestRelayout()
     }
 }
