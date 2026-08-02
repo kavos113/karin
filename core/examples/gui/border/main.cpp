@@ -27,7 +27,7 @@ int main()
         karin::Color(dis(gen), dis(gen), dis(gen))
     );
     rect2->setBorder(karin::gui::ViewNode::Side::All, 5.0f, karin::Color(dis(gen), dis(gen), dis(gen)), karin::gui::NodeBorder::LineStyle::Solid);
-    rootView->addChild(std::move(rect2));
+    rootView->addChild(rect2.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
     rootView->setGap(10.0f);

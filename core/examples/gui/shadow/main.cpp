@@ -31,7 +31,7 @@ int main()
         karin::Color(dis(gen), dis(gen), dis(gen)),
         10.0f, 0.0f
     );
-    rootView->addChild(std::move(rect2));
+    rootView->addChild(rect2.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
     rootView->setGap(10.0f);
