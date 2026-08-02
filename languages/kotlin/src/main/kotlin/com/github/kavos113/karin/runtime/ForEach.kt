@@ -1,16 +1,15 @@
 package com.github.kavos113.karin.runtime
 
-import com.github.kavos113.karin.engine.handle.ContainerNode
 import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 import com.github.kavos113.karin.engine.handle.VirtualContainerNode
 import com.github.kavos113.karin.ui.UiBuilder
 
-fun <T, K> UiBuilder.ForEach(
+fun <T> UiBuilder.ForEach(
     items: State<List<T>>,
-    keySelector: (T) -> K,
+    keySelector: (T) -> Any = { it as Any },
     block: UiBuilder.(T) -> Unit
 ) {
-    val components = mutableMapOf<K, List<ViewNodeHandle>>()
+    val components = mutableMapOf<Any, List<ViewNodeHandle>>()
 
     for (item in items.value) {
         val key = keySelector(item)
@@ -42,6 +41,7 @@ fun <T, K> UiBuilder.ForEach(
             val nodesToRemove = components[key] ?: continue
             for (node in nodesToRemove) {
                 parentContainer.removeChild(node)
+                childrenCount--
             }
         }
 
@@ -63,13 +63,17 @@ fun <T, K> UiBuilder.ForEach(
                 components[key] = newNodes
                 for (n in newNodes) {
                     parentContainer.insertChild(n, currentIndex)
+                    childrenCount++
                     currentIndex++
                 }
             // move existing node
             } else {
                 for (n in nodes) {
-                    parentContainer.removeChild(n)
-                    parentContainer.insertChild(n, currentIndex)
+                    val oldIndex = parentContainer.childIndexOf(n)
+                    if (oldIndex != currentIndex) {
+                        parentContainer.removeChild(n)
+                        parentContainer.insertChild(n, currentIndex)
+                    }
                     currentIndex++
                 }
             }
