@@ -5,7 +5,7 @@ import com.github.kavos113.karin.engine.handle.VirtualContainerNode
 import com.github.kavos113.karin.engine.handle.VirtualViewUpdateRequester
 import com.github.kavos113.karin.ui.UiBuilder
 
-fun <T> UiBuilder.ForEach(
+fun <T : Any> UiBuilder.ForEach(
     items: State<List<T>>,
     keySelector: (T) -> Any = { it as Any },
     block: UiBuilder.(T) -> Unit
