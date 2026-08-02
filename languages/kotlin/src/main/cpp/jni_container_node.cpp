@@ -31,7 +31,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
-    container->addChild(std::unique_ptr<ViewNode>(child));
+    container->addChild(child);
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setLayoutDirection
@@ -93,5 +93,5 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
-    container->insertChild(std::unique_ptr<ViewNode>(child), index);
+    container->insertChild(child, index);
 }
