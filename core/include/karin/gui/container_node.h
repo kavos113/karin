@@ -44,7 +44,7 @@ public:
     void setWrapMode(WrapMode mode);
     void setEnableClip(bool enable);
 
-    ViewNode* hitTest(const Point& point) override;
+    ViewNode* hitTest(const Point& point, EventType type) override;
 
 protected:
     void drawInternal(GraphicsContext& gc) const final;

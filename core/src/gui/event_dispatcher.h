@@ -16,14 +16,12 @@ public:
 
 private:
     void handleMouseMoveEvent(const MouseMoveEvent& event);
-    void handleMouseButtonEvent(const MouseButtonEvent& event);
-    void handleMouseWheelEvent(const MouseWheelEvent& event);
+    void handleMouseButtonEvent(const MouseButtonEvent& event) const;
+    void handleMouseWheelEvent(const MouseWheelEvent& event) const;
 
     ViewNode *m_rootView;
 
-    ViewNode *m_pressedNode = nullptr;
     ViewNode *m_hoveredNode = nullptr;
-    ViewNode *m_focusedNode = nullptr;
 };
 
 } // karin::gui

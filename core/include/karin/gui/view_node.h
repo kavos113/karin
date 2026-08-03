@@ -1,15 +1,18 @@
 #ifndef KARIN_GUI_VIEW_NODE_H
 #define KARIN_GUI_VIEW_NODE_H
 
-#include <karin/common/geometry/size.h>
-#include <karin/common/geometry/point.h>
-#include <karin/common/geometry/rectangle.h>
-#include <karin/graphics/graphics_context.h>
-
-#include <yoga/Yoga.h>
 #include <array>
 #include <functional>
 #include <optional>
+#include <vector>
+
+#include <yoga/Yoga.h>
+
+#include <karin/common/geometry/size.h>
+#include <karin/common/geometry/point.h>
+#include <karin/common/geometry/rectangle.h>
+#include <karin/system/event.h>
+#include <karin/graphics/graphics_context.h>
 
 namespace karin::gui
 {
@@ -53,12 +56,31 @@ public:
         All = 6
     };
 
+    enum class EventType : uint8_t
+    {
+        PointerMove = 0,
+        PointerDown = 1,
+        PointerUp = 2,
+        PointerEnter = 3,
+        PointerLeave = 4,
+        MouseWheel = 5,
+    };
+
     ViewNode();
     explicit ViewNode(Size size);
     virtual ~ViewNode();
 
     void draw(GraphicsContext& gc) const;
-    virtual ViewNode* hitTest(const Point& point);
+
+    /**
+     * Check nodes and find target node.
+     * If appropriate handler is not registered, return nullptr and pass to parent node.
+     *
+     * @param point target point
+     * @param type target event type
+     * @return node that need to execute event
+     */
+    virtual ViewNode* hitTest(const Point& point, EventType type);
 
     void calculateLayout() const;
     Rectangle getLayout() const;
@@ -80,8 +102,8 @@ public:
 
     YGNodeRef getYogaNode() const;
 
-    void setOnClick(std::function<void(Point point)> onClick);
-    void triggerClick(Point point) const;
+    void setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func);
+    void triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta);
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
@@ -89,6 +111,10 @@ protected:
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
+    std::unordered_map<
+        EventType,
+        std::optional<std::function<void(Point, MouseButtonType, int)>>
+    > m_pointerHandlers;
 
 private:
     void drawBorder(GraphicsContext& gc) const;
@@ -98,7 +124,7 @@ private:
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;
     std::optional<ShadowParams> m_shadow = std::nullopt;
-    std::function<void(Point point)> m_onClick;
+
     float m_opacity = 1.0f;
 };
 } // karin

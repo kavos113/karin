@@ -39,7 +39,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_LBUTTONDOWN:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonPress_,
-            MouseButtonEvent::Button::Left,
+            MouseButtonType::Left,
             LOWORD(lParam),
             HIWORD(lParam)
         );
@@ -47,7 +47,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_LBUTTONUP:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonRelease_,
-            MouseButtonEvent::Button::Left,
+            MouseButtonType::Left,
             LOWORD(lParam),
             HIWORD(lParam)
         );
@@ -55,7 +55,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_RBUTTONDOWN:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonPress_,
-            MouseButtonEvent::Button::Right,
+            MouseButtonType::Right,
             LOWORD(lParam),
             HIWORD(lParam)
         );
@@ -63,7 +63,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_RBUTTONUP:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonRelease_,
-            MouseButtonEvent::Button::Right,
+            MouseButtonType::Right,
             LOWORD(lParam),
             HIWORD(lParam)
         );
@@ -71,7 +71,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_MBUTTONDOWN:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonPress_,
-            MouseButtonEvent::Button::Middle,
+            MouseButtonType::Middle,
             LOWORD(lParam),
             HIWORD(lParam)
         );
@@ -79,7 +79,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_MBUTTONUP:
         return MouseButtonEvent(
             MouseButtonEvent::Type::ButtonRelease_,
-            MouseButtonEvent::Button::Middle,
+            MouseButtonType::Middle,
             LOWORD(lParam),
             HIWORD(lParam)
         );

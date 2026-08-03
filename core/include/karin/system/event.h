@@ -38,17 +38,16 @@ struct MouseMoveEvent
     int y;
 };
 
+enum struct MouseButtonType
+{
+    // TODO: Add more buttons if needed
+    Left,
+    Right,
+    Middle
+};
+
 struct MouseButtonEvent
 {
-
-    enum struct Button
-    {
-        // TODO: Add more buttons if needed
-        Left,
-        Right,
-        Middle
-    };
-
     enum struct Type
     {
         ButtonPress_,
@@ -56,7 +55,7 @@ struct MouseButtonEvent
     };
 
     Type type;
-    Button button;
+    MouseButtonType button;
     int x;
     int y;
 };

@@ -39,30 +39,65 @@ void EventDispatcher::dispatchEvent(const Event& event)
 
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 {
+    using enum ViewNode::EventType;
+
+    Point point(static_cast<float>(event.x), static_cast<float>(event.y));
+
+    ViewNode* target = m_rootView->hitTest(point, PointerMove);
+    if (target)
+    {
+        target->triggerPointerHandler(PointerMove, point, MouseButtonType::Left, 0);
+    }
+
+    if (target && m_hoveredNode != target)
+    {
+        m_hoveredNode = target;
+        target->triggerPointerHandler(PointerEnter, point, MouseButtonType::Left, 0);
+    }
+
+    if (m_hoveredNode && m_hoveredNode != target)
+    {
+        m_hoveredNode->triggerPointerHandler(PointerLeave, point, MouseButtonType::Left, 0);
+        m_hoveredNode = target;
+    }
 }
 
-void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
+void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event) const
 {
+    using enum ViewNode::EventType;
+
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
-    ViewNode *target = m_rootView->hitTest(point);
+    auto type = PointerUp;
 
     switch (event.type)
     {
     case MouseButtonEvent::Type::ButtonPress_:
-        m_pressedNode = target;
+        type = PointerDown;
         break;
 
     case MouseButtonEvent::Type::ButtonRelease_:
-        if (m_pressedNode && m_pressedNode == target)
-        {
-            m_pressedNode->triggerClick(point);
-        }
-        m_pressedNode = nullptr;
+        type = PointerUp;
         break;
+    }
+
+    ViewNode* target = m_rootView->hitTest(point, type);
+
+    if (target)
+    {
+        target->triggerPointerHandler(type, point, event.button, 0);
     }
 }
 
-void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event)
+void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
 {
+    using enum ViewNode::EventType;
+
+    Point point(static_cast<float>(event.x), static_cast<float>(event.y));
+
+    ViewNode* target = m_rootView->hitTest(point, MouseWheel);
+    if (target)
+    {
+        target->triggerPointerHandler(MouseWheel, point, MouseButtonType::Left, event.delta);
+    }
 }
 } // karin::gui
