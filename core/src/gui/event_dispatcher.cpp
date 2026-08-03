@@ -44,7 +44,7 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
-    ViewNode *target = m_rootView->hitTest(point);
+    ViewNode* target = m_rootView->hitTest(point);
 
     switch (event.type)
     {
@@ -55,7 +55,7 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
     case MouseButtonEvent::Type::ButtonRelease_:
         if (m_pressedNode && m_pressedNode == target)
         {
-            m_pressedNode->triggerClick(point);
+            m_pressedNode->triggerPointerHandler(ViewNode::EventType::PointerClick, point, event.button, 0);
         }
         m_pressedNode = nullptr;
         break;

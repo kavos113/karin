@@ -66,6 +66,14 @@ ViewNode::ViewNode()
     m_yogaNode = YGNodeNew();
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
+
+    m_pointerHandlers[EventType::PointerClick] = std::nullopt;
+    m_pointerHandlers[EventType::PointerMove] = std::nullopt;
+    m_pointerHandlers[EventType::PointerDown] = std::nullopt;
+    m_pointerHandlers[EventType::PointerUp] = std::nullopt;
+    m_pointerHandlers[EventType::PointerEnter] = std::nullopt;
+    m_pointerHandlers[EventType::PointerLeave] = std::nullopt;
+    m_pointerHandlers[EventType::MouseWheel] = std::nullopt;
 }
 
 ViewNode::ViewNode(Size size)
@@ -75,6 +83,14 @@ ViewNode::ViewNode(Size size)
     YGNodeStyleSetHeight(m_yogaNode, size.height);
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
+
+    m_pointerHandlers[EventType::PointerClick] = std::nullopt;
+    m_pointerHandlers[EventType::PointerMove] = std::nullopt;
+    m_pointerHandlers[EventType::PointerDown] = std::nullopt;
+    m_pointerHandlers[EventType::PointerUp] = std::nullopt;
+    m_pointerHandlers[EventType::PointerEnter] = std::nullopt;
+    m_pointerHandlers[EventType::PointerLeave] = std::nullopt;
+    m_pointerHandlers[EventType::MouseWheel] = std::nullopt;
 }
 
 ViewNode::~ViewNode()
@@ -242,16 +258,17 @@ YGNodeRef ViewNode::getYogaNode() const
     return m_yogaNode;
 }
 
-void ViewNode::setOnClick(std::function<void(Point point)> onClick)
+void ViewNode::setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func)
 {
-    m_onClick = std::move(onClick);
+    m_pointerHandlers[type] = std::move(func);
 }
 
-void ViewNode::triggerClick(Point point) const
+void ViewNode::triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta)
 {
-    if (m_onClick)
+    auto handler = m_pointerHandlers[type];
+    if (handler.has_value())
     {
-        m_onClick(point);
+        handler.value()(point, buttonType, delta);
     }
 }
 

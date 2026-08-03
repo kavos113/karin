@@ -1,15 +1,18 @@
 #ifndef KARIN_GUI_VIEW_NODE_H
 #define KARIN_GUI_VIEW_NODE_H
 
-#include <karin/common/geometry/size.h>
-#include <karin/common/geometry/point.h>
-#include <karin/common/geometry/rectangle.h>
-#include <karin/graphics/graphics_context.h>
-
-#include <yoga/Yoga.h>
 #include <array>
 #include <functional>
 #include <optional>
+#include <vector>
+
+#include <yoga/Yoga.h>
+
+#include <karin/common/geometry/size.h>
+#include <karin/common/geometry/point.h>
+#include <karin/common/geometry/rectangle.h>
+#include <karin/system/event.h>
+#include <karin/graphics/graphics_context.h>
 
 namespace karin::gui
 {
@@ -53,6 +56,17 @@ public:
         All = 6
     };
 
+    enum class EventType : uint8_t
+    {
+        PointerClick = 0,
+        PointerMove = 1,
+        PointerDown = 2,
+        PointerUp = 3,
+        PointerEnter = 4,
+        PointerLeave = 5,
+        MouseWheel = 6,
+    };
+
     ViewNode();
     explicit ViewNode(Size size);
     virtual ~ViewNode();
@@ -80,8 +94,8 @@ public:
 
     YGNodeRef getYogaNode() const;
 
-    void setOnClick(std::function<void(Point point)> onClick);
-    void triggerClick(Point point) const;
+    void setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func);
+    void triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta);
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
@@ -98,7 +112,11 @@ private:
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;
     std::optional<ShadowParams> m_shadow = std::nullopt;
-    std::function<void(Point point)> m_onClick;
+    std::unordered_map<
+        EventType,
+        std::optional<std::function<void(Point, MouseButtonType, int)>>
+    > m_pointerHandlers;
+
     float m_opacity = 1.0f;
 };
 } // karin
