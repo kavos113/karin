@@ -168,7 +168,7 @@ void ContainerNode::setEnableClip(bool enable)
     m_enableClip = enable;
 }
 
-ViewNode* ContainerNode::hitTest(const Point& point)
+ViewNode* ContainerNode::hitTest(const Point& point, EventType type)
 {
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
@@ -184,11 +184,16 @@ ViewNode* ContainerNode::hitTest(const Point& point)
         float childY = YGNodeLayoutGetTop(child->getYogaNode());
         Point childPoint = { point.x - childX, point.y - childY };
 
-        ViewNode* hitNode = child->hitTest(childPoint);
+        ViewNode* hitNode = child->hitTest(childPoint, type);
         if (hitNode)
         {
             return hitNode;
         }
+    }
+
+    if (!m_pointerHandlers[type].has_value())
+    {
+        return nullptr;
     }
 
     return this;

@@ -355,12 +355,17 @@ void ViewNode::drawShadow(GraphicsContext& gc) const
     }
 }
 
-ViewNode* ViewNode::hitTest(const Point& point)
+ViewNode* ViewNode::hitTest(const Point& point, EventType type)
 {
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
 
     if (point.x < 0 || point.y < 0 || point.x > width || point.y > height)
+    {
+        return nullptr;
+    }
+
+    if (!m_pointerHandlers[type].has_value())
     {
         return nullptr;
     }

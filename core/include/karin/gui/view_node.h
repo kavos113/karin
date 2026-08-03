@@ -72,7 +72,16 @@ public:
     virtual ~ViewNode();
 
     void draw(GraphicsContext& gc) const;
-    virtual ViewNode* hitTest(const Point& point);
+
+    /**
+     * Check nodes and find target node.
+     * If appropriate handler is not registered, return nullptr and pass to parent node.
+     *
+     * @param point target point
+     * @param type target event type
+     * @return node that need to execute event
+     */
+    virtual ViewNode* hitTest(const Point& point, EventType type);
 
     void calculateLayout() const;
     Rectangle getLayout() const;
@@ -103,6 +112,10 @@ protected:
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
+    std::unordered_map<
+        EventType,
+        std::optional<std::function<void(Point, MouseButtonType, int)>>
+    > m_pointerHandlers;
 
 private:
     void drawBorder(GraphicsContext& gc) const;
@@ -112,10 +125,6 @@ private:
     std::array<NodeBorder, 4> m_borders;
     std::optional<Color> m_backgroundColor = std::nullopt;
     std::optional<ShadowParams> m_shadow = std::nullopt;
-    std::unordered_map<
-        EventType,
-        std::optional<std::function<void(Point, MouseButtonType, int)>>
-    > m_pointerHandlers;
 
     float m_opacity = 1.0f;
 };

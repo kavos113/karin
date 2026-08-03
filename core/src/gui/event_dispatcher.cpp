@@ -44,7 +44,7 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
-    ViewNode* target = m_rootView->hitTest(point);
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerClick);
 
     switch (event.type)
     {
