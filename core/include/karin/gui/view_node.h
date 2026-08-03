@@ -58,13 +58,12 @@ public:
 
     enum class EventType : uint8_t
     {
-        PointerClick = 0,
-        PointerMove = 1,
-        PointerDown = 2,
-        PointerUp = 3,
-        PointerEnter = 4,
-        PointerLeave = 5,
-        MouseWheel = 6,
+        PointerMove = 0,
+        PointerDown = 1,
+        PointerUp = 2,
+        PointerEnter = 3,
+        PointerLeave = 4,
+        MouseWheel = 5,
     };
 
     ViewNode();

@@ -67,7 +67,6 @@ ViewNode::ViewNode()
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
 
-    m_pointerHandlers[EventType::PointerClick] = std::nullopt;
     m_pointerHandlers[EventType::PointerMove] = std::nullopt;
     m_pointerHandlers[EventType::PointerDown] = std::nullopt;
     m_pointerHandlers[EventType::PointerUp] = std::nullopt;
@@ -84,7 +83,6 @@ ViewNode::ViewNode(Size size)
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
 
-    m_pointerHandlers[EventType::PointerClick] = std::nullopt;
     m_pointerHandlers[EventType::PointerMove] = std::nullopt;
     m_pointerHandlers[EventType::PointerDown] = std::nullopt;
     m_pointerHandlers[EventType::PointerUp] = std::nullopt;
