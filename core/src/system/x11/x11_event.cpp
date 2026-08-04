@@ -22,19 +22,19 @@ std::optional<Event> translateX11Event(XEvent* event)
         case Button1:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonPress_,
-                MouseButtonEvent::Button::Left,
+                MouseButtonType::Left,
                 x, y
             );
         case Button2:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonPress_,
-                MouseButtonEvent::Button::Middle,
+                MouseButtonType::Middle,
                 x, y
             );
         case Button3:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonPress_,
-                MouseButtonEvent::Button::Right,
+                MouseButtonType::Right,
                 x, y
             );
         case Button4:
@@ -62,19 +62,19 @@ std::optional<Event> translateX11Event(XEvent* event)
         case Button1:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonRelease_,
-                MouseButtonEvent::Button::Left,
+                MouseButtonType::Left,
                 x, y
             );
         case Button2:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonRelease_,
-                MouseButtonEvent::Button::Middle,
+                MouseButtonType::Middle,
                 x, y
             );
         case Button3:
             return MouseButtonEvent(
                 MouseButtonEvent::Type::ButtonRelease_,
-                MouseButtonEvent::Button::Right,
+                MouseButtonType::Right,
                 x, y
             );
         default:
