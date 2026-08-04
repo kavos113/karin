@@ -62,37 +62,37 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     fun setOnClickListener(listener: () -> Unit) {
         onPointerClick = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value, "dispatchPointerUp")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
     }
 
     fun setOnPointerMove(listener: (Point) -> Unit) {
         onPointerMove = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerMove.value, "dispatchPointerMove")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerMove.value)
     }
 
     fun setOnPointerDown(listener: (Point) -> Unit) {
         onPointerDown = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value, "dispatchPointerDown")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
     }
 
     fun setOnPointerUp(listener: (Point) -> Unit) {
         onPointerUp = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value, "dispatchPointerUp")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
     }
 
     fun setOnPointerEnter(listener: () -> Unit) {
         onPointerEnter = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value, "dispatchPointerEnter")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
     }
 
     fun setOnPointerLeave(listener: () -> Unit) {
         onPointerLeave = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value, "dispatchPointerLeave")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
     }
 
     fun setOnMouseWheel(listener: (Int) -> Unit) {
         onMouseWheel = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value, "dispatchMouseWheel")
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value)
     }
 
     fun setSize(size: Size) {
