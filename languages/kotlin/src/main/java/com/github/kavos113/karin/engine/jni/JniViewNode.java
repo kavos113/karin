@@ -7,7 +7,7 @@ class JniViewNode {
         KarinLoader.load();
     }
 
-    static native void setClickListener(long nodePtr, ViewNodeHandle node);
+    static native void setPointerListener(long nodePtr, ViewNodeHandle node);
     static native void setSize(long nodePtr, float width, float height);
     static native void setWidth(long nodePtr, float width);
     static native void setHeight(long nodePtr, float height);

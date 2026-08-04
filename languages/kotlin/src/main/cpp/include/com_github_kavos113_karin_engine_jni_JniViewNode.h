@@ -17,10 +17,10 @@ extern "C" {
 #define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM 8L
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setClickListener
+ * Method:    setPointerListener
  * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
  */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
   (JNIEnv *, jclass, jlong, jobject);
 
 /*

@@ -3,6 +3,7 @@ package com.github.kavos113.karin.engine.handle
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
@@ -14,8 +15,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
 
-    private var onClick: (() -> Unit)? = null
-
     enum class Side(val value: Int) {
         Left(0),
         Top(1),
@@ -24,8 +23,24 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         Horizontal(4),
         Vertical(5),
         All(6);
-
     }
+
+    enum class EventType(val value: Int) {
+        PointerMove(0),
+        PointerDown(1),
+        PointerUp(2),
+        PointerEnter(3),
+        PointerLeave(4),
+        MouseWheel(5);
+    }
+
+    private var onPointerClick: (() -> Unit)? = null
+    private var onPointerMove: ((Point) -> Unit)? = null
+    private var onPointerDown: ((Point) -> Unit)? = null
+    private var onPointerUp: ((Point) -> Unit)? = null
+    private var onPointerEnter: (() -> Unit)? = null
+    private var onPointerLeave: (() -> Unit)? = null
+    private var onMouseWheel: ((Int) -> Unit)? = null
 
     val ptr: Long
         get() {
@@ -44,8 +59,8 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     }
 
     fun setOnClickListener(listener: () -> Unit) {
-        onClick = listener
-        JniViewNodeBridge.setClickListener(ptr, this)
+        onPointerClick = listener
+        JniViewNodeBridge.setPointerListener(ptr, this)
     }
 
     fun setSize(size: Size) {
@@ -103,7 +118,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     @SuppressWarnings("unused")
     @JvmName("dispatchClickEvent")
     internal fun dispatchClickEvent() {
-        onClick?.invoke()
+        onPointerClick?.invoke()
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {

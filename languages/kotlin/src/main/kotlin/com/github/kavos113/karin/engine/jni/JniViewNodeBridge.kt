@@ -3,7 +3,7 @@ package com.github.kavos113.karin.engine.jni
 import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 
 internal object JniViewNodeBridge {
-    fun setClickListener(nodePtr: Long, node: ViewNodeHandle) = JniViewNode.setClickListener(nodePtr, node)
+    fun setPointerListener(nodePtr: Long, node: ViewNodeHandle) = JniViewNode.setPointerListener(nodePtr, node)
     fun setSize(nodePtr: Long, width: Float, height: Float) = JniViewNode.setSize(nodePtr, width, height)
     fun setWidth(nodePtr: Long, width: Float) = JniViewNode.setWidth(nodePtr, width)
     fun setHeight(nodePtr: Long, height: Float) = JniViewNode.setHeight(nodePtr, height)

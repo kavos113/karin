@@ -10,7 +10,7 @@
 using namespace karin::gui;
 using namespace karin::jni;
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
     (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
 {
     CHECK_JNI_PTR(viewPtr);
@@ -18,8 +18,8 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto callback = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setOnClick(
-        [callback](karin::Point point)
+    node->setPointerHandler(
+        [callback](karin::Point point, karin::MouseButtonType type, int delta)
         {
             callback->invoke(
                 [](JNIEnv* env, jobject obj)
