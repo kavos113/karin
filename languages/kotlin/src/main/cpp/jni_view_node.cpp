@@ -10,32 +10,149 @@
 using namespace karin::gui;
 using namespace karin::jni;
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setClickListener
-    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
+    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener, jint eventType)
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto callback = std::make_shared<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setOnClick(
-        [callback](karin::Point point)
-        {
-            callback->invoke(
-                [](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchClickEvent", "()V");
-                    if (methodId)
+    switch (static_cast<ViewNode::EventType>(eventType))
+    {
+    using enum ViewNode::EventType;
+    case PointerMove:
+        node->setPointerHandler(
+            PointerMove,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerMove", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+
+    case PointerDown:
+        node->setPointerHandler(
+            PointerDown,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerDown", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+
+    case PointerUp:
+        node->setPointerHandler(
+            PointerUp,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerUp", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+
+    case PointerEnter:
+        node->setPointerHandler(
+            PointerEnter,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [](JNIEnv* env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerEnter", "()V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+
+    case PointerLeave:
+        node->setPointerHandler(
+            PointerLeave,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [](JNIEnv* env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerLeave", "()V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+
+    case MouseWheel:
+        node->setPointerHandler(
+            MouseWheel,
+            [target](karin::Point point, karin::MouseButtonType type, int delta)
+            {
+                target->invoke(
+                    [delta](JNIEnv* env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchMouseWheel", "(I)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, delta);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+        break;
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setSize

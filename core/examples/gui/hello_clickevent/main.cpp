@@ -4,6 +4,25 @@
 #include <memory>
 #include <random>
 
+namespace
+{
+std::string formatMouseButtonType(karin::MouseButtonType type)
+{
+    switch (type)
+    {
+        using enum karin::MouseButtonType;
+    case karin::MouseButtonType::Left:
+        return "Left";
+    case karin::MouseButtonType::Right:
+        return "Right";
+    case karin::MouseButtonType::Middle:
+        return "Middle";
+    }
+
+    return "";
+}
+}
+
 int main()
 {
     std::random_device rd;
@@ -40,9 +59,11 @@ int main()
     bigRect->setGap(5.0f);
     bigRect->setWrapMode(karin::gui::ContainerNode::WrapMode::Wrap);
     bigRect->setPadding(karin::gui::ViewNode::Side::All, 10.0f);
-    bigRect->setOnClick(
-        [](karin::Point point)  {
-            std::cout << "Big rectangle clicked at (" << point.x << ", " << point.y << ")" << std::endl;
+    bigRect->setPointerHandler(
+        karin::gui::ViewNode::EventType::PointerUp,
+        [](karin::Point point, karin::MouseButtonType type, int delta)
+        {
+            std::cout << "big rect is clicked at: " << point << ", button: " << formatMouseButtonType(type) << std::endl;
         }
     );
     rootView->addChild(bigRect.get());

@@ -3,6 +3,7 @@ package com.github.kavos113.karin.engine.handle
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
@@ -14,8 +15,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
 
-    private var onClick: (() -> Unit)? = null
-
     enum class Side(val value: Int) {
         Left(0),
         Top(1),
@@ -24,8 +23,26 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         Horizontal(4),
         Vertical(5),
         All(6);
-
     }
+
+    enum class EventType(val value: Int) {
+        PointerMove(0),
+        PointerDown(1),
+        PointerUp(2),
+        PointerEnter(3),
+        PointerLeave(4),
+        MouseWheel(5);
+    }
+
+    private var onPointerClick: (() -> Unit)? = null
+    private var onPointerMove: ((Point) -> Unit)? = null
+    private var onPointerDown: ((Point) -> Unit)? = null
+    private var onPointerUp: ((Point) -> Unit)? = null
+    private var onPointerEnter: (() -> Unit)? = null
+    private var onPointerLeave: (() -> Unit)? = null
+    private var onMouseWheel: ((Int) -> Unit)? = null
+
+    private var isPressed = false
 
     val ptr: Long
         get() {
@@ -44,8 +61,38 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     }
 
     fun setOnClickListener(listener: () -> Unit) {
-        onClick = listener
-        JniViewNodeBridge.setClickListener(ptr, this)
+        onPointerClick = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+    }
+
+    fun setOnPointerMove(listener: (Point) -> Unit) {
+        onPointerMove = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerMove.value)
+    }
+
+    fun setOnPointerDown(listener: (Point) -> Unit) {
+        onPointerDown = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
+    }
+
+    fun setOnPointerUp(listener: (Point) -> Unit) {
+        onPointerUp = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+    }
+
+    fun setOnPointerEnter(listener: () -> Unit) {
+        onPointerEnter = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
+    }
+
+    fun setOnPointerLeave(listener: () -> Unit) {
+        onPointerLeave = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
+    }
+
+    fun setOnMouseWheel(listener: (Int) -> Unit) {
+        onMouseWheel = listener
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value)
     }
 
     fun setSize(size: Size) {
@@ -101,9 +148,46 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     }
 
     @SuppressWarnings("unused")
-    @JvmName("dispatchClickEvent")
-    internal fun dispatchClickEvent() {
-        onClick?.invoke()
+    @JvmName("dispatchPointerMove")
+    internal fun dispatchPointerMove(x: Float, y: Float) {
+        onPointerMove?.invoke(Point(x, y))
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchPointerDown")
+    internal fun dispatchPointerDown(x: Float, y: Float) {
+        isPressed = true
+        onPointerDown?.invoke(Point(x, y))
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchPointerUp")
+    internal fun dispatchPointerUp(x: Float, y: Float) {
+        onPointerUp?.invoke(Point(x, y))
+
+        if (isPressed && onPointerClick != null) {
+            onPointerClick!!.invoke()
+        }
+
+        isPressed = false
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchPointerEnter")
+    internal fun dispatchPointerEnter() {
+        onPointerEnter?.invoke()
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchPointerLeave")
+    internal fun dispatchPointerLeave() {
+        onPointerLeave?.invoke()
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchMouseWheel")
+    internal fun dispatchMouseWheel(delta: Int) {
+        onMouseWheel?.invoke(delta)
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {

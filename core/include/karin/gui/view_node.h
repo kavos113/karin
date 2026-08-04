@@ -58,7 +58,7 @@ public:
 
     enum class EventType : uint8_t
     {
-        PointerMove = 0,
+        PointerMove = 0, // TODO: moveに渡す座標はabsoluteかrelativeか
         PointerDown = 1,
         PointerUp = 2,
         PointerEnter = 3,
