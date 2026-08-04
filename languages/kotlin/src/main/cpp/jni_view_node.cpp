@@ -11,21 +11,34 @@ using namespace karin::gui;
 using namespace karin::jni;
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
-    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
+    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener, jint eventType, jstring handlerName, jstring handlerSignature)
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto callback = std::make_shared<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
+
+    const char *handlerNameChars = env->GetStringUTFChars(handlerName, nullptr);
+    if (handlerNameChars == nullptr)
+    {
+        return;
+    }
+
+    const char *handlerSignatureChars = env->GetStringUTFChars(handlerSignature, nullptr);
+    if (handlerSignatureChars == nullptr)
+    {
+        return;
+    }
 
     node->setPointerHandler(
-        [callback](karin::Point point, karin::MouseButtonType type, int delta)
+        static_cast<ViewNode::EventType>(eventType),
+        [target, handlerSignatureChars, handlerNameChars](karin::Point point, karin::MouseButtonType type, int delta)
         {
-            callback->invoke(
-                [](JNIEnv* env, jobject obj)
+            target->invoke(
+                [handlerSignatureChars, handlerNameChars](JNIEnv* env, jobject obj)
                 {
                     jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchClickEvent", "()V");
+                    jmethodID methodId = env->GetMethodID(listenerClass, handlerNameChars, handlerSignatureChars);
                     if (methodId)
                     {
                         env->CallVoidMethod(obj, methodId);
