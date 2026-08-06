@@ -443,4 +443,64 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
             setOnClickListener(handler ?: {})
         }
     }
+
+    event.onPointerMove?.let {
+        setOnPointerMove(it)
+    }
+
+    event.onPointerMoveState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerMove(handler ?: {})
+        }
+    }
+
+    event.onPointerDown?.let {
+        setOnPointerDown(it)
+    }
+
+    event.onPointerDownState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerDown(handler ?: {})
+        }
+    }
+
+    event.onPointerUp?.let {
+        setOnPointerUp(it)
+    }
+
+    event.onPointerUpState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerUp(handler ?: {})
+        }
+    }
+
+    event.onPointerEnter?.let {
+        setOnPointerEnter(it)
+    }
+
+    event.onPointerEnterState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerEnter(handler ?: {})
+        }
+    }
+
+    event.onPointerLeave?.let {
+        setOnPointerLeave(it)
+    }
+
+    event.onPointerLeaveState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerLeave(handler ?: {})
+        }
+    }
+
+    event.onMouseWheel?.let {
+        setOnMouseWheel(it)
+    }
+
+    event.onMouseWheelState?.let { state ->
+        state.onChange { handler ->
+            setOnMouseWheel(handler ?: {})
+        }
+    }
 }
