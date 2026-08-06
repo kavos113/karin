@@ -7,7 +7,7 @@ import com.github.kavos113.karin.ui.style.LineStyle
 import com.github.kavos113.karin.ui.style.Shadow
 
 @ConsistentCopyVisibility
-data class Style private constructor(
+data class Style internal constructor(
     val backgroundColor: Color? = null,
     val backgroundColorState: State<Color>? = null,
     val opacity: Float? = null,
