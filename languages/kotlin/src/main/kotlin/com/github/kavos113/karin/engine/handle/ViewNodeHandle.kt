@@ -43,6 +43,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onMouseWheel: ((Int) -> Unit)? = null
 
     private var isPressed = false
+    private var isHovered = false
 
     val ptr: Long
         get() {
@@ -176,12 +177,14 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
         onPointerEnter?.invoke()
+        isHovered = true
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
         onPointerLeave?.invoke()
+        isHovered = false
     }
 
     @SuppressWarnings("unused")
