@@ -46,8 +46,10 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onStartPress: (() -> Unit)? = null
     private var onEndPress: (() -> Unit)? = null
 
-    private var isPressed = false
-    private var isHovered = false
+    internal var isPressed = false
+        private set
+    internal var isHovered = false
+        private set
 
     val ptr: Long
         get() {
@@ -324,7 +326,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
+                if (isPressed && style.pressedStyle != null) {
+                    applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null))
+                } else {
+                    applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
+                }
                 requestRedraw()
             }
         )
@@ -336,7 +342,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
+                if (isHovered && style.hoverStyle != null) {
+                    applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null))
+                } else {
+                    applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
+                }
                 requestRedraw()
             }
         )
