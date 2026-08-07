@@ -18,10 +18,10 @@ extern "C" {
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setPointerListener
- * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;ILjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;I)V
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
-  (JNIEnv *, jclass, jlong, jobject, jint, jstring, jstring);
+  (JNIEnv *, jclass, jlong, jobject, jint);
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
