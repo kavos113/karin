@@ -13,11 +13,11 @@ data class Color(
         a / 255f
     )
 
-    constructor(rgba: Int) : this(
-        (rgba shr 24) and 0xFF,
-        (rgba shr 16) and 0xFF,
-        (rgba shr 8) and 0xFF,
-        rgba and 0xFF
+    constructor(rgba: Long) : this(
+        ((rgba shr 24) and 0xFF).toInt(),
+        ((rgba shr 16) and 0xFF).toInt(),
+        ((rgba shr 8) and 0xFF).toInt(),
+        (rgba and 0xFF).toInt()
     )
 
     companion object {
