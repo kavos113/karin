@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui.component
 
+import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.props.Event
@@ -43,6 +44,38 @@ fun UiBuilder.Button(
     layout: Layout = Layout.Default,
     event: Event = Event.Default,
     text: String = "",
+    textStyle: TextStyle = TextStyle(),
+    paragraphStyle: ParagraphStyle = ParagraphStyle(),
+    onClick: () -> Unit
+) {
+    val finalEvent = event.onClick(onClick)
+
+    var finalStyle: Style = style
+    if (style.backgroundColor == null) {
+        finalStyle = style
+            .background(BUTTON_COLOR)
+            .hover(Style.background(BUTTON_COLOR_HOVER))
+            .pressed(Style.background(BUTTON_COLOR_PRESS))
+    }
+
+    Box(
+        style = finalStyle,
+        layout = layout,
+        event = finalEvent,
+    ) {
+        Text(
+            text = text,
+            style = textStyle,
+            paragraphStyle = paragraphStyle
+        )
+    }
+}
+
+fun UiBuilder.Button(
+    style: Style = Style.Default,
+    layout: Layout = Layout.Default,
+    event: Event = Event.Default,
+    text: State<String> = State(""),
     textStyle: TextStyle = TextStyle(),
     paragraphStyle: ParagraphStyle = ParagraphStyle(),
     onClick: () -> Unit
