@@ -25,14 +25,16 @@ int main()
         karin::gui::ViewNode::EventType::PointerEnter,
         [&hoveredColor, &rect](karin::Point point, karin::MouseButtonType type, int delta)
         {
-            rect->setBackgroundColor(hoveredColor);
+            rect->setColor(hoveredColor);
+            rect->requestRedraw();
         }
     );
     rect->setPointerHandler(
         karin::gui::ViewNode::EventType::PointerLeave,
         [&rect, &color](karin::Point point, karin::MouseButtonType type, int delta)
         {
-            rect->setBackgroundColor(color);
+            rect->setColor(color);
+            rect->requestRedraw();
         }
     );
     rootView->addChild(rect.get());
