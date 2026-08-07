@@ -12,6 +12,8 @@ public:
     RectangleNode(Size size, Color color) : ContainerNode(size), m_color(color) {}
     ~RectangleNode() override = default;
 
+    void setColor(Color color);
+
 protected:
     void drawBackground(GraphicsContext& gc) const override;
 

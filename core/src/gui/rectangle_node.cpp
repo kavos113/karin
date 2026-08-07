@@ -2,6 +2,11 @@
 
 namespace karin::gui
 {
+void RectangleNode::setColor(Color color)
+{
+    m_color = color;
+}
+
 void RectangleNode::drawBackground(GraphicsContext& gc) const
 {
     Rectangle layout = getLayout();
