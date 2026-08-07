@@ -321,9 +321,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
         setHoverHandler(
             start = {
                 applyStyle(it)
+                requestRedraw()
             },
             end = {
                 applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
+                requestRedraw()
             }
         )
     }
@@ -331,9 +333,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
         setPressHandler(
             start = {
                 applyStyle(it)
+                requestRedraw()
             },
             end = {
                 applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
+                requestRedraw()
             }
         )
     }
