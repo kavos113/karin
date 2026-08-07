@@ -16,7 +16,7 @@ fun main() {
         Row(
             wrap = LayoutWrap.Wrap,
             gap = 10f,
-            layout = Layout.padding(10f)
+            layout = Layout.margin(all = 10f)
         ) {
             val count = State(0)
 
