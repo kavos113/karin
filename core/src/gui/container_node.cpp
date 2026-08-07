@@ -193,6 +193,15 @@ ViewNode* ContainerNode::hitTest(const Point& point, EventType type)
 
     if (!m_pointerHandlers[type].has_value())
     {
+        if (
+            type == EventType::PointerMove &&
+            (m_pointerHandlers[EventType::PointerEnter].has_value() ||
+            m_pointerHandlers[EventType::PointerLeave].has_value())
+        )
+        {
+            return this;
+        }
+
         return nullptr;
     }
 

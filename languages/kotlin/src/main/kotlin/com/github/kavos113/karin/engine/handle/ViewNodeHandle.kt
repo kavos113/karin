@@ -41,8 +41,13 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onPointerEnter: (() -> Unit)? = null
     private var onPointerLeave: (() -> Unit)? = null
     private var onMouseWheel: ((Int) -> Unit)? = null
+    private var onStartHover: (() -> Unit)? = null
+    private var onEndHover: (() -> Unit)? = null
+    private var onStartPress: (() -> Unit)? = null
+    private var onEndPress: (() -> Unit)? = null
 
     private var isPressed = false
+    private var isHovered = false
 
     val ptr: Long
         get() {
@@ -93,6 +98,20 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     fun setOnMouseWheel(listener: (Int) -> Unit) {
         onMouseWheel = listener
         JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value)
+    }
+
+    fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
+        onStartHover = start
+        onEndHover = end
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
+    }
+
+    fun setPressHandler(start: () -> Unit, end: () -> Unit) {
+        onStartPress = start
+        onEndPress = end
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
     }
 
     fun setSize(size: Size) {
@@ -158,6 +177,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     internal fun dispatchPointerDown(x: Float, y: Float) {
         isPressed = true
         onPointerDown?.invoke(Point(x, y))
+        onStartPress?.invoke()
     }
 
     @SuppressWarnings("unused")
@@ -170,18 +190,23 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         }
 
         isPressed = false
+        onEndPress?.invoke()
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
         onPointerEnter?.invoke()
+        onStartHover?.invoke()
+        isHovered = true
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
         onPointerLeave?.invoke()
+        onEndHover?.invoke()
+        isHovered = false
     }
 
     @SuppressWarnings("unused")
@@ -290,6 +315,31 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
             setShadow(shadow.offsetX, shadow.offsetY, shadow.color, shadow.blurRadius, shadow.spreadRadius)
             requestRedraw()
         }
+    }
+
+    style.hoverStyle?.let {
+        setHoverHandler(
+            start = {
+                applyStyle(it)
+                requestRedraw()
+            },
+            end = {
+                applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
+                requestRedraw()
+            }
+        )
+    }
+    style.pressedStyle?.let {
+        setPressHandler(
+            start = {
+                applyStyle(it)
+                requestRedraw()
+            },
+            end = {
+                applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
+                requestRedraw()
+            }
+        )
     }
 }
 
@@ -441,6 +491,66 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onClickState?.let { state ->
         state.onChange { handler ->
             setOnClickListener(handler ?: {})
+        }
+    }
+
+    event.onPointerMove?.let {
+        setOnPointerMove(it)
+    }
+
+    event.onPointerMoveState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerMove(handler ?: {})
+        }
+    }
+
+    event.onPointerDown?.let {
+        setOnPointerDown(it)
+    }
+
+    event.onPointerDownState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerDown(handler ?: {})
+        }
+    }
+
+    event.onPointerUp?.let {
+        setOnPointerUp(it)
+    }
+
+    event.onPointerUpState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerUp(handler ?: {})
+        }
+    }
+
+    event.onPointerEnter?.let {
+        setOnPointerEnter(it)
+    }
+
+    event.onPointerEnterState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerEnter(handler ?: {})
+        }
+    }
+
+    event.onPointerLeave?.let {
+        setOnPointerLeave(it)
+    }
+
+    event.onPointerLeaveState?.let { state ->
+        state.onChange { handler ->
+            setOnPointerLeave(handler ?: {})
+        }
+    }
+
+    event.onMouseWheel?.let {
+        setOnMouseWheel(it)
+    }
+
+    event.onMouseWheelState?.let { state ->
+        state.onChange { handler ->
+            setOnMouseWheel(handler ?: {})
         }
     }
 }
