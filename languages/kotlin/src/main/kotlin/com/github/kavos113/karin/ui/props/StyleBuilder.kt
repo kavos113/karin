@@ -122,7 +122,9 @@ class StyleBuilder {
             borderRight = borderRight,
             borderRightState = borderRightState,
             shadow = shadow,
-            shadowState = shadowState
+            shadowState = shadowState,
+            hoverStyle = hoverStyle?.build(),
+            pressedStyle = pressedStyle?.build()
         )
     }
 }

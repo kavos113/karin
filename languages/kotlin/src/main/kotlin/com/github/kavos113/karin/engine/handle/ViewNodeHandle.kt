@@ -41,6 +41,10 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onPointerEnter: (() -> Unit)? = null
     private var onPointerLeave: (() -> Unit)? = null
     private var onMouseWheel: ((Int) -> Unit)? = null
+    private var onStartHover: (() -> Unit)? = null
+    private var onEndHover: (() -> Unit)? = null
+    private var onStartPress: (() -> Unit)? = null
+    private var onEndPress: (() -> Unit)? = null
 
     private var isPressed = false
     private var isHovered = false
@@ -94,6 +98,20 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     fun setOnMouseWheel(listener: (Int) -> Unit) {
         onMouseWheel = listener
         JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value)
+    }
+
+    fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
+        onStartHover = start
+        onEndHover = end
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
+    }
+
+    fun setPressHandler(start: () -> Unit, end: () -> Unit) {
+        onStartPress = start
+        onEndPress = end
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
     }
 
     fun setSize(size: Size) {
@@ -159,6 +177,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     internal fun dispatchPointerDown(x: Float, y: Float) {
         isPressed = true
         onPointerDown?.invoke(Point(x, y))
+        onStartPress?.invoke()
     }
 
     @SuppressWarnings("unused")
@@ -171,12 +190,14 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         }
 
         isPressed = false
+        onEndPress?.invoke()
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
         onPointerEnter?.invoke()
+        onStartHover?.invoke()
         isHovered = true
     }
 
@@ -184,6 +205,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
         onPointerLeave?.invoke()
+        onEndHover?.invoke()
         isHovered = false
     }
 
@@ -293,6 +315,27 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
             setShadow(shadow.offsetX, shadow.offsetY, shadow.color, shadow.blurRadius, shadow.spreadRadius)
             requestRedraw()
         }
+    }
+
+    style.hoverStyle?.let {
+        setHoverHandler(
+            start = {
+                applyStyle(it)
+            },
+            end = {
+                applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
+            }
+        )
+    }
+    style.pressedStyle?.let {
+        setPressHandler(
+            start = {
+                applyStyle(it)
+            },
+            end = {
+                applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
+            }
+        )
     }
 }
 

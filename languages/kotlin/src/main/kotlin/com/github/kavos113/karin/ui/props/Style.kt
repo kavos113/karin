@@ -26,6 +26,9 @@ data class Style internal constructor(
 
     val shadow: Shadow? = null,
     val shadowState: State<Shadow>? = null,
+
+    val hoverStyle: Style? = null,
+    val pressedStyle: Style? = null,
 ) {
     fun background(color: Color) = copy(backgroundColor = color)
     fun background(state: State<Color>) = copy(backgroundColorState = state)
@@ -47,6 +50,9 @@ data class Style internal constructor(
     fun shadow(offsetX: Float, offsetY: Float, color: Color, blurRadius: Float = 0.0f, spreadRadius: Float = 0.0f) = copy(shadow = Shadow(offsetX, offsetY, color, blurRadius, spreadRadius))
     fun shadowState(state: State<Shadow>) = copy(shadowState = state)
 
+    fun hover(style: Style) = copy(hoverStyle = style)
+    fun pressed(style: Style) = copy(pressedStyle = style)
+
     companion object {
         val Default = Style()
 
@@ -66,5 +72,7 @@ data class Style internal constructor(
         fun borderRightState(state: State<Border>) = Style().borderRightState(state)
         fun shadow(offsetX: Float, offsetY: Float, color: Color, blurRadius: Float = 0.0f, spreadRadius: Float = 0.0f) = Style().shadow(offsetX, offsetY, color, blurRadius, spreadRadius)
         fun shadowState(state: State<Shadow>) = Style().shadowState(state)
+        fun hover(style: Style) = Style().hover(style)
+        fun pressed(style: Style) = Style().pressed(style)
     }
 }
