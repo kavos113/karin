@@ -18,17 +18,17 @@ int main()
 
     karin::Color activeColor = karin::Color(dis(gen), dis(gen), dis(gen));
     karin::Color color = karin::Color(dis(gen), dis(gen), dis(gen));
-    bool focus = false;
+    bool press = false;
     auto rect = std::make_unique<karin::gui::RectangleNode>(
         karin::Size(100, 100),
         color
     );
     rect->setPointerDownHandler(
-        [&activeColor, &rect, &focus, &color](karin::Point point, karin::MouseButtonType type)
+        [&activeColor, &rect, &press, &color](karin::Point point, karin::MouseButtonType type)
         {
-            focus = !focus;
+            press = !press;
 
-            if (focus)
+            if (press)
             {
                 rect->setColor(activeColor);
             }
