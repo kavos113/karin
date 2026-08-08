@@ -66,13 +66,6 @@ ViewNode::ViewNode()
     m_yogaNode = YGNodeNew();
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
-
-    m_pointerHandlers[EventType::PointerMove] = std::nullopt;
-    m_pointerHandlers[EventType::PointerDown] = std::nullopt;
-    m_pointerHandlers[EventType::PointerUp] = std::nullopt;
-    m_pointerHandlers[EventType::PointerEnter] = std::nullopt;
-    m_pointerHandlers[EventType::PointerLeave] = std::nullopt;
-    m_pointerHandlers[EventType::MouseWheel] = std::nullopt;
 }
 
 ViewNode::ViewNode(Size size)
@@ -82,13 +75,6 @@ ViewNode::ViewNode(Size size)
     YGNodeStyleSetHeight(m_yogaNode, size.height);
 
     m_borders.fill({ 0.0f, Color(), NodeBorder::LineStyle::None });
-
-    m_pointerHandlers[EventType::PointerMove] = std::nullopt;
-    m_pointerHandlers[EventType::PointerDown] = std::nullopt;
-    m_pointerHandlers[EventType::PointerUp] = std::nullopt;
-    m_pointerHandlers[EventType::PointerEnter] = std::nullopt;
-    m_pointerHandlers[EventType::PointerLeave] = std::nullopt;
-    m_pointerHandlers[EventType::MouseWheel] = std::nullopt;
 }
 
 ViewNode::~ViewNode()
@@ -175,28 +161,28 @@ void ViewNode::requestRedraw() const
     }
 }
 
-void ViewNode::setSize(Size size)
+void ViewNode::setSize(Size size) const
 {
     YGNodeStyleSetWidth(m_yogaNode, size.width);
     YGNodeStyleSetHeight(m_yogaNode, size.height);
 }
 
-void ViewNode::setWidth(float width)
+void ViewNode::setWidth(float width) const
 {
     YGNodeStyleSetWidth(m_yogaNode, width);
 }
 
-void ViewNode::setHeight(float height)
+void ViewNode::setHeight(float height) const
 {
     YGNodeStyleSetHeight(m_yogaNode, height);
 }
 
-void ViewNode::setMargin(Side side, float margin)
+void ViewNode::setMargin(Side side, float margin) const
 {
     YGNodeStyleSetMargin(m_yogaNode, toYogaEdge(side), margin);
 }
 
-void ViewNode::setPadding(Side side, float padding)
+void ViewNode::setPadding(Side side, float padding) const
 {
     YGNodeStyleSetPadding(m_yogaNode, toYogaEdge(side), padding);
 }
@@ -256,17 +242,87 @@ YGNodeRef ViewNode::getYogaNode() const
     return m_yogaNode;
 }
 
-void ViewNode::setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func)
+void ViewNode::setPointerMoveHandler(std::function<void(Point)> func)
 {
-    m_pointerHandlers[type] = std::move(func);
+    m_pointerMoveHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
 }
 
-void ViewNode::triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta)
+void ViewNode::setPointerDownHandler(std::function<void(Point, MouseButtonType)> func)
 {
-    auto handler = m_pointerHandlers[type];
-    if (handler.has_value())
+    m_pointerDownHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerDown));
+}
+
+void ViewNode::setPointerUpHandler(std::function<void(Point, MouseButtonType)> func)
+{
+    m_pointerUpHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerUp));
+}
+
+void ViewNode::setPointerEnterHandler(std::function<void(Point)> func)
+{
+    m_pointerEnterHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+}
+
+void ViewNode::setPointerLeaveHandler(std::function<void(Point)> func)
+{
+    m_pointerLeaveHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+}
+
+void ViewNode::setMouseWheelHandler(std::function<void(Point, int)> func)
+{
+    m_mouseWheelHandler = std::move(func);
+    m_enableHandlers.set(static_cast<size_t>(EventType::MouseWheel));
+}
+
+void ViewNode::triggerPointerMoveHandler(Point point) const
+{
+    if (m_pointerMoveHandler)
     {
-        handler.value()(point, buttonType, delta);
+        m_pointerMoveHandler(point);
+    }
+}
+
+void ViewNode::triggerPointerDownHandler(Point point, MouseButtonType type) const
+{
+    if (m_pointerDownHandler)
+    {
+        m_pointerDownHandler(point, type);
+    }
+}
+
+void ViewNode::triggerPointerUpHandler(Point point, MouseButtonType type) const
+{
+    if (m_pointerUpHandler)
+    {
+        m_pointerUpHandler(point, type);
+    }
+}
+
+void ViewNode::triggerPointerEnterHandler(Point point) const
+{
+    if (m_pointerEnterHandler)
+    {
+        m_pointerEnterHandler(point);
+    }
+}
+
+void ViewNode::triggerPointerLeaveHandler(Point point) const
+{
+    if (m_pointerLeaveHandler)
+    {
+        m_pointerLeaveHandler(point);
+    }
+}
+
+void ViewNode::triggerMouseWheelHandler(Point point, int delta) const
+{
+    if (m_mouseWheelHandler)
+    {
+        m_mouseWheelHandler(point, delta);
     }
 }
 
@@ -373,7 +429,7 @@ ViewNode* ViewNode::hitTest(const Point& point, EventType type)
         return nullptr;
     }
 
-    if (!m_pointerHandlers[type].has_value())
+    if (!m_enableHandlers[static_cast<size_t>(type)])
     {
         return nullptr;
     }

@@ -46,18 +46,18 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
     ViewNode* target = m_rootView->hitTest(point, PointerMove);
     if (target)
     {
-        target->triggerPointerHandler(PointerMove, point, MouseButtonType::Left, 0);
+        target->triggerPointerMoveHandler(point);
     }
 
     if (target && m_hoveredNode != target)
     {
         m_hoveredNode = target;
-        target->triggerPointerHandler(PointerEnter, point, MouseButtonType::Left, 0);
+        target->triggerPointerEnterHandler(point);
     }
 
     if (m_hoveredNode && m_hoveredNode != target)
     {
-        m_hoveredNode->triggerPointerHandler(PointerLeave, point, MouseButtonType::Left, 0);
+        m_hoveredNode->triggerPointerLeaveHandler(point);
         m_hoveredNode = target;
     }
 }
@@ -92,7 +92,15 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
         {
             m_focusNode = nullptr;
         }
-        target->triggerPointerHandler(type, point, event.button, 0);
+
+        if (type == PointerDown)
+        {
+            target->triggerPointerDownHandler(point, event.button);
+        }
+        else
+        {
+            target->triggerPointerUpHandler(point, event.button);
+        }
     }
     else
     {
@@ -109,7 +117,7 @@ void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
     ViewNode* target = m_rootView->hitTest(point, MouseWheel);
     if (target)
     {
-        target->triggerPointerHandler(MouseWheel, point, MouseButtonType::Left, event.delta);
+        target->triggerMouseWheelHandler(point, event.delta);
     }
 }
 } // karin::gui

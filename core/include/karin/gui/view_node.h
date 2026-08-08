@@ -2,6 +2,7 @@
 #define KARIN_GUI_VIEW_NODE_H
 
 #include <array>
+#include <bitset>
 #include <functional>
 #include <optional>
 #include <vector>
@@ -61,9 +62,7 @@ public:
         PointerMove = 0, // TODO: moveに渡す座標はabsoluteかrelativeか
         PointerDown = 1,
         PointerUp = 2,
-        PointerEnter = 3,
-        PointerLeave = 4,
-        MouseWheel = 5,
+        MouseWheel = 3,
     };
 
     ViewNode();
@@ -90,11 +89,11 @@ public:
     void requestRelayout() const;
     void requestRedraw() const;
 
-    void setSize(Size size);
-    void setWidth(float width);
-    void setHeight(float height);
-    void setMargin(Side side, float margin);
-    void setPadding(Side side, float padding);
+    void setSize(Size size) const;
+    void setWidth(float width) const;
+    void setHeight(float height) const;
+    void setMargin(Side side, float margin) const;
+    void setPadding(Side side, float padding) const;
     void setBorder(Side side, float width, Color color, NodeBorder::LineStyle style);
     void setBackgroundColor(Color color);
     void setOpacity(float opacity);
@@ -102,10 +101,22 @@ public:
 
     YGNodeRef getYogaNode() const;
 
-    void setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func);
-    void triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta);
     bool isFocusable() const;
     void setFocusable(bool isFocusable);
+
+    void setPointerMoveHandler(std::function<void(Point)> func);
+    void setPointerDownHandler(std::function<void(Point, MouseButtonType)> func);
+    void setPointerUpHandler(std::function<void(Point, MouseButtonType)> func);
+    void setPointerEnterHandler(std::function<void(Point)> func);
+    void setPointerLeaveHandler(std::function<void(Point)> func);
+    void setMouseWheelHandler(std::function<void(Point, int)> func);
+
+    void triggerPointerMoveHandler(Point point) const;
+    void triggerPointerDownHandler(Point point, MouseButtonType type) const;
+    void triggerPointerUpHandler(Point point, MouseButtonType type) const;
+    void triggerPointerEnterHandler(Point point) const;
+    void triggerPointerLeaveHandler(Point point) const;
+    void triggerMouseWheelHandler(Point point, int delta) const;
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
@@ -113,10 +124,8 @@ protected:
 
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
-    std::unordered_map<
-        EventType,
-        std::optional<std::function<void(Point, MouseButtonType, int)>>
-    > m_pointerHandlers;
+
+    std::bitset<4> m_enableHandlers{0};
 
 private:
     void drawBorder(GraphicsContext& gc) const;
@@ -129,6 +138,13 @@ private:
 
     float m_opacity = 1.0f;
     bool m_isFocusable = false;
+
+    std::function<void(Point)> m_pointerMoveHandler = nullptr;
+    std::function<void(Point, MouseButtonType)> m_pointerDownHandler = nullptr;
+    std::function<void(Point, MouseButtonType)> m_pointerUpHandler = nullptr;
+    std::function<void(Point)> m_pointerEnterHandler = nullptr;
+    std::function<void(Point)> m_pointerLeaveHandler = nullptr;
+    std::function<void(Point, int)> m_mouseWheelHandler = nullptr;
 };
 } // karin
 
