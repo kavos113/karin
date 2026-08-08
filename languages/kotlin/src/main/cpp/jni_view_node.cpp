@@ -202,7 +202,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto target = std::make_unique<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
     node->setPointerDownHandler(
         [target](karin::Point point, karin::MouseButtonType type)
@@ -230,7 +230,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto target = std::make_unique<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
     node->setPointerUpHandler(
         [target](karin::Point point, karin::MouseButtonType type)
@@ -258,7 +258,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto target = std::make_unique<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
     node->setPointerEnterHandler(
         [target](karin::Point point)
@@ -286,7 +286,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto target = std::make_unique<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
     node->setPointerLeaveHandler(
         [target](karin::Point point)
@@ -314,7 +314,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    auto target = std::make_unique<JniGlobalRef>(env, listener);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
 
     node->setMouseWheelHandler(
         [target](karin::Point point, int delta)
