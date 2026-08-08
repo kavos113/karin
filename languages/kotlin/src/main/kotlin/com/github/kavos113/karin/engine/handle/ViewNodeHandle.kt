@@ -25,15 +25,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         All(6);
     }
 
-    enum class EventType(val value: Int) {
-        PointerMove(0),
-        PointerDown(1),
-        PointerUp(2),
-        PointerEnter(3),
-        PointerLeave(4),
-        MouseWheel(5);
-    }
-
     private var onPointerClick: (() -> Unit)? = null
     private var onPointerMove: ((Point) -> Unit)? = null
     private var onPointerDown: ((Point) -> Unit)? = null
