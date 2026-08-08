@@ -7,7 +7,6 @@ class JniViewNode {
         KarinLoader.load();
     }
 
-    static native void setPointerListener(long nodePtr, ViewNodeHandle node, int eventType);
     static native void setSize(long nodePtr, float width, float height);
     static native void setWidth(long nodePtr, float width);
     static native void setHeight(long nodePtr, float height);
@@ -29,6 +28,13 @@ class JniViewNode {
 
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);
+
+    static native void setPointerMoveListener(long nodePtr, ViewNodeHandle target);
+    static native void setPointerDownListener(long nodePtr, ViewNodeHandle target);
+    static native void setPointerUpListener(long nodePtr, ViewNodeHandle target);
+    static native void setPointerEnterListener(long nodePtr, ViewNodeHandle target);
+    static native void setPointerLeaveListener(long nodePtr, ViewNodeHandle target);
+    static native void setMouseWheelListener(long nodePtr, ViewNodeHandle target);
 
     static native void destroy(long nodePtr);
 }

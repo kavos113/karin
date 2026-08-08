@@ -32,6 +32,14 @@ void EventDispatcher::dispatchEvent(const Event& event)
             {
                 handleMouseWheelEvent(e);
             }
+            else if constexpr (std::is_same_v<T, KeyEvent>)
+            {
+                handleKeyEvent(e);
+            }
+            else if constexpr (std::is_same_v<T, KeyTypeEvent>)
+            {
+                handleKeyTypeEvent(e);
+            }
         },
         event
     );
@@ -39,65 +47,84 @@ void EventDispatcher::dispatchEvent(const Event& event)
 
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
-    ViewNode* target = m_rootView->hitTest(point, PointerMove);
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerMove);
     if (target)
     {
-        target->triggerPointerHandler(PointerMove, point, MouseButtonType::Left, 0);
+        target->triggerPointerMoveHandler(point);
     }
 
     if (target && m_hoveredNode != target)
     {
         m_hoveredNode = target;
-        target->triggerPointerHandler(PointerEnter, point, MouseButtonType::Left, 0);
+        target->triggerPointerEnterHandler(point);
     }
 
     if (m_hoveredNode && m_hoveredNode != target)
     {
-        m_hoveredNode->triggerPointerHandler(PointerLeave, point, MouseButtonType::Left, 0);
+        m_hoveredNode->triggerPointerLeaveHandler(point);
         m_hoveredNode = target;
     }
 }
 
-void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event) const
+void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
-    auto type = PointerUp;
 
-    switch (event.type)
-    {
-    case MouseButtonEvent::Type::ButtonPress_:
-        type = PointerDown;
-        break;
-
-    case MouseButtonEvent::Type::ButtonRelease_:
-        type = PointerUp;
-        break;
-    }
-
-    ViewNode* target = m_rootView->hitTest(point, type);
-
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerClick);
     if (target)
     {
-        target->triggerPointerHandler(type, point, event.button, 0);
+        if (target->isFocusable())
+        {
+            m_focusNode = target;
+        }
+        else
+        {
+            m_focusNode = nullptr;
+        }
+
+        switch (event.type)
+        {
+        case MouseButtonEvent::Type::ButtonPress_:
+            target->triggerPointerDownHandler(point, event.button);
+            break;
+
+        case MouseButtonEvent::Type::ButtonRelease_:
+            target->triggerPointerUpHandler(point, event.button);
+            break;
+        }
+    }
+    else
+    {
+        m_focusNode = nullptr;
     }
 }
 
 void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
-    ViewNode* target = m_rootView->hitTest(point, MouseWheel);
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::MouseWheel);
     if (target)
     {
-        target->triggerPointerHandler(MouseWheel, point, MouseButtonType::Left, event.delta);
+        target->triggerMouseWheelHandler(point, event.delta);
+    }
+}
+
+void EventDispatcher::handleKeyEvent(const KeyEvent& event) const
+{
+    if (m_focusNode)
+    {
+        m_focusNode->triggerKeyHandler(event);
+    }
+}
+
+void EventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
+{
+    if (m_focusNode)
+    {
+        m_focusNode->triggerKeyTypeHandler(event.character);
     }
 }
 } // karin::gui

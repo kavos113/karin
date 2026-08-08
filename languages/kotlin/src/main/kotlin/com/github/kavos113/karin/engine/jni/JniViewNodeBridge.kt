@@ -3,7 +3,6 @@ package com.github.kavos113.karin.engine.jni
 import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 
 internal object JniViewNodeBridge {
-    fun setPointerListener(nodePtr: Long, node: ViewNodeHandle, eventType: Int) = JniViewNode.setPointerListener(nodePtr, node, eventType)
     fun setSize(nodePtr: Long, width: Float, height: Float) = JniViewNode.setSize(nodePtr, width, height)
     fun setWidth(nodePtr: Long, width: Float) = JniViewNode.setWidth(nodePtr, width)
     fun setHeight(nodePtr: Long, height: Float) = JniViewNode.setHeight(nodePtr, height)
@@ -25,6 +24,13 @@ internal object JniViewNodeBridge {
 
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
+
+    fun setPointerMoveHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerMoveListener(nodePtr, target)
+    fun setPointerDownHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerDownListener(nodePtr, target)
+    fun setPointerUpHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerUpListener(nodePtr, target)
+    fun setPointerEnterHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerEnterListener(nodePtr, target)
+    fun setPointerLeaveHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerLeaveListener(nodePtr, target)
+    fun setMouseWheelHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setMouseWheelListener(nodePtr, target)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }

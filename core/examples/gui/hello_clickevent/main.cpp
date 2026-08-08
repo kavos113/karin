@@ -59,9 +59,8 @@ int main()
     bigRect->setGap(5.0f);
     bigRect->setWrapMode(karin::gui::ContainerNode::WrapMode::Wrap);
     bigRect->setPadding(karin::gui::ViewNode::Side::All, 10.0f);
-    bigRect->setPointerHandler(
-        karin::gui::ViewNode::EventType::PointerUp,
-        [](karin::Point point, karin::MouseButtonType type, int delta)
+    bigRect->setPointerDownHandler(
+        [](karin::Point point, karin::MouseButtonType type)
         {
             std::cout << "big rect is clicked at: " << point << ", button: " << formatMouseButtonType(type) << std::endl;
         }

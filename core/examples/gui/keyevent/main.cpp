@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <random>
+#include <iostream>
 
 int main()
 {
@@ -15,26 +16,37 @@ int main()
 
     auto rootView = std::make_unique<karin::gui::ContainerNode>(karin::Size(800, 600));
 
-    karin::Color hoveredColor = karin::Color(dis(gen), dis(gen), dis(gen));
+    karin::Color activeColor = karin::Color(dis(gen), dis(gen), dis(gen));
     karin::Color color = karin::Color(dis(gen), dis(gen), dis(gen));
+    bool press = false;
     auto rect = std::make_unique<karin::gui::RectangleNode>(
         karin::Size(100, 100),
         color
     );
-    rect->setPointerEnterHandler(
-        [&hoveredColor, &rect](karin::Point point)
+    rect->setPointerDownHandler(
+        [&activeColor, &rect, &press, &color](karin::Point point, karin::MouseButtonType type)
         {
-            rect->setColor(hoveredColor);
+            press = !press;
+
+            if (press)
+            {
+                rect->setColor(activeColor);
+            }
+            else
+            {
+                rect->setColor(color);
+            }
+
             rect->requestRedraw();
         }
     );
-    rect->setPointerLeaveHandler(
-        [&rect, &color](karin::Point point)
+    rect->setKeyTypeHandler(
+        [](const std::string& character)
         {
-            rect->setColor(color);
-            rect->requestRedraw();
+            std::cout << "[KEY] " << character << std::endl;
         }
     );
+    rect->setFocusable(true);
     rootView->addChild(rect.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);

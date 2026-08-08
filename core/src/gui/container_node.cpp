@@ -191,17 +191,8 @@ ViewNode* ContainerNode::hitTest(const Point& point, EventType type)
         }
     }
 
-    if (!m_pointerHandlers[type].has_value())
+    if (!m_enableHandlers[static_cast<size_t>(type)])
     {
-        if (
-            type == EventType::PointerMove &&
-            (m_pointerHandlers[EventType::PointerEnter].has_value() ||
-            m_pointerHandlers[EventType::PointerLeave].has_value())
-        )
-        {
-            return this;
-        }
-
         return nullptr;
     }
 
