@@ -70,24 +70,9 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 
 void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
-    auto type = PointerUp;
 
-    switch (event.type)
-    {
-    case MouseButtonEvent::Type::ButtonPress_:
-        type = PointerDown;
-        break;
-
-    case MouseButtonEvent::Type::ButtonRelease_:
-        type = PointerUp;
-        break;
-    }
-
-    ViewNode* target = m_rootView->hitTest(point, type);
-
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerClick);
     if (target)
     {
         if (target->isFocusable())
@@ -99,13 +84,15 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
             m_focusNode = nullptr;
         }
 
-        if (type == PointerDown)
+        switch (event.type)
         {
+        case MouseButtonEvent::Type::ButtonPress_:
             target->triggerPointerDownHandler(point, event.button);
-        }
-        else
-        {
+            break;
+
+        case MouseButtonEvent::Type::ButtonRelease_:
             target->triggerPointerUpHandler(point, event.button);
+            break;
         }
     }
     else

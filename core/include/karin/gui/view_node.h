@@ -5,7 +5,6 @@
 #include <bitset>
 #include <functional>
 #include <optional>
-#include <vector>
 
 #include <yoga/Yoga.h>
 
@@ -60,9 +59,8 @@ public:
     enum class EventType : uint8_t
     {
         PointerMove = 0, // TODO: moveに渡す座標はabsoluteかrelativeか
-        PointerDown = 1,
-        PointerUp = 2,
-        MouseWheel = 3,
+        PointerClick = 1, // up / down
+        MouseWheel = 2,
     };
 
     ViewNode();
@@ -129,7 +127,7 @@ protected:
     YGNodeRef m_yogaNode;
     Window *m_window = nullptr;
 
-    std::bitset<4> m_enableHandlers{0};
+    std::bitset<3> m_enableHandlers{0};
 
 private:
     void drawBorder(GraphicsContext& gc) const;

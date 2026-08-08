@@ -251,13 +251,13 @@ void ViewNode::setPointerMoveHandler(std::function<void(Point)> func)
 void ViewNode::setPointerDownHandler(std::function<void(Point, MouseButtonType)> func)
 {
     m_pointerDownHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerDown));
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
 }
 
 void ViewNode::setPointerUpHandler(std::function<void(Point, MouseButtonType)> func)
 {
     m_pointerUpHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerUp));
+    m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
 }
 
 void ViewNode::setPointerEnterHandler(std::function<void(Point)> func)
