@@ -17,14 +17,6 @@ extern "C" {
 #define com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM 8L
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
- * Method:    setPointerListener
- * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;I)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerListener
-  (JNIEnv *, jclass, jlong, jobject, jint);
-
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setSize
  * Signature: (JFF)V
  */
@@ -126,6 +118,54 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_req
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRedraw
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPointerMoveListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerMoveListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPointerDownListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerDownListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPointerUpListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerUpListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPointerEnterListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerEnterListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setPointerLeaveListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerLeaveListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setMouseWheelListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMouseWheelListener
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode

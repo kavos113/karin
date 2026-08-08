@@ -69,51 +69,51 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     fun setOnClickListener(listener: () -> Unit) {
         onPointerClick = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+        JniViewNodeBridge.setPointerUpHandler(ptr, this)
     }
 
     fun setOnPointerMove(listener: (Point) -> Unit) {
         onPointerMove = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerMove.value)
+        JniViewNodeBridge.setPointerMoveHandler(ptr, this)
     }
 
     fun setOnPointerDown(listener: (Point) -> Unit) {
         onPointerDown = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
+        JniViewNodeBridge.setPointerDownHandler(ptr, this)
     }
 
     fun setOnPointerUp(listener: (Point) -> Unit) {
         onPointerUp = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
+        JniViewNodeBridge.setPointerUpHandler(ptr, this)
     }
 
     fun setOnPointerEnter(listener: () -> Unit) {
         onPointerEnter = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
+        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
     }
 
     fun setOnPointerLeave(listener: () -> Unit) {
         onPointerLeave = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
+        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
     }
 
     fun setOnMouseWheel(listener: (Int) -> Unit) {
         onMouseWheel = listener
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.MouseWheel.value)
+        JniViewNodeBridge.setMouseWheelHandler(ptr, this)
     }
 
     fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
         onStartHover = start
         onEndHover = end
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerEnter.value)
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerLeave.value)
+        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
+        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
     }
 
     fun setPressHandler(start: () -> Unit, end: () -> Unit) {
         onStartPress = start
         onEndPress = end
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerUp.value)
-        JniViewNodeBridge.setPointerListener(ptr, this, EventType.PointerDown.value)
+        JniViewNodeBridge.setPointerUpHandler(ptr, this)
+        JniViewNodeBridge.setPointerDownHandler(ptr, this)
     }
 
     fun setSize(size: Size) {
