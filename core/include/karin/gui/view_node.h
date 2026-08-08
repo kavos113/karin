@@ -110,6 +110,8 @@ public:
     void setPointerEnterHandler(std::function<void(Point)> func);
     void setPointerLeaveHandler(std::function<void(Point)> func);
     void setMouseWheelHandler(std::function<void(Point, int)> func);
+    void setKeyHandler(std::function<void(KeyEvent)> func);
+    void setKeyTypeHandler(std::function<void(std::string)> func);
 
     void triggerPointerMoveHandler(Point point) const;
     void triggerPointerDownHandler(Point point, MouseButtonType type) const;
@@ -117,6 +119,8 @@ public:
     void triggerPointerEnterHandler(Point point) const;
     void triggerPointerLeaveHandler(Point point) const;
     void triggerMouseWheelHandler(Point point, int delta) const;
+    void triggerKeyHandler(KeyEvent key) const;
+    void triggerKeyTypeHandler(std::string c) const;
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
@@ -145,6 +149,8 @@ private:
     std::function<void(Point)> m_pointerEnterHandler = nullptr;
     std::function<void(Point)> m_pointerLeaveHandler = nullptr;
     std::function<void(Point, int)> m_mouseWheelHandler = nullptr;
+    std::function<void(KeyEvent)> m_keyHandler = nullptr;
+    std::function<void(std::string)> m_keyTypeHandler = nullptr;
 };
 } // karin
 

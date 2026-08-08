@@ -278,6 +278,16 @@ void ViewNode::setMouseWheelHandler(std::function<void(Point, int)> func)
     m_enableHandlers.set(static_cast<size_t>(EventType::MouseWheel));
 }
 
+void ViewNode::setKeyHandler(std::function<void(KeyEvent)> func)
+{
+    m_keyHandler = std::move(func);
+}
+
+void ViewNode::setKeyTypeHandler(std::function<void(std::string)> func)
+{
+    m_keyTypeHandler = std::move(func);
+}
+
 void ViewNode::triggerPointerMoveHandler(Point point) const
 {
     if (m_pointerMoveHandler)
@@ -323,6 +333,22 @@ void ViewNode::triggerMouseWheelHandler(Point point, int delta) const
     if (m_mouseWheelHandler)
     {
         m_mouseWheelHandler(point, delta);
+    }
+}
+
+void ViewNode::triggerKeyHandler(KeyEvent key) const
+{
+    if (m_keyHandler)
+    {
+        m_keyHandler(key);
+    }
+}
+
+void ViewNode::triggerKeyTypeHandler(std::string c) const
+{
+    if (m_keyTypeHandler)
+    {
+        m_keyTypeHandler(c);
     }
 }
 

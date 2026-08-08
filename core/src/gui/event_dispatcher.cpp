@@ -32,6 +32,14 @@ void EventDispatcher::dispatchEvent(const Event& event)
             {
                 handleMouseWheelEvent(e);
             }
+            else if constexpr (std::is_same_v<T, KeyEvent>)
+            {
+                handleKeyEvent(e);
+            }
+            else if constexpr (std::is_same_v<T, KeyTypeEvent>)
+            {
+                handleKeyTypeEvent(e);
+            }
         },
         event
     );
@@ -39,11 +47,9 @@ void EventDispatcher::dispatchEvent(const Event& event)
 
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
-    ViewNode* target = m_rootView->hitTest(point, PointerMove);
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerMove);
     if (target)
     {
         target->triggerPointerMoveHandler(point);
@@ -110,14 +116,28 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 
 void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
 {
-    using enum ViewNode::EventType;
-
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
-    ViewNode* target = m_rootView->hitTest(point, MouseWheel);
+    ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::MouseWheel);
     if (target)
     {
         target->triggerMouseWheelHandler(point, event.delta);
+    }
+}
+
+void EventDispatcher::handleKeyEvent(const KeyEvent& event) const
+{
+    if (m_focusNode)
+    {
+        m_focusNode->triggerKeyHandler(event);
+    }
+}
+
+void EventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
+{
+    if (m_focusNode)
+    {
+        m_focusNode->triggerKeyTypeHandler(event.character);
     }
 }
 } // karin::gui
