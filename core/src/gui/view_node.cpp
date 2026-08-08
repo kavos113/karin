@@ -270,6 +270,16 @@ void ViewNode::triggerPointerHandler(EventType type, Point point, MouseButtonTyp
     }
 }
 
+bool ViewNode::isFocusable() const
+{
+    return m_isFocusable;
+}
+
+void ViewNode::setFocusable(bool isFocusable)
+{
+    m_isFocusable = isFocusable;
+}
+
 bool ViewNode::needLayer() const
 {
     return m_opacity < 1.0f;

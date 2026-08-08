@@ -62,7 +62,7 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
     }
 }
 
-void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event) const
+void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
     using enum ViewNode::EventType;
 
@@ -84,7 +84,19 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event) cons
 
     if (target)
     {
+        if (target->isFocusable())
+        {
+            m_focusNode = target;
+        }
+        else
+        {
+            m_focusNode = nullptr;
+        }
         target->triggerPointerHandler(type, point, event.button, 0);
+    }
+    else
+    {
+        m_focusNode = nullptr;
     }
 }
 

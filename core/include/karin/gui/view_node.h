@@ -104,6 +104,8 @@ public:
 
     void setPointerHandler(EventType type, std::function<void(Point, MouseButtonType, int)> func);
     void triggerPointerHandler(EventType type, Point point, MouseButtonType buttonType, int delta);
+    bool isFocusable() const;
+    void setFocusable(bool isFocusable);
 
 protected:
     virtual void drawInternal(GraphicsContext& gc) const = 0;
@@ -126,6 +128,7 @@ private:
     std::optional<ShadowParams> m_shadow = std::nullopt;
 
     float m_opacity = 1.0f;
+    bool m_isFocusable = false;
 };
 } // karin
 
