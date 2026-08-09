@@ -24,6 +24,11 @@ class WindowTest {
         every {
             JniApplicationBridge.createWindow(any(), any(), any(), any(), any(), any())
         } returns 456L
+
+        mockkObject(JniContainerNodeBridge)
+        every {
+            JniContainerNodeBridge.create()
+        } returns 789L
     }
 
     @AfterEach
@@ -58,11 +63,6 @@ class WindowTest {
         every {
             JniWindowBridge.setRootView(any(), any())
         } just runs
-
-        mockkObject(JniContainerNodeBridge)
-        every {
-            JniContainerNodeBridge.create()
-        } returns 789L
 
         val window = Window(
             title = "Test Window",
