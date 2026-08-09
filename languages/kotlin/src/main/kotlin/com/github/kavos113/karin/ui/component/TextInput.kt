@@ -41,7 +41,7 @@ fun UiBuilder.TextInput(
         style
     }
 
-    val finalEvent = event.onKeyDown {
+    val finalEvent = event.onKeyType {
         text.value += it
         println("current text: ${text.value}")
     }

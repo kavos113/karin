@@ -715,6 +715,8 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyDown?.let {
         setOnKeyDown(it)
         setIsFocusable(true)
+        enablePointerDownHandler()
+        enablePointerUpHandler()
     }
 
     event.onKeyDownState?.let { state ->
@@ -728,6 +730,8 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyUp?.let {
         setOnKeyUp(it)
         setIsFocusable(true)
+        enablePointerDownHandler()
+        enablePointerUpHandler()
     }
 
     event.onKeyUpState?.let { state ->
@@ -741,6 +745,8 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyType?.let {
         setOnKeyType(it)
         setIsFocusable(true)
+        enablePointerDownHandler()
+        enablePointerUpHandler()
     }
 
     event.onKeyTypeState?.let { state ->
