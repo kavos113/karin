@@ -118,6 +118,10 @@ void EventDispatcher::handleKeyEvent(const KeyEvent& event) const
     {
         m_focusNode->triggerKeyHandler(event);
     }
+    else
+    {
+        m_rootView->triggerKeyHandler(event);
+    }
 }
 
 void EventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
@@ -125,6 +129,10 @@ void EventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
     if (m_focusNode)
     {
         m_focusNode->triggerKeyTypeHandler(event.character);
+    }
+    else
+    {
+        m_rootView->triggerKeyTypeHandler(event.character);
     }
 }
 } // karin::gui
