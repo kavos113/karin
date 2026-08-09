@@ -93,8 +93,8 @@ struct KeyEvent
     enum struct Modifier : uint8_t;
     enum struct Type
     {
-        KeyPress_,
-        KeyRelease_,
+        KeyPress_ = 0,
+        KeyRelease_ = 1,
     };
 
     Type type;
