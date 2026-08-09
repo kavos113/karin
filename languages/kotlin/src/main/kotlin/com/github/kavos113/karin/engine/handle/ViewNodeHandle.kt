@@ -6,6 +6,7 @@ import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
 import com.github.kavos113.karin.ui.event.Key
+import com.github.kavos113.karin.ui.event.KeyEvent
 import com.github.kavos113.karin.ui.event.KeyEventType
 import com.github.kavos113.karin.ui.event.KeyModifierMask
 import com.github.kavos113.karin.ui.props.Event
@@ -39,7 +40,8 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onEndHover: (() -> Unit)? = null
     private var onStartPress: (() -> Unit)? = null
     private var onEndPress: (() -> Unit)? = null
-    private var onKeyEvent: ((KeyEventType, Key, Key, KeyModifierMask) -> Unit)? = null
+    private var onKeyDown: ((KeyEvent) -> Unit)? = null
+    private var onKeyUp: ((KeyEvent) -> Unit)? = null
     private var onKeyType: ((String) -> Unit)? = null
 
     internal var isPressed = false
@@ -112,8 +114,13 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         JniViewNodeBridge.setPointerDownHandler(ptr, this)
     }
 
-    fun setKeyEventHandler(listener: (KeyEventType, Key, Key, KeyModifierMask) -> Unit) {
-        onKeyEvent = listener
+    fun setKeyDownHandler(listener: (KeyEvent) -> Unit) {
+        onKeyDown = listener
+        JniViewNodeBridge.setKeyListener(ptr, this)
+    }
+
+    fun setKeyUpHandler(listener: (KeyEvent) -> Unit) {
+        onKeyUp = listener
         JniViewNodeBridge.setKeyListener(ptr, this)
     }
 
@@ -226,12 +233,20 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     @SuppressWarnings("unused")
     @JvmName("dispatchKeyEvent")
     internal fun dispatchKeyEvent(type: Int, keyCode: Int, scanCode: Int, modifier: Int) {
-        onKeyEvent?.invoke(
-            KeyEventType.fromInt(type),
-            Key.fromInt(keyCode),
-            Key.fromInt(scanCode),
-            KeyModifierMask(modifier)
+        val event = KeyEvent(
+            key = Key.fromInt(keyCode),
+            physicalKey = Key.fromInt(scanCode),
+            modifiers = KeyModifierMask(modifier)
         )
+
+        when(KeyEventType.fromInt(type)) {
+            KeyEventType.KeyPress -> {
+                onKeyDown?.invoke(event)
+            }
+            KeyEventType.KeyRelease -> {
+                onKeyUp?.invoke(event)
+            }
+        }
     }
 
     @SuppressWarnings("unused")
