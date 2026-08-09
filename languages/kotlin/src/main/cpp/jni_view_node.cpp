@@ -399,3 +399,12 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
         }
     );
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
+    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setFocusable(isFocusable);
+}
