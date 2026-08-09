@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.ui.event
 
-enum class KeyCode(val value: Int) {
+enum class Key(val value: Int) {
     ErrorRollOver(0x01),
     POSTFail(0x02),
     ErrorUndefined(0x03),
@@ -222,7 +222,7 @@ enum class KeyCode(val value: Int) {
     Undefined(0xFF);
 
     companion object {
-        fun fromInt(value: Int): KeyCode {
+        fun fromInt(value: Int): Key {
             return entries.find { it.value == value } ?: Undefined
         }
     }
