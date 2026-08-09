@@ -5,6 +5,10 @@ import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
+import com.github.kavos113.karin.ui.event.Key
+import com.github.kavos113.karin.ui.event.KeyEvent
+import com.github.kavos113.karin.ui.event.KeyEventType
+import com.github.kavos113.karin.ui.event.KeyModifierMask
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
@@ -36,6 +40,9 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onEndHover: (() -> Unit)? = null
     private var onStartPress: (() -> Unit)? = null
     private var onEndPress: (() -> Unit)? = null
+    private var onKeyDown: ((KeyEvent) -> Unit)? = null
+    private var onKeyUp: ((KeyEvent) -> Unit)? = null
+    private var onKeyType: ((String) -> Unit)? = null
 
     internal var isPressed = false
         private set
@@ -105,6 +112,21 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         onEndPress = end
         JniViewNodeBridge.setPointerUpHandler(ptr, this)
         JniViewNodeBridge.setPointerDownHandler(ptr, this)
+    }
+
+    fun setKeyDownHandler(listener: (KeyEvent) -> Unit) {
+        onKeyDown = listener
+        JniViewNodeBridge.setKeyListener(ptr, this)
+    }
+
+    fun setKeyUpHandler(listener: (KeyEvent) -> Unit) {
+        onKeyUp = listener
+        JniViewNodeBridge.setKeyListener(ptr, this)
+    }
+
+    fun setKeyTypeHandler(listener: (String) -> Unit) {
+        onKeyType = listener
+        JniViewNodeBridge.setKeyTypeListener(ptr, this)
     }
 
     fun setSize(size: Size) {
@@ -206,6 +228,31 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     @JvmName("dispatchMouseWheel")
     internal fun dispatchMouseWheel(delta: Int) {
         onMouseWheel?.invoke(delta)
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchKeyEvent")
+    internal fun dispatchKeyEvent(type: Int, keyCode: Int, scanCode: Int, modifier: Int) {
+        val event = KeyEvent(
+            key = Key.fromInt(keyCode),
+            physicalKey = Key.fromInt(scanCode),
+            modifiers = KeyModifierMask(modifier)
+        )
+
+        when(KeyEventType.fromInt(type)) {
+            KeyEventType.KeyPress -> {
+                onKeyDown?.invoke(event)
+            }
+            KeyEventType.KeyRelease -> {
+                onKeyUp?.invoke(event)
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("dispatchKeyType")
+    internal fun dispatchKeyType(character: String) {
+        onKeyType?.invoke(character)
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {

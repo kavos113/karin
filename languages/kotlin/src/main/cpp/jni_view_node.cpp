@@ -335,3 +335,67 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
         }
     );
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyListener
+    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
+
+    node->setKeyHandler(
+        [target](karin::KeyEvent event)
+        {
+            target->invoke(
+                [&event](JNIEnv* env, jobject obj)
+                {
+                    jclass listenerClass = env->GetObjectClass(obj);
+                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyEvent", "(IIII)V");
+                    if (methodId)
+                    {
+                        env->CallVoidMethod(
+                            obj,
+                            methodId,
+                            static_cast<int>(event.type),
+                            static_cast<int>(event.keyCode),
+                            static_cast<int>(event.scanCode),
+                            static_cast<int>(event.modifierState)
+                        );
+                    }
+
+                    env->DeleteLocalRef(listenerClass);
+                }
+            );
+        }
+    );
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyTypeListener
+    (JNIEnv *env, jclass cls, jlong viewPtr, jobject listener)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
+
+    node->setKeyTypeHandler(
+        [target](std::string character)
+        {
+            target->invoke(
+                [&character](JNIEnv *env, jobject obj)
+                {
+                    jclass listenerClass = env->GetObjectClass(obj);
+                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyType", "(Ljava/lang/String)V");
+                    if (methodId)
+                    {
+                        jstring str = env->NewStringUTF(character.c_str());
+                        env->CallVoidMethod(obj, methodId, str);
+                    }
+
+                    env->DeleteLocalRef(listenerClass);
+                }
+            );
+        }
+    );
+}
