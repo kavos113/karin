@@ -12,18 +12,17 @@ class Window(
     height: Int
 ) {
     private val handle: WindowHandle = WindowHandle(title, x, y, width, height)
+    private val rootNode: ContainerNodeHandle = ContainerNodeHandle()
 
     fun setContent(
         content: UiBuilder.() -> Unit
     ) {
-        val root = ContainerNodeHandle()
-
         val builder = object : UiBuilder() {
-            override val parentContainer = root
-            override val viewUpdateRequester = root
+            override val parentContainer = rootNode
+            override val viewUpdateRequester = rootNode
         }
         builder.content()
 
-        handle.setRootView(root)
+        handle.setRootView(rootNode)
     }
 }
