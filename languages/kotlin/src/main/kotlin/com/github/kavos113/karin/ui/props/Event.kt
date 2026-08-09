@@ -2,6 +2,7 @@ package com.github.kavos113.karin.ui.props
 
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.common.Point
+import com.github.kavos113.karin.ui.event.KeyEvent
 
 @ConsistentCopyVisibility
 data class Event private constructor(
@@ -20,6 +21,13 @@ data class Event private constructor(
     val onPointerLeaveState: State<(() -> Unit)?>? = null,
     val onMouseWheel: ((Int) -> Unit)? = null,
     val onMouseWheelState: State<((Int) -> Unit)?>? = null,
+
+    val onKeyDown: ((KeyEvent) -> Unit)? = null,
+    val onKeyDownState: State<((KeyEvent) -> Unit)?>? = null,
+    val onKeyUp: ((KeyEvent) -> Unit)? = null,
+    val onKeyUpState: State<((KeyEvent) -> Unit)?>? = null,
+    val onKeyType: ((String) -> Unit)? = null,
+    val onKeyTypeState: State<((String) -> Unit)?>? = null,
 ) {
     fun onClick(handler: () -> Unit) = copy(onClick = handler)
     fun onClick(state: State<(() -> Unit)?>) = copy(onClickState = state)
@@ -36,6 +44,13 @@ data class Event private constructor(
     fun onPointerLeave(state: State<(() -> Unit)?>) = copy(onPointerLeaveState = state)
     fun onMouseWheel(handler: (Int) -> Unit) = copy(onMouseWheel = handler)
     fun onMouseWheel(state: State<((Int) -> Unit)?>) = copy(onMouseWheelState = state)
+
+    fun onKeyDown(handler: (KeyEvent) -> Unit) = copy(onKeyDown = handler)
+    fun onKeyDown(state: State<((KeyEvent) -> Unit)?>) = copy(onKeyDownState = state)
+    fun onKeyUp(handler: (KeyEvent) -> Unit) = copy(onKeyUp = handler)
+    fun onKeyUp(state: State<((KeyEvent) -> Unit)?>) = copy(onKeyUpState = state)
+    fun onKeyType(handler: (String) -> Unit) = copy(onKeyType = handler)
+    fun onKeyType(state: State<((String) -> Unit)?>) = copy(onKeyTypeState = state)
 
     companion object {
         val Default = Event()
@@ -55,5 +70,12 @@ data class Event private constructor(
         fun onPointerLeave(state: State<(() -> Unit)?>) = Event().onPointerLeave(state)
         fun onMouseWheel(handler: (Int) -> Unit) = Event().onMouseWheel(handler)
         fun onMouseWheel(state: State<((Int) -> Unit)?>) = Event().onMouseWheel(state)
+
+        fun onKeyDown(handler: (KeyEvent) -> Unit) = Event().onKeyDown(handler)
+        fun onKeyDown(state: State<((KeyEvent) -> Unit)?>) = Event().onKeyDown(state)
+        fun onKeyUp(handler: (KeyEvent) -> Unit) = Event().onKeyUp(handler)
+        fun onKeyUp(state: State<((KeyEvent) -> Unit)?>) = Event().onKeyUp(state)
+        fun onKeyType(handler: (String) -> Unit) = Event().onKeyType(handler)
+        fun onKeyType(state: State<((String) -> Unit)?>) = Event().onKeyType(state)
     }
 }

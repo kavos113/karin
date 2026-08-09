@@ -386,7 +386,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
                 [&character](JNIEnv *env, jobject obj)
                 {
                     jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyType", "(Ljava/lang/String)V");
+                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyType", "(Ljava/lang/String;)V");
                     if (methodId)
                     {
                         jstring str = env->NewStringUTF(character.c_str());
@@ -398,4 +398,13 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
             );
         }
     );
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
+    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setFocusable(isFocusable);
 }

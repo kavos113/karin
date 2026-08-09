@@ -37,6 +37,7 @@ class JniViewNode {
     static native void setMouseWheelListener(long nodePtr, ViewNodeHandle target);
     static native void setKeyListener(long nodePtr, ViewNodeHandle target);
     static native void setKeyTypeListener(long nodePtr, ViewNodeHandle target);
+    static native void setIsFocusable(long nodePtr, boolean isFocusable);
 
     static native void destroy(long nodePtr);
 }
