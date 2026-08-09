@@ -169,6 +169,22 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setKeyListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setKeyTypeListener
+ * Signature: (JLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyTypeListener
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    destroy
  * Signature: (J)V
  */

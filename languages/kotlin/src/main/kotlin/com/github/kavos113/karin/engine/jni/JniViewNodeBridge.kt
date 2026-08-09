@@ -31,6 +31,8 @@ internal object JniViewNodeBridge {
     fun setPointerEnterHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerEnterListener(nodePtr, target)
     fun setPointerLeaveHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerLeaveListener(nodePtr, target)
     fun setMouseWheelHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setMouseWheelListener(nodePtr, target)
+    fun setKeyListener(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setKeyListener(nodePtr, target)
+    fun setKeyTypeListener(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setKeyTypeListener(nodePtr, target)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }
