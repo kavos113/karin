@@ -114,17 +114,17 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         JniViewNodeBridge.setPointerDownHandler(ptr, this)
     }
 
-    fun setKeyDownHandler(listener: (KeyEvent) -> Unit) {
+    fun setOnKeyDown(listener: (KeyEvent) -> Unit) {
         onKeyDown = listener
         JniViewNodeBridge.setKeyListener(ptr, this)
     }
 
-    fun setKeyUpHandler(listener: (KeyEvent) -> Unit) {
+    fun setOnKeyUp(listener: (KeyEvent) -> Unit) {
         onKeyUp = listener
         JniViewNodeBridge.setKeyListener(ptr, this)
     }
 
-    fun setKeyTypeHandler(listener: (String) -> Unit) {
+    fun setOnKeyType(listener: (String) -> Unit) {
         onKeyType = listener
         JniViewNodeBridge.setKeyTypeListener(ptr, this)
     }
@@ -599,6 +599,36 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onMouseWheelState?.let { state ->
         state.onChange { handler ->
             setOnMouseWheel(handler ?: {})
+        }
+    }
+
+    event.onKeyDown?.let {
+        setOnKeyDown(it)
+    }
+
+    event.onKeyDownState?.let { state ->
+        state.onChange { handler ->
+            setOnKeyDown(handler ?: {})
+        }
+    }
+
+    event.onKeyUp?.let {
+        setOnKeyUp(it)
+    }
+
+    event.onKeyUpState?.let { state ->
+        state.onChange { handler ->
+            setOnKeyUp(handler ?: {})
+        }
+    }
+
+    event.onKeyType?.let {
+        setOnKeyType(it)
+    }
+
+    event.onKeyTypeState?.let { state ->
+        state.onChange { handler ->
+            setOnKeyType(handler ?: {})
         }
     }
 }

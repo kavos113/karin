@@ -44,12 +44,12 @@ class Window(
     fun addKeyHandler(handler: (KeyEvent) -> Unit) {
         keyHandlers.add(handler)
 
-        rootNode.setKeyDownHandler(keyHandler)
+        rootNode.setOnKeyDown(keyHandler)
     }
 
     fun addShortcut(key: Key, handler: () -> Unit) {
         shortcutHandlers[key] = handler
 
-        rootNode.setKeyDownHandler(keyHandler)
+        rootNode.setOnKeyDown(keyHandler)
     }
 }
