@@ -44,6 +44,23 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
     private var onKeyUp: ((KeyEvent) -> Unit)? = null
     private var onKeyType: ((String) -> Unit)? = null
 
+    @JvmInline
+    private value class NativeEventType private constructor(val value: Int) {
+        companion object {
+            val PointerMove = NativeEventType(0)
+            val PointerDown = NativeEventType(1)
+            val PointerUp = NativeEventType(2)
+            val PointerEnter = NativeEventType(3)
+            val PointerLeave = NativeEventType(4)
+            val MouseWheel = NativeEventType(5)
+            val Key = NativeEventType(6)
+            val KeyType = NativeEventType(7)
+
+            const val ENUM_COUNT = 8
+        }
+    }
+    private var nativeHandlerEnabled = 0L
+
     internal var isPressed = false
         private set
     internal var isHovered = false
@@ -65,69 +82,157 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         cleanupTask.isOwnedByCore = true
     }
 
+    fun enablePointerMoveHandler() {
+        val mask = 1L shl NativeEventType.PointerMove.value;
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setPointerMoveHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enablePointerDownHandler() {
+        val mask = 1L shl NativeEventType.PointerDown.value;
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setPointerDownHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enablePointerUpHandler() {
+        val mask = 1L shl NativeEventType.PointerUp.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setPointerUpHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enablePointerEnterHandler() {
+        val mask = 1L shl NativeEventType.PointerEnter.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enablePointerLeaveHandler() {
+        val mask = 1L shl NativeEventType.PointerLeave.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enableMouseWheelHandler() {
+        val mask = 1L shl NativeEventType.MouseWheel.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setMouseWheelHandler(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enableKeyHandler() {
+        val mask = 1L shl NativeEventType.Key.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setKeyListener(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
+    fun enableKeyTypeHandler() {
+        val mask = 1L shl NativeEventType.KeyType.value
+
+        if (nativeHandlerEnabled and mask != 0L) {
+            return
+        }
+        JniViewNodeBridge.setKeyTypeListener(ptr, this)
+
+        nativeHandlerEnabled = nativeHandlerEnabled or mask
+    }
+
     fun setOnClickListener(listener: () -> Unit) {
         onPointerClick = listener
-        JniViewNodeBridge.setPointerDownHandler(ptr, this)
-        JniViewNodeBridge.setPointerUpHandler(ptr, this)
+        enablePointerDownHandler()
+        enablePointerUpHandler()
     }
 
     fun setOnPointerMove(listener: (Point) -> Unit) {
         onPointerMove = listener
-        JniViewNodeBridge.setPointerMoveHandler(ptr, this)
+        enablePointerMoveHandler()
     }
 
     fun setOnPointerDown(listener: (Point) -> Unit) {
         onPointerDown = listener
-        JniViewNodeBridge.setPointerDownHandler(ptr, this)
+        enablePointerDownHandler()
     }
 
     fun setOnPointerUp(listener: (Point) -> Unit) {
         onPointerUp = listener
-        JniViewNodeBridge.setPointerUpHandler(ptr, this)
+        enablePointerUpHandler()
     }
 
     fun setOnPointerEnter(listener: () -> Unit) {
         onPointerEnter = listener
-        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
+        enablePointerEnterHandler()
     }
 
     fun setOnPointerLeave(listener: () -> Unit) {
         onPointerLeave = listener
-        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
+        enablePointerLeaveHandler()
     }
 
     fun setOnMouseWheel(listener: (Int) -> Unit) {
         onMouseWheel = listener
-        JniViewNodeBridge.setMouseWheelHandler(ptr, this)
+        enableMouseWheelHandler()
     }
 
     fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
         onStartHover = start
         onEndHover = end
-        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
-        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
+        enablePointerEnterHandler()
+        enablePointerLeaveHandler()
     }
 
     fun setPressHandler(start: () -> Unit, end: () -> Unit) {
         onStartPress = start
         onEndPress = end
-        JniViewNodeBridge.setPointerUpHandler(ptr, this)
-        JniViewNodeBridge.setPointerDownHandler(ptr, this)
+        enablePointerUpHandler()
+        enablePointerDownHandler()
     }
 
     fun setOnKeyDown(listener: (KeyEvent) -> Unit) {
         onKeyDown = listener
-        JniViewNodeBridge.setKeyListener(ptr, this)
+        enableKeyHandler()
     }
 
     fun setOnKeyUp(listener: (KeyEvent) -> Unit) {
         onKeyUp = listener
-        JniViewNodeBridge.setKeyListener(ptr, this)
+        enableKeyHandler()
     }
 
     fun setOnKeyType(listener: (String) -> Unit) {
         onKeyType = listener
-        JniViewNodeBridge.setKeyTypeListener(ptr, this)
+        enableKeyTypeHandler()
     }
 
     fun setSize(size: Size) {
