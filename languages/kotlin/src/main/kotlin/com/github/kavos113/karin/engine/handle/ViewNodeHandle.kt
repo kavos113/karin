@@ -67,6 +67,7 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     fun setOnClickListener(listener: () -> Unit) {
         onPointerClick = listener
+        JniViewNodeBridge.setPointerDownHandler(ptr, this)
         JniViewNodeBridge.setPointerUpHandler(ptr, this)
     }
 
@@ -179,6 +180,10 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     override fun requestRedraw() {
         JniViewNodeBridge.requestRedraw(ptr)
+    }
+
+    fun setIsFocusable(isFocusable: Boolean) {
+        JniViewNodeBridge.setIsFocusable(ptr, isFocusable)
     }
 
     @SuppressWarnings("unused")
@@ -604,31 +609,40 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
 
     event.onKeyDown?.let {
         setOnKeyDown(it)
+        setIsFocusable(true)
     }
 
     event.onKeyDownState?.let { state ->
         state.onChange { handler ->
             setOnKeyDown(handler ?: {})
+            setIsFocusable(handler != null)
         }
+        setIsFocusable(state.value != null)
     }
 
     event.onKeyUp?.let {
         setOnKeyUp(it)
+        setIsFocusable(true)
     }
 
     event.onKeyUpState?.let { state ->
         state.onChange { handler ->
             setOnKeyUp(handler ?: {})
+            setIsFocusable(handler != null)
         }
+        setIsFocusable(state.value != null)
     }
 
     event.onKeyType?.let {
         setOnKeyType(it)
+        setIsFocusable(true)
     }
 
     event.onKeyTypeState?.let { state ->
         state.onChange { handler ->
             setOnKeyType(handler ?: {})
+            setIsFocusable(handler != null)
         }
+        setIsFocusable(state.value != null)
     }
 }
