@@ -15,6 +15,8 @@ private val BORDER_COLOR = Color(0x808080ff)
 private val BORDER_HOVER_COLOR = Color(0x303030ff)
 // TODO: focus color
 
+private const val DEFAULT_WIDTH = 120f
+
 fun UiBuilder.TextInput(
     initialText: String,
     style: Style = Style.Default,
@@ -30,21 +32,29 @@ fun UiBuilder.TextInput(
         onTextChange(it)
     }
 
-    var finalStyle: Style = style
-    if (style == Style.Default) {
-        finalStyle = style
+    val finalStyle: Style = if (style == Style.Default) {
+        style
             .border(1f, BORDER_COLOR, LineStyle.Solid)
             .background(BACKGROUND_COLOR)
             .hover(Style.border(1f, BORDER_HOVER_COLOR, LineStyle.Solid))
+    } else {
+        style
     }
 
     val finalEvent = event.onKeyDown {
         text.value += it
+        println("current text: ${text.value}")
     }
+
+    val height = layout.height ?: (textStyle.fontSize + 4)
+    val width = layout.width ?: DEFAULT_WIDTH
+    val finalLayout = layout
+        .height(height)
+        .width(width)
 
     Box(
         style = finalStyle,
-        layout = layout,
+        layout = finalLayout,
         event = finalEvent
     ) {
         Text(
