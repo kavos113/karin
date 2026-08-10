@@ -84,7 +84,10 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
             }
             else
             {
-                m_focusNode->triggerChangeFocusStateHandler(false);
+                if (m_focusNode)
+                {
+                    m_focusNode->triggerChangeFocusStateHandler(false);
+                }
                 m_focusNode = nullptr;
             }
         }
@@ -102,6 +105,10 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
     }
     else
     {
+        if (m_focusNode)
+        {
+            m_focusNode->triggerChangeFocusStateHandler(false);
+        }
         m_focusNode = nullptr;
     }
 }
