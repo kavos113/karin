@@ -6,7 +6,6 @@
 
 #include "jni_global_ref.h"
 #include "jni_resource.h"
-#include "../../../../../core/src/graphics/d2d/d2d_color.h"
 
 using namespace karin::gui;
 using namespace karin::jni;
