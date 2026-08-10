@@ -21,6 +21,8 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     private var onEndHover: (() -> Unit)? = null
     private var onStartPress: (() -> Unit)? = null
     private var onEndPress: (() -> Unit)? = null
+    private var onStartFocus: (() -> Unit)? = null
+    private var onEndFocus: (() -> Unit)? = null
     private var onKeyDown: ((KeyEvent) -> Unit)? = null
     private var onKeyUp: ((KeyEvent) -> Unit)? = null
     private var onKeyType: ((String) -> Unit)? = null
@@ -281,6 +283,11 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         onEndPress = end
         enablePointerUpHandler()
         enablePointerDownHandler()
+    }
+
+    override fun setFocusHandler(start: () -> Unit, end: () -> Unit) {
+        onStartFocus = start
+        onEndFocus = end
     }
 
     override fun setOnKeyDown(handler: (KeyEvent) -> Unit) {

@@ -29,6 +29,7 @@ data class Style internal constructor(
 
     val hoverStyle: Style? = null,
     val pressedStyle: Style? = null,
+    val focusStyle: Style? = null,
 ) {
     fun background(color: Color) = copy(backgroundColor = color)
     fun background(state: State<Color>) = copy(backgroundColorState = state)
@@ -52,6 +53,7 @@ data class Style internal constructor(
 
     fun hover(style: Style) = copy(hoverStyle = style)
     fun pressed(style: Style) = copy(pressedStyle = style)
+    fun focus(style: Style) = copy(focusStyle = style)
 
     companion object {
         val Default = Style()
@@ -74,5 +76,6 @@ data class Style internal constructor(
         fun shadowState(state: State<Shadow>) = Style().shadowState(state)
         fun hover(style: Style) = Style().hover(style)
         fun pressed(style: Style) = Style().pressed(style)
+        fun focus(style: Style) = Style().focus(style)
     }
 }

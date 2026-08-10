@@ -96,6 +96,7 @@ class StyleBuilder {
 
     internal var hoverStyle: StyleBuilder? = null
     internal var pressedStyle: StyleBuilder? = null
+    internal var focusStyle: StyleBuilder? = null
 
     fun hover(block: StyleBuilder.() -> Unit) {
         hoverStyle = StyleBuilder().apply(block)
@@ -103,6 +104,10 @@ class StyleBuilder {
 
     fun pressed(block: StyleBuilder.() -> Unit) {
         pressedStyle = StyleBuilder().apply(block)
+    }
+
+    fun focus(block: StyleBuilder.() -> Unit) {
+        focusStyle = StyleBuilder().apply(block)
     }
 
     internal fun build(): Style {
@@ -124,7 +129,8 @@ class StyleBuilder {
             shadow = shadow,
             shadowState = shadowState,
             hoverStyle = hoverStyle?.build(),
-            pressedStyle = pressedStyle?.build()
+            pressedStyle = pressedStyle?.build(),
+            focusStyle = focusStyle?.build(),
         )
     }
 }

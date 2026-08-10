@@ -25,6 +25,7 @@ internal interface EventManager {
     fun setOnKeyType(handler: (String) -> Unit)
     fun setHoverHandler(start: () -> Unit, end: () -> Unit)
     fun setPressHandler(start: () -> Unit, end: () -> Unit)
+    fun setFocusHandler(start: () -> Unit, end: () -> Unit)
 
     fun clearOnClick()
     fun clearOnPointerMove()
