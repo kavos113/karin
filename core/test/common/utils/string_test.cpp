@@ -4,8 +4,8 @@
 class StringUtilsTest : public ::testing::Test
 {
 protected:
-    std::string sampleString = "Hello, Karin! 日本語";
-    std::wstring sampleWString = L"Hello, Karin! 日本語";
+    std::string sampleString = "Hello, Karin! あいうえお日本語";
+    std::wstring sampleWString = L"Hello, Karin! あいうえお日本語";
 };
 
 TEST_F(StringUtilsTest, WStringToStringConversion)

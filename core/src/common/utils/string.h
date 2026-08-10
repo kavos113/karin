@@ -33,7 +33,7 @@ inline std::string toString(const std::wstring& str)
     {
         return "";
     }
-    std::vector<char> buffer(newSize);
+    std::vector<char> buffer(newSize, 0);
     int result = WideCharToMultiByte(
         CP_UTF8,
         0,

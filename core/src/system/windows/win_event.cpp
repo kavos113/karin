@@ -1,12 +1,14 @@
 #include "win_event.h"
 
 #include <iostream>
+#include <memory>
+#include <string>
+
 #include <karin/system/event.h>
+#include <utils/string.h>
 
 #include "win_converter.h"
 
-#include <memory>
-#include <utils/string.h>
 
 namespace karin
 {
