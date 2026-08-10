@@ -122,7 +122,7 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_req
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setIsFocusable
- * Signature: (JZLcom/github/kavos113/karin/engine/handle/ViewNodeHandle;)V
+ * Signature: (JZLcom/github/kavos113/karin/engine/handle/EventManager;)V
  */
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
   (JNIEnv *, jclass, jlong, jboolean, jobject);

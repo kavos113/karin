@@ -317,7 +317,16 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     @SuppressWarnings("unused")
     @JvmName("onChangeFocusState")
     internal fun onChangeFocusState(focused: Boolean) {
+        val oldFocused = isFocused
         isFocused = focused
+
+        if (oldFocused != isFocused) {
+            if (isFocused) {
+                onStartFocus?.invoke()
+            } else {
+                onEndFocus?.invoke()
+            }
+        }
     }
 
     override fun clearOnClick() {
@@ -429,17 +438,17 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
+        isHovered = true
         onPointerEnter?.invoke()
         onStartHover?.invoke()
-        isHovered = true
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
+        isHovered = false
         onPointerLeave?.invoke()
         onEndHover?.invoke()
-        isHovered = false
     }
 
     @SuppressWarnings("unused")

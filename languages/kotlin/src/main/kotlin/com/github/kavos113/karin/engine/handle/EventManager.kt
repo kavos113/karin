@@ -23,6 +23,13 @@ internal interface EventManager {
     fun setOnKeyDown(handler: (KeyEvent) -> Unit)
     fun setOnKeyUp(handler: (KeyEvent) -> Unit)
     fun setOnKeyType(handler: (String) -> Unit)
+
+    /**
+     * start: called when mouse enter that node. when called, isHovered() = true
+     * end: called when mouse leave that node. when called, isHovered() = false
+     *
+     * press and focus are the same
+     */
     fun setHoverHandler(start: () -> Unit, end: () -> Unit)
     fun setPressHandler(start: () -> Unit, end: () -> Unit)
     fun setFocusHandler(start: () -> Unit, end: () -> Unit)

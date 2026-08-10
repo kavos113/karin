@@ -197,20 +197,26 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
         }
     }
 
+    val applyInteractionStyle = {
+        if (isFocused() && style.focusStyle != null) {
+            applyStyle(style = style.focusStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
+        } else if (isPressed() && style.pressedStyle != null) {
+            applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
+        } else if (isHovered() && style.hoverStyle != null) {
+            applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
+        } else {
+            applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null, focusStyle = null))
+        }
+    }
+
     style.hoverStyle?.let {
         setHoverHandler(
             start = {
-                applyStyle(it)
+                applyInteractionStyle()
                 requestRedraw()
             },
             end = {
-                if (isFocused() && style.focusStyle != null) {
-                    applyStyle(style = style.focusStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else if (isPressed() && style.pressedStyle != null) {
-                    applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else {
-                    applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                }
+                applyInteractionStyle()
                 requestRedraw()
             }
         )
@@ -218,17 +224,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.pressedStyle?.let {
         setPressHandler(
             start = {
-                applyStyle(it)
+                applyInteractionStyle()
                 requestRedraw()
             },
             end = {
-                if (isFocused() && style.focusStyle != null) {
-                    applyStyle(style = style.focusStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else if (isHovered() && style.hoverStyle != null) {
-                    applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else {
-                    applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null, focusStyle = null))
-                }
+                applyInteractionStyle()
                 requestRedraw()
             }
         )
@@ -236,17 +236,12 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     style.focusStyle?.let {
         setFocusHandler(
             start = {
-                applyStyle(it)
+                applyInteractionStyle()
                 requestRedraw()
             },
             end = {
-                if (isPressed() && style.pressedStyle != null) {
-                    applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else if (isHovered() && style.hoverStyle != null) {
-                    applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-                } else {
-                    applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null, focusStyle = null))
-                }
+                applyInteractionStyle()
+                requestRedraw()
             }
         )
     }
