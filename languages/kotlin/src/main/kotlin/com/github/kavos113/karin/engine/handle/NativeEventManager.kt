@@ -208,6 +208,85 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         enableKeyTypeHandler()
     }
 
+    override fun clearOnClick() {
+        onPointerClick = null
+
+        if (onKeyDown == null && onKeyUp == null && onKeyType == null) {
+            if (onPointerDown == null) {
+                JniViewNodeBridge.clearPointerDownHandler(ptr)
+            }
+            if (onPointerUp == null) {
+                JniViewNodeBridge.clearPointerUpHandler(ptr)
+            }
+        }
+    }
+
+    override fun clearOnPointerMove() {
+        onPointerMove = null
+
+        JniViewNodeBridge.clearPointerMoveHandler(ptr)
+    }
+
+    override fun clearOnPointerDown() {
+        onPointerDown = null
+
+        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onStartPress == null) {
+            JniViewNodeBridge.clearPointerDownHandler(ptr)
+        }
+    }
+
+    override fun clearOnPointerUp() {
+        onPointerUp = null
+
+        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onEndPress == null) {
+            JniViewNodeBridge.clearPointerUpHandler(ptr)
+        }
+    }
+
+    override fun clearOnPointerEnter() {
+        onPointerEnter = null
+
+        if (onStartHover == null) {
+            JniViewNodeBridge.clearPointerEnterHandler(ptr)
+        }
+    }
+
+    override fun clearOnPointerLeave() {
+        onPointerLeave = null
+
+        if (onEndHover == null) {
+            JniViewNodeBridge.clearPointerLeaveHandler(ptr)
+        }
+    }
+
+    override fun clearOnMouseWheel() {
+        onMouseWheel = null
+
+        JniViewNodeBridge.clearMouseWheelHandler(ptr)
+    }
+
+    override fun clearOnKeyDown() {
+        onKeyDown = null
+
+        if (onKeyUp == null) {
+            JniViewNodeBridge.clearKeyHandler(ptr)
+        }
+    }
+
+    override fun clearOnKeyUp() {
+        onKeyUp = null
+
+        if (onKeyDown == null) {
+            JniViewNodeBridge.clearKeyHandler(ptr)
+        }
+    }
+
+    override fun clearOnKeyType() {
+        onKeyType = null
+
+        JniViewNodeBridge.clearKeyTypeHandler(ptr)
+    }
+
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerMove")
     internal fun dispatchPointerMove(x: Float, y: Float) {

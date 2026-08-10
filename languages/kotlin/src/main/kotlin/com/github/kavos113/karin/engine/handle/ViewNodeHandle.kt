@@ -97,6 +97,11 @@ internal open class ViewNodeHandle(
 
     fun setIsFocusable(isFocusable: Boolean) {
         JniViewNodeBridge.setIsFocusable(ptr, isFocusable)
+
+        if (isFocusable) {
+            enablePointerDownHandler()
+            enablePointerUpHandler()
+        }
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
@@ -449,14 +454,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyDown?.let {
         setOnKeyDown(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyDownState?.let { state ->
         state.onChange { handler ->
-            setOnKeyDown(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyDown(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyDown()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }
@@ -464,14 +472,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyUp?.let {
         setOnKeyUp(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyUpState?.let { state ->
         state.onChange { handler ->
-            setOnKeyUp(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyUp(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyUp()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }
@@ -479,14 +490,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyType?.let {
         setOnKeyType(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyTypeState?.let { state ->
         state.onChange { handler ->
-            setOnKeyType(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyType(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyType()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }

@@ -26,6 +26,17 @@ internal interface EventManager {
     fun setHoverHandler(start: () -> Unit, end: () -> Unit)
     fun setPressHandler(start: () -> Unit, end: () -> Unit)
 
+    fun clearOnClick()
+    fun clearOnPointerMove()
+    fun clearOnPointerDown()
+    fun clearOnPointerUp()
+    fun clearOnPointerEnter()
+    fun clearOnPointerLeave()
+    fun clearOnMouseWheel()
+    fun clearOnKeyDown()
+    fun clearOnKeyUp()
+    fun clearOnKeyType()
+
     fun isHovered(): Boolean
     fun isPressed(): Boolean
 }
