@@ -401,12 +401,36 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
-    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable)
+    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable, jobject listener)
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
     node->setFocusable(isFocusable);
+
+    if (isFocusable)
+    {
+        auto target = std::make_shared<JniGlobalRef>(env, listener);
+
+        node->setChangeFocusStateHandler(
+            [target](bool focusState)
+            {
+                target->invoke(
+                    [focusState](JNIEnv *env, jobject obj)
+                    {
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "onChangeFocusState", "(Z)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, focusState);
+                        }
+
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerMoveListener

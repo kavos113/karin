@@ -25,7 +25,7 @@ internal object JniViewNodeBridge {
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
 
-    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean) = JniViewNode.setIsFocusable(nodePtr, isFocusable)
+    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean, target: EventManager) = JniViewNode.setIsFocusable(nodePtr, isFocusable, target)
     fun setPointerMoveHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerMoveListener(nodePtr, target)
     fun setPointerDownHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerDownListener(nodePtr, target)
     fun setPointerUpHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerUpListener(nodePtr, target)

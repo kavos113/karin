@@ -21,6 +21,8 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     private var onEndHover: (() -> Unit)? = null
     private var onStartPress: (() -> Unit)? = null
     private var onEndPress: (() -> Unit)? = null
+    private var onStartFocus: (() -> Unit)? = null
+    private var onEndFocus: (() -> Unit)? = null
     private var onKeyDown: ((KeyEvent) -> Unit)? = null
     private var onKeyUp: ((KeyEvent) -> Unit)? = null
     private var onKeyType: ((String) -> Unit)? = null
@@ -44,8 +46,10 @@ internal class NativeEventManager(ptr: Long) : EventManager {
 
     private var isPressed = false
     private var isHovered = false
+    private var isFocused = false
     override fun isPressed(): Boolean = isPressed
     override fun isHovered(): Boolean = isHovered
+    override fun isFocused(): Boolean = isFocused
 
     val ptr: Long
         get() {
@@ -281,6 +285,11 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         enablePointerDownHandler()
     }
 
+    override fun setFocusHandler(start: () -> Unit, end: () -> Unit) {
+        onStartFocus = start
+        onEndFocus = end
+    }
+
     override fun setOnKeyDown(handler: (KeyEvent) -> Unit) {
         onKeyDown = handler
         enableKeyHandler()
@@ -294,6 +303,30 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun setOnKeyType(handler: (String) -> Unit) {
         onKeyType = handler
         enableKeyTypeHandler()
+    }
+
+    override fun setIsFocusable(isFocusable: Boolean) {
+        JniViewNodeBridge.setIsFocusable(ptr, isFocusable, this)
+
+        if (isFocusable) {
+            enablePointerDownHandler()
+            enablePointerUpHandler()
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("onChangeFocusState")
+    internal fun onChangeFocusState(focused: Boolean) {
+        val oldFocused = isFocused
+        isFocused = focused
+
+        if (oldFocused != isFocused) {
+            if (isFocused) {
+                onStartFocus?.invoke()
+            } else {
+                onEndFocus?.invoke()
+            }
+        }
     }
 
     override fun clearOnClick() {
@@ -405,17 +438,17 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
+        isHovered = true
         onPointerEnter?.invoke()
         onStartHover?.invoke()
-        isHovered = true
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
+        isHovered = false
         onPointerLeave?.invoke()
         onEndHover?.invoke()
-        isHovered = false
     }
 
     @SuppressWarnings("unused")

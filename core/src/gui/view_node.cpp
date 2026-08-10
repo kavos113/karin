@@ -328,12 +328,38 @@ void ViewNode::setMouseWheelHandler(std::function<void(Point, int)> func)
 
 void ViewNode::setKeyHandler(std::function<void(KeyEvent)> func)
 {
-    m_keyHandler = std::move(func);
+    if (func != nullptr)
+    {
+        m_keyHandler = std::move(func);
+    }
+    else
+    {
+        m_keyHandler = nullptr;
+    }
 }
 
 void ViewNode::setKeyTypeHandler(std::function<void(std::string)> func)
 {
-    m_keyTypeHandler = std::move(func);
+    if (func != nullptr)
+    {
+        m_keyTypeHandler = std::move(func);
+    }
+    else
+    {
+        m_keyTypeHandler = nullptr;
+    }
+}
+
+void ViewNode::setChangeFocusStateHandler(std::function<void(bool)> func)
+{
+    if (func != nullptr)
+    {
+        m_changeFocusStateHandler = std::move(func);
+    }
+    else
+    {
+        m_changeFocusStateHandler = nullptr;
+    }
 }
 
 void ViewNode::triggerPointerMoveHandler(Point point) const
@@ -397,6 +423,14 @@ void ViewNode::triggerKeyTypeHandler(std::string c) const
     if (m_keyTypeHandler)
     {
         m_keyTypeHandler(c);
+    }
+}
+
+void ViewNode::triggerChangeFocusStateHandler(bool focusState) const
+{
+    if (m_changeFocusStateHandler)
+    {
+        m_changeFocusStateHandler(focusState);
     }
 }
 

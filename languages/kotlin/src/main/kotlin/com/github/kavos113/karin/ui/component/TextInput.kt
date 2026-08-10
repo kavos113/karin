@@ -13,7 +13,7 @@ import com.github.kavos113.karin.ui.text.TextStyle
 private val BACKGROUND_COLOR = Color(0xfdfdfdff)
 private val BORDER_COLOR = Color(0x808080ff)
 private val BORDER_HOVER_COLOR = Color(0x303030ff)
-// TODO: focus color
+private val BORDER_FOCUS_COLOR = Color(0x3870d9ff)
 
 private const val DEFAULT_WIDTH = 120f
 
@@ -37,6 +37,7 @@ fun UiBuilder.TextInput(
             .border(1f, BORDER_COLOR, LineStyle.Solid)
             .background(BACKGROUND_COLOR)
             .hover(Style.border(1f, BORDER_HOVER_COLOR, LineStyle.Solid))
+            .focus(Style.border(1f, BORDER_FOCUS_COLOR, LineStyle.Solid))
     } else {
         style
     }
