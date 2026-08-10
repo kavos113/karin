@@ -5,10 +5,7 @@ import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.ui.event.Key
 import com.github.kavos113.karin.ui.event.KeyEvent
-import com.github.kavos113.karin.ui.event.KeyEventType
-import com.github.kavos113.karin.ui.event.KeyModifierMask
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
@@ -289,80 +286,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     fun setIsFocusable(isFocusable: Boolean) {
         JniViewNodeBridge.setIsFocusable(ptr, isFocusable)
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerMove")
-    internal fun dispatchPointerMove(x: Float, y: Float) {
-        onPointerMove?.invoke(Point(x, y))
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerDown")
-    internal fun dispatchPointerDown(x: Float, y: Float) {
-        isPressed = true
-        onPointerDown?.invoke(Point(x, y))
-        onStartPress?.invoke()
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerUp")
-    internal fun dispatchPointerUp(x: Float, y: Float) {
-        onPointerUp?.invoke(Point(x, y))
-
-        if (isPressed && onPointerClick != null) {
-            onPointerClick!!.invoke()
-        }
-
-        isPressed = false
-        onEndPress?.invoke()
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerEnter")
-    internal fun dispatchPointerEnter() {
-        onPointerEnter?.invoke()
-        onStartHover?.invoke()
-        isHovered = true
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerLeave")
-    internal fun dispatchPointerLeave() {
-        onPointerLeave?.invoke()
-        onEndHover?.invoke()
-        isHovered = false
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchMouseWheel")
-    internal fun dispatchMouseWheel(delta: Int) {
-        onMouseWheel?.invoke(delta)
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchKeyEvent")
-    internal fun dispatchKeyEvent(type: Int, keyCode: Int, scanCode: Int, modifier: Int) {
-        val event = KeyEvent(
-            key = Key.fromInt(keyCode),
-            physicalKey = Key.fromInt(scanCode),
-            modifiers = KeyModifierMask(modifier)
-        )
-
-        when(KeyEventType.fromInt(type)) {
-            KeyEventType.KeyPress -> {
-                onKeyDown?.invoke(event)
-            }
-            KeyEventType.KeyRelease -> {
-                onKeyUp?.invoke(event)
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchKeyType")
-    internal fun dispatchKeyType(character: String) {
-        onKeyType?.invoke(character)
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
