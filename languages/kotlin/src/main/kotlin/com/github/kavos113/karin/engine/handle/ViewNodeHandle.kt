@@ -95,21 +95,6 @@ internal open class ViewNodeHandle(
         JniViewNodeBridge.requestRedraw(ptr)
     }
 
-    fun setIsFocusable(isFocusable: Boolean) {
-        JniViewNodeBridge.setIsFocusable(ptr, isFocusable, this)
-
-        if (isFocusable) {
-            enablePointerDownHandler()
-            enablePointerUpHandler()
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("onChangeFocusState")
-    internal fun onChangeFocusState(focused: Boolean) {
-
-    }
-
     private class CleanupTask(private val ptr: Long) : Runnable {
         // if true, ptr also owned by c++ vector<ViewNode*> (ownership is kotlin)
         @Volatile

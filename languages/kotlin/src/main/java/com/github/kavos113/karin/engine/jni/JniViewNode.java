@@ -1,7 +1,6 @@
 package com.github.kavos113.karin.engine.jni;
 
 import com.github.kavos113.karin.engine.handle.EventManager;
-import com.github.kavos113.karin.engine.handle.ViewNodeHandle;
 
 class JniViewNode {
     static {
@@ -30,7 +29,7 @@ class JniViewNode {
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);
 
-    static native void setIsFocusable(long nodePtr, boolean isFocusable, ViewNodeHandle target);
+    static native void setIsFocusable(long nodePtr, boolean isFocusable, EventManager target);
     static native void setPointerMoveListener(long nodePtr, EventManager target);
     static native void setPointerDownListener(long nodePtr, EventManager target);
     static native void setPointerUpListener(long nodePtr, EventManager target);

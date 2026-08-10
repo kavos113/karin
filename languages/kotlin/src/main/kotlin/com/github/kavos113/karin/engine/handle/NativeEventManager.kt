@@ -44,8 +44,10 @@ internal class NativeEventManager(ptr: Long) : EventManager {
 
     private var isPressed = false
     private var isHovered = false
+    private var isFocused = false
     override fun isPressed(): Boolean = isPressed
     override fun isHovered(): Boolean = isHovered
+    override fun isFocused(): Boolean = isFocused
 
     val ptr: Long
         get() {
@@ -294,6 +296,21 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun setOnKeyType(handler: (String) -> Unit) {
         onKeyType = handler
         enableKeyTypeHandler()
+    }
+
+    override fun setIsFocusable(isFocusable: Boolean) {
+        JniViewNodeBridge.setIsFocusable(ptr, isFocusable, this)
+
+        if (isFocusable) {
+            enablePointerDownHandler()
+            enablePointerUpHandler()
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("onChangeFocusState")
+    internal fun onChangeFocusState(focused: Boolean) {
+        isFocused = focused
     }
 
     override fun clearOnClick() {

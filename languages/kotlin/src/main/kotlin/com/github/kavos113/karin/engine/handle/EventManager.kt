@@ -39,4 +39,7 @@ internal interface EventManager {
 
     fun isHovered(): Boolean
     fun isPressed(): Boolean
+    fun isFocused(): Boolean
+
+    fun setIsFocusable(isFocusable: Boolean)
 }
