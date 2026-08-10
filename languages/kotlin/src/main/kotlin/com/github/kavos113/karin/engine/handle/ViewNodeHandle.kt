@@ -3,18 +3,17 @@ package com.github.kavos113.karin.engine.handle
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
-import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.ui.event.Key
-import com.github.kavos113.karin.ui.event.KeyEvent
-import com.github.kavos113.karin.ui.event.KeyEventType
-import com.github.kavos113.karin.ui.event.KeyModifierMask
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
-internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
+internal open class ViewNodeHandle(
+    ptr: Long,
+    val eventManager: EventManager = NativeEventManager(ptr)
+) : ViewUpdateRequester, EventManager by eventManager {
+
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
@@ -28,44 +27,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         Vertical(5),
         All(6);
     }
-
-    private var onPointerClick: (() -> Unit)? = null
-    private var onPointerMove: ((Point) -> Unit)? = null
-    private var onPointerDown: ((Point) -> Unit)? = null
-    private var onPointerUp: ((Point) -> Unit)? = null
-    private var onPointerEnter: (() -> Unit)? = null
-    private var onPointerLeave: (() -> Unit)? = null
-    private var onMouseWheel: ((Int) -> Unit)? = null
-    private var onStartHover: (() -> Unit)? = null
-    private var onEndHover: (() -> Unit)? = null
-    private var onStartPress: (() -> Unit)? = null
-    private var onEndPress: (() -> Unit)? = null
-    private var onKeyDown: ((KeyEvent) -> Unit)? = null
-    private var onKeyUp: ((KeyEvent) -> Unit)? = null
-    private var onKeyType: ((String) -> Unit)? = null
-
-    @JvmInline
-    private value class NativeEventType private constructor(val value: Int) {
-        companion object {
-            val PointerMove = NativeEventType(0)
-            val PointerDown = NativeEventType(1)
-            val PointerUp = NativeEventType(2)
-            val PointerEnter = NativeEventType(3)
-            val PointerLeave = NativeEventType(4)
-            val MouseWheel = NativeEventType(5)
-            val Key = NativeEventType(6)
-            val KeyType = NativeEventType(7)
-
-            const val ENUM_COUNT = 8
-        }
-    }
-    private var nativeHandlerEnabled = 0L
-
-    internal var isPressed = false
-        private set
-    internal var isHovered = false
-        private set
-
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
@@ -80,159 +41,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         }
 
         cleanupTask.isOwnedByCore = true
-    }
-
-    fun enablePointerMoveHandler() {
-        val mask = 1L shl NativeEventType.PointerMove.value;
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerMoveHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerDownHandler() {
-        val mask = 1L shl NativeEventType.PointerDown.value;
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerDownHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerUpHandler() {
-        val mask = 1L shl NativeEventType.PointerUp.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerUpHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerEnterHandler() {
-        val mask = 1L shl NativeEventType.PointerEnter.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerLeaveHandler() {
-        val mask = 1L shl NativeEventType.PointerLeave.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableMouseWheelHandler() {
-        val mask = 1L shl NativeEventType.MouseWheel.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setMouseWheelHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableKeyHandler() {
-        val mask = 1L shl NativeEventType.Key.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setKeyListener(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableKeyTypeHandler() {
-        val mask = 1L shl NativeEventType.KeyType.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setKeyTypeListener(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun setOnClickListener(listener: () -> Unit) {
-        onPointerClick = listener
-        enablePointerDownHandler()
-        enablePointerUpHandler()
-    }
-
-    fun setOnPointerMove(listener: (Point) -> Unit) {
-        onPointerMove = listener
-        enablePointerMoveHandler()
-    }
-
-    fun setOnPointerDown(listener: (Point) -> Unit) {
-        onPointerDown = listener
-        enablePointerDownHandler()
-    }
-
-    fun setOnPointerUp(listener: (Point) -> Unit) {
-        onPointerUp = listener
-        enablePointerUpHandler()
-    }
-
-    fun setOnPointerEnter(listener: () -> Unit) {
-        onPointerEnter = listener
-        enablePointerEnterHandler()
-    }
-
-    fun setOnPointerLeave(listener: () -> Unit) {
-        onPointerLeave = listener
-        enablePointerLeaveHandler()
-    }
-
-    fun setOnMouseWheel(listener: (Int) -> Unit) {
-        onMouseWheel = listener
-        enableMouseWheelHandler()
-    }
-
-    fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
-        onStartHover = start
-        onEndHover = end
-        enablePointerEnterHandler()
-        enablePointerLeaveHandler()
-    }
-
-    fun setPressHandler(start: () -> Unit, end: () -> Unit) {
-        onStartPress = start
-        onEndPress = end
-        enablePointerUpHandler()
-        enablePointerDownHandler()
-    }
-
-    fun setOnKeyDown(listener: (KeyEvent) -> Unit) {
-        onKeyDown = listener
-        enableKeyHandler()
-    }
-
-    fun setOnKeyUp(listener: (KeyEvent) -> Unit) {
-        onKeyUp = listener
-        enableKeyHandler()
-    }
-
-    fun setOnKeyType(listener: (String) -> Unit) {
-        onKeyType = listener
-        enableKeyTypeHandler()
     }
 
     fun setSize(size: Size) {
@@ -289,80 +97,11 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
 
     fun setIsFocusable(isFocusable: Boolean) {
         JniViewNodeBridge.setIsFocusable(ptr, isFocusable)
-    }
 
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerMove")
-    internal fun dispatchPointerMove(x: Float, y: Float) {
-        onPointerMove?.invoke(Point(x, y))
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerDown")
-    internal fun dispatchPointerDown(x: Float, y: Float) {
-        isPressed = true
-        onPointerDown?.invoke(Point(x, y))
-        onStartPress?.invoke()
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerUp")
-    internal fun dispatchPointerUp(x: Float, y: Float) {
-        onPointerUp?.invoke(Point(x, y))
-
-        if (isPressed && onPointerClick != null) {
-            onPointerClick!!.invoke()
+        if (isFocusable) {
+            enablePointerDownHandler()
+            enablePointerUpHandler()
         }
-
-        isPressed = false
-        onEndPress?.invoke()
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerEnter")
-    internal fun dispatchPointerEnter() {
-        onPointerEnter?.invoke()
-        onStartHover?.invoke()
-        isHovered = true
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchPointerLeave")
-    internal fun dispatchPointerLeave() {
-        onPointerLeave?.invoke()
-        onEndHover?.invoke()
-        isHovered = false
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchMouseWheel")
-    internal fun dispatchMouseWheel(delta: Int) {
-        onMouseWheel?.invoke(delta)
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchKeyEvent")
-    internal fun dispatchKeyEvent(type: Int, keyCode: Int, scanCode: Int, modifier: Int) {
-        val event = KeyEvent(
-            key = Key.fromInt(keyCode),
-            physicalKey = Key.fromInt(scanCode),
-            modifiers = KeyModifierMask(modifier)
-        )
-
-        when(KeyEventType.fromInt(type)) {
-            KeyEventType.KeyPress -> {
-                onKeyDown?.invoke(event)
-            }
-            KeyEventType.KeyRelease -> {
-                onKeyUp?.invoke(event)
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @JvmName("dispatchKeyType")
-    internal fun dispatchKeyType(character: String) {
-        onKeyType?.invoke(character)
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {
@@ -474,7 +213,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                if (isPressed && style.pressedStyle != null) {
+                if (isPressed() && style.pressedStyle != null) {
                     applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null))
                 } else {
                     applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
@@ -490,7 +229,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                if (isHovered && style.hoverStyle != null) {
+                if (isHovered() && style.hoverStyle != null) {
                     applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null))
                 } else {
                     applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
@@ -643,12 +382,12 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
 
 internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onClick?.let {
-        setOnClickListener(it)
+        setOnClick(it)
     }
 
     event.onClickState?.let { state ->
         state.onChange { handler ->
-            setOnClickListener(handler ?: {})
+            setOnClick(handler ?: {})
         }
     }
 
@@ -715,14 +454,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyDown?.let {
         setOnKeyDown(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyDownState?.let { state ->
         state.onChange { handler ->
-            setOnKeyDown(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyDown(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyDown()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }
@@ -730,14 +472,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyUp?.let {
         setOnKeyUp(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyUpState?.let { state ->
         state.onChange { handler ->
-            setOnKeyUp(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyUp(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyUp()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }
@@ -745,14 +490,17 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onKeyType?.let {
         setOnKeyType(it)
         setIsFocusable(true)
-        enablePointerDownHandler()
-        enablePointerUpHandler()
     }
 
     event.onKeyTypeState?.let { state ->
         state.onChange { handler ->
-            setOnKeyType(handler ?: {})
-            setIsFocusable(handler != null)
+            if (handler != null) {
+                setOnKeyType(handler)
+                setIsFocusable(true)
+            } else {
+                clearOnKeyType()
+                setIsFocusable(false)
+            }
         }
         setIsFocusable(state.value != null)
     }

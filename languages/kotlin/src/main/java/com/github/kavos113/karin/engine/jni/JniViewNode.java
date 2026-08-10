@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.engine.jni;
 
-import com.github.kavos113.karin.engine.handle.ViewNodeHandle;
+import com.github.kavos113.karin.engine.handle.EventManager;
 
 class JniViewNode {
     static {
@@ -29,15 +29,23 @@ class JniViewNode {
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);
 
-    static native void setPointerMoveListener(long nodePtr, ViewNodeHandle target);
-    static native void setPointerDownListener(long nodePtr, ViewNodeHandle target);
-    static native void setPointerUpListener(long nodePtr, ViewNodeHandle target);
-    static native void setPointerEnterListener(long nodePtr, ViewNodeHandle target);
-    static native void setPointerLeaveListener(long nodePtr, ViewNodeHandle target);
-    static native void setMouseWheelListener(long nodePtr, ViewNodeHandle target);
-    static native void setKeyListener(long nodePtr, ViewNodeHandle target);
-    static native void setKeyTypeListener(long nodePtr, ViewNodeHandle target);
     static native void setIsFocusable(long nodePtr, boolean isFocusable);
+    static native void setPointerMoveListener(long nodePtr, EventManager target);
+    static native void setPointerDownListener(long nodePtr, EventManager target);
+    static native void setPointerUpListener(long nodePtr, EventManager target);
+    static native void setPointerEnterListener(long nodePtr, EventManager target);
+    static native void setPointerLeaveListener(long nodePtr, EventManager target);
+    static native void setMouseWheelListener(long nodePtr, EventManager target);
+    static native void setKeyListener(long nodePtr, EventManager target);
+    static native void setKeyTypeListener(long nodePtr, EventManager target);
+    static native void clearPointerMoveListener(long nodePtr);
+    static native void clearPointerDownListener(long nodePtr);
+    static native void clearPointerUpListener(long nodePtr);
+    static native void clearPointerEnterListener(long nodePtr);
+    static native void clearPointerLeaveListener(long nodePtr);
+    static native void clearMouseWheelListener(long nodePtr);
+    static native void clearKeyListener(long nodePtr);
+    static native void clearKeyTypeListener(long nodePtr);
 
     static native void destroy(long nodePtr);
 }

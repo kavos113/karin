@@ -1,6 +1,6 @@
 package com.github.kavos113.karin.engine.jni
 
-import com.github.kavos113.karin.engine.handle.ViewNodeHandle
+import com.github.kavos113.karin.engine.handle.EventManager
 
 internal object JniViewNodeBridge {
     fun setSize(nodePtr: Long, width: Float, height: Float) = JniViewNode.setSize(nodePtr, width, height)
@@ -25,15 +25,23 @@ internal object JniViewNodeBridge {
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
 
-    fun setPointerMoveHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerMoveListener(nodePtr, target)
-    fun setPointerDownHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerDownListener(nodePtr, target)
-    fun setPointerUpHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerUpListener(nodePtr, target)
-    fun setPointerEnterHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerEnterListener(nodePtr, target)
-    fun setPointerLeaveHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setPointerLeaveListener(nodePtr, target)
-    fun setMouseWheelHandler(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setMouseWheelListener(nodePtr, target)
-    fun setKeyListener(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setKeyListener(nodePtr, target)
-    fun setKeyTypeListener(nodePtr: Long, target: ViewNodeHandle) = JniViewNode.setKeyTypeListener(nodePtr, target)
     fun setIsFocusable(nodePtr: Long, isFocusable: Boolean) = JniViewNode.setIsFocusable(nodePtr, isFocusable)
+    fun setPointerMoveHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerMoveListener(nodePtr, target)
+    fun setPointerDownHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerDownListener(nodePtr, target)
+    fun setPointerUpHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerUpListener(nodePtr, target)
+    fun setPointerEnterHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerEnterListener(nodePtr, target)
+    fun setPointerLeaveHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerLeaveListener(nodePtr, target)
+    fun setMouseWheelHandler(nodePtr: Long, target: EventManager) = JniViewNode.setMouseWheelListener(nodePtr, target)
+    fun setKeyHandler(nodePtr: Long, target: EventManager) = JniViewNode.setKeyListener(nodePtr, target)
+    fun setKeyTypeHandler(nodePtr: Long, target: EventManager) = JniViewNode.setKeyTypeListener(nodePtr, target)
+    fun clearPointerMoveHandler(nodePtr: Long) = JniViewNode.clearPointerMoveListener(nodePtr)
+    fun clearPointerDownHandler(nodePtr: Long) = JniViewNode.clearPointerDownListener(nodePtr)
+    fun clearPointerUpHandler(nodePtr: Long) = JniViewNode.clearPointerUpListener(nodePtr)
+    fun clearPointerEnterHandler(nodePtr: Long) = JniViewNode.clearPointerEnterListener(nodePtr)
+    fun clearPointerLeaveHandler(nodePtr: Long) = JniViewNode.clearPointerLeaveListener(nodePtr)
+    fun clearMouseWheelHandler(nodePtr: Long) = JniViewNode.clearMouseWheelListener(nodePtr)
+    fun clearKeyHandler(nodePtr: Long) = JniViewNode.clearKeyListener(nodePtr)
+    fun clearKeyTypeHandler(nodePtr: Long) = JniViewNode.clearKeyTypeListener(nodePtr)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }
