@@ -42,10 +42,10 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     }
     private var nativeHandlerEnabled = 0L
 
-    internal var isPressed = false
-        private set
-    internal var isHovered = false
-        private set
+    private var isPressed = false
+    private var isHovered = false
+    override fun isPressed(): Boolean = isPressed
+    override fun isHovered(): Boolean = isHovered
 
     val ptr: Long
         get() {

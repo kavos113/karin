@@ -3,15 +3,16 @@ package com.github.kavos113.karin.engine.handle
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
 import com.github.kavos113.karin.engine.memory.NativeResourceManager
 import com.github.kavos113.karin.ui.common.Color
-import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.common.Size
-import com.github.kavos113.karin.ui.event.KeyEvent
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
 import java.lang.ref.Cleaner
 
-internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
+internal open class ViewNodeHandle(
+    ptr: Long,
+    val eventManager: EventManager = NativeEventManager(ptr)
+) : ViewUpdateRequester, EventManager by eventManager {
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)
@@ -25,44 +26,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         Vertical(5),
         All(6);
     }
-
-    private var onPointerClick: (() -> Unit)? = null
-    private var onPointerMove: ((Point) -> Unit)? = null
-    private var onPointerDown: ((Point) -> Unit)? = null
-    private var onPointerUp: ((Point) -> Unit)? = null
-    private var onPointerEnter: (() -> Unit)? = null
-    private var onPointerLeave: (() -> Unit)? = null
-    private var onMouseWheel: ((Int) -> Unit)? = null
-    private var onStartHover: (() -> Unit)? = null
-    private var onEndHover: (() -> Unit)? = null
-    private var onStartPress: (() -> Unit)? = null
-    private var onEndPress: (() -> Unit)? = null
-    private var onKeyDown: ((KeyEvent) -> Unit)? = null
-    private var onKeyUp: ((KeyEvent) -> Unit)? = null
-    private var onKeyType: ((String) -> Unit)? = null
-
-    @JvmInline
-    private value class NativeEventType private constructor(val value: Int) {
-        companion object {
-            val PointerMove = NativeEventType(0)
-            val PointerDown = NativeEventType(1)
-            val PointerUp = NativeEventType(2)
-            val PointerEnter = NativeEventType(3)
-            val PointerLeave = NativeEventType(4)
-            val MouseWheel = NativeEventType(5)
-            val Key = NativeEventType(6)
-            val KeyType = NativeEventType(7)
-
-            const val ENUM_COUNT = 8
-        }
-    }
-    private var nativeHandlerEnabled = 0L
-
-    internal var isPressed = false
-        private set
-    internal var isHovered = false
-        private set
-
     val ptr: Long
         get() {
             check(internalPtr != 0L) {
@@ -77,159 +40,6 @@ internal open class ViewNodeHandle(ptr: Long) : ViewUpdateRequester {
         }
 
         cleanupTask.isOwnedByCore = true
-    }
-
-    fun enablePointerMoveHandler() {
-        val mask = 1L shl NativeEventType.PointerMove.value;
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerMoveHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerDownHandler() {
-        val mask = 1L shl NativeEventType.PointerDown.value;
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerDownHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerUpHandler() {
-        val mask = 1L shl NativeEventType.PointerUp.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerUpHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerEnterHandler() {
-        val mask = 1L shl NativeEventType.PointerEnter.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerEnterHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enablePointerLeaveHandler() {
-        val mask = 1L shl NativeEventType.PointerLeave.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setPointerLeaveHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableMouseWheelHandler() {
-        val mask = 1L shl NativeEventType.MouseWheel.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setMouseWheelHandler(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableKeyHandler() {
-        val mask = 1L shl NativeEventType.Key.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setKeyListener(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun enableKeyTypeHandler() {
-        val mask = 1L shl NativeEventType.KeyType.value
-
-        if (nativeHandlerEnabled and mask != 0L) {
-            return
-        }
-        JniViewNodeBridge.setKeyTypeListener(ptr, this)
-
-        nativeHandlerEnabled = nativeHandlerEnabled or mask
-    }
-
-    fun setOnClickListener(listener: () -> Unit) {
-        onPointerClick = listener
-        enablePointerDownHandler()
-        enablePointerUpHandler()
-    }
-
-    fun setOnPointerMove(listener: (Point) -> Unit) {
-        onPointerMove = listener
-        enablePointerMoveHandler()
-    }
-
-    fun setOnPointerDown(listener: (Point) -> Unit) {
-        onPointerDown = listener
-        enablePointerDownHandler()
-    }
-
-    fun setOnPointerUp(listener: (Point) -> Unit) {
-        onPointerUp = listener
-        enablePointerUpHandler()
-    }
-
-    fun setOnPointerEnter(listener: () -> Unit) {
-        onPointerEnter = listener
-        enablePointerEnterHandler()
-    }
-
-    fun setOnPointerLeave(listener: () -> Unit) {
-        onPointerLeave = listener
-        enablePointerLeaveHandler()
-    }
-
-    fun setOnMouseWheel(listener: (Int) -> Unit) {
-        onMouseWheel = listener
-        enableMouseWheelHandler()
-    }
-
-    fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
-        onStartHover = start
-        onEndHover = end
-        enablePointerEnterHandler()
-        enablePointerLeaveHandler()
-    }
-
-    fun setPressHandler(start: () -> Unit, end: () -> Unit) {
-        onStartPress = start
-        onEndPress = end
-        enablePointerUpHandler()
-        enablePointerDownHandler()
-    }
-
-    fun setOnKeyDown(listener: (KeyEvent) -> Unit) {
-        onKeyDown = listener
-        enableKeyHandler()
-    }
-
-    fun setOnKeyUp(listener: (KeyEvent) -> Unit) {
-        onKeyUp = listener
-        enableKeyHandler()
-    }
-
-    fun setOnKeyType(listener: (String) -> Unit) {
-        onKeyType = listener
-        enableKeyTypeHandler()
     }
 
     fun setSize(size: Size) {
@@ -397,7 +207,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                if (isPressed && style.pressedStyle != null) {
+                if (isPressed() && style.pressedStyle != null) {
                     applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null))
                 } else {
                     applyStyle(style = style.copy(hoverStyle = null, pressedStyle = null))
@@ -413,7 +223,7 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
                 requestRedraw()
             },
             end = {
-                if (isHovered && style.hoverStyle != null) {
+                if (isHovered() && style.hoverStyle != null) {
                     applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null))
                 } else {
                     applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null))
@@ -566,12 +376,12 @@ internal fun ViewNodeHandle.applyLayout(layout: Layout) {
 
 internal fun ViewNodeHandle.applyEvent(event: Event) {
     event.onClick?.let {
-        setOnClickListener(it)
+        setOnClick(it)
     }
 
     event.onClickState?.let { state ->
         state.onChange { handler ->
-            setOnClickListener(handler ?: {})
+            setOnClick(handler ?: {})
         }
     }
 
