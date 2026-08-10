@@ -96,12 +96,18 @@ internal open class ViewNodeHandle(
     }
 
     fun setIsFocusable(isFocusable: Boolean) {
-        JniViewNodeBridge.setIsFocusable(ptr, isFocusable)
+        JniViewNodeBridge.setIsFocusable(ptr, isFocusable, this)
 
         if (isFocusable) {
             enablePointerDownHandler()
             enablePointerUpHandler()
         }
+    }
+
+    @SuppressWarnings("unused")
+    @JvmName("onChangeFocusState")
+    internal fun onChangeFocusState(focused: Boolean) {
+
     }
 
     private class CleanupTask(private val ptr: Long) : Runnable {

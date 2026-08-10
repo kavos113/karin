@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.engine.jni
 
 import com.github.kavos113.karin.engine.handle.EventManager
+import com.github.kavos113.karin.engine.handle.ViewNodeHandle
 
 internal object JniViewNodeBridge {
     fun setSize(nodePtr: Long, width: Float, height: Float) = JniViewNode.setSize(nodePtr, width, height)
@@ -25,7 +26,7 @@ internal object JniViewNodeBridge {
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
 
-    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean) = JniViewNode.setIsFocusable(nodePtr, isFocusable)
+    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean, target: ViewNodeHandle) = JniViewNode.setIsFocusable(nodePtr, isFocusable, target)
     fun setPointerMoveHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerMoveListener(nodePtr, target)
     fun setPointerDownHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerDownListener(nodePtr, target)
     fun setPointerUpHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerUpListener(nodePtr, target)
