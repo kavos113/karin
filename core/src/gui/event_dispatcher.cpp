@@ -75,13 +75,18 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
     ViewNode* target = m_rootView->hitTest(point, ViewNode::EventType::PointerClick);
     if (target)
     {
-        if (target->isFocusable())
+        if (event.type == MouseButtonEvent::Type::ButtonPress_)
         {
-            m_focusNode = target;
-        }
-        else
-        {
-            m_focusNode = nullptr;
+            if (target->isFocusable())
+            {
+                m_focusNode = target;
+                target->triggerChangeFocusStateHandler(true);
+            }
+            else
+            {
+                m_focusNode->triggerChangeFocusStateHandler(false);
+                m_focusNode = nullptr;
+            }
         }
 
         switch (event.type)
