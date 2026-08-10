@@ -143,6 +143,94 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         nativeHandlerEnabled = nativeHandlerEnabled or mask
     }
 
+    private fun disablePointerMoveHandler() {
+        val mask = 1L shl NativeEventType.PointerMove.value;
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearPointerMoveHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disablePointerDownHandler() {
+        val mask = 1L shl NativeEventType.PointerDown.value;
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearPointerDownHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disablePointerUpHandler() {
+        val mask = 1L shl NativeEventType.PointerUp.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearPointerUpHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disablePointerEnterHandler() {
+        val mask = 1L shl NativeEventType.PointerEnter.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearPointerEnterHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disablePointerLeaveHandler() {
+        val mask = 1L shl NativeEventType.PointerLeave.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearPointerLeaveHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disableMouseWheelHandler() {
+        val mask = 1L shl NativeEventType.MouseWheel.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearMouseWheelHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disableKeyHandler() {
+        val mask = 1L shl NativeEventType.Key.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearKeyHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
+    private fun disableKeyTypeHandler() {
+        val mask = 1L shl NativeEventType.KeyType.value
+
+        if (nativeHandlerEnabled and mask == 0L) {
+            return
+        }
+        JniViewNodeBridge.clearKeyTypeHandler(ptr)
+
+        nativeHandlerEnabled = nativeHandlerEnabled and (mask.inv())
+    }
+
     override fun setOnClick(handler: () -> Unit) {
         onPointerClick = handler
         enablePointerDownHandler()
@@ -213,10 +301,10 @@ internal class NativeEventManager(ptr: Long) : EventManager {
 
         if (onKeyDown == null && onKeyUp == null && onKeyType == null) {
             if (onPointerDown == null) {
-                JniViewNodeBridge.clearPointerDownHandler(ptr)
+                disablePointerDownHandler()
             }
             if (onPointerUp == null) {
-                JniViewNodeBridge.clearPointerUpHandler(ptr)
+                disablePointerUpHandler()
             }
         }
     }
@@ -224,14 +312,14 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun clearOnPointerMove() {
         onPointerMove = null
 
-        JniViewNodeBridge.clearPointerMoveHandler(ptr)
+        disablePointerMoveHandler()
     }
 
     override fun clearOnPointerDown() {
         onPointerDown = null
 
         if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onStartPress == null) {
-            JniViewNodeBridge.clearPointerDownHandler(ptr)
+            disablePointerDownHandler()
         }
     }
 
@@ -239,7 +327,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         onPointerUp = null
 
         if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onEndPress == null) {
-            JniViewNodeBridge.clearPointerUpHandler(ptr)
+            disablePointerUpHandler()
         }
     }
 
@@ -247,7 +335,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         onPointerEnter = null
 
         if (onStartHover == null) {
-            JniViewNodeBridge.clearPointerEnterHandler(ptr)
+            disablePointerEnterHandler()
         }
     }
 
@@ -255,21 +343,21 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         onPointerLeave = null
 
         if (onEndHover == null) {
-            JniViewNodeBridge.clearPointerLeaveHandler(ptr)
+            disablePointerLeaveHandler()
         }
     }
 
     override fun clearOnMouseWheel() {
         onMouseWheel = null
 
-        JniViewNodeBridge.clearMouseWheelHandler(ptr)
+        disableMouseWheelHandler()
     }
 
     override fun clearOnKeyDown() {
         onKeyDown = null
 
         if (onKeyUp == null) {
-            JniViewNodeBridge.clearKeyHandler(ptr)
+            disableKeyHandler()
         }
     }
 
@@ -277,14 +365,14 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         onKeyUp = null
 
         if (onKeyDown == null) {
-            JniViewNodeBridge.clearKeyHandler(ptr)
+            disableKeyHandler()
         }
     }
 
     override fun clearOnKeyType() {
         onKeyType = null
 
-        JniViewNodeBridge.clearKeyTypeHandler(ptr)
+        disableKeyTypeHandler()
     }
 
     @SuppressWarnings("unused")
