@@ -408,3 +408,75 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     node->setFocusable(isFocusable);
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerMoveListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setPointerMoveHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerDownListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setPointerDownHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerUpListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setPointerUpHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerEnterListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setPointerEnterHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerLeaveListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setPointerLeaveHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearMouseWheelListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setMouseWheelHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearKeyListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setKeyHandler(nullptr);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearKeyTypeListener
+  (JNIEnv *env, jclass cls, jlong viewPtr)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+
+    node->setKeyTypeHandler(nullptr);
+}

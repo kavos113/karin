@@ -29,6 +29,7 @@ class JniViewNode {
     static native void requestRelayout(long nodePtr);
     static native void requestRedraw(long nodePtr);
 
+    static native void setIsFocusable(long nodePtr, boolean isFocusable);
     static native void setPointerMoveListener(long nodePtr, EventManager target);
     static native void setPointerDownListener(long nodePtr, EventManager target);
     static native void setPointerUpListener(long nodePtr, EventManager target);
@@ -37,7 +38,14 @@ class JniViewNode {
     static native void setMouseWheelListener(long nodePtr, EventManager target);
     static native void setKeyListener(long nodePtr, EventManager target);
     static native void setKeyTypeListener(long nodePtr, EventManager target);
-    static native void setIsFocusable(long nodePtr, boolean isFocusable);
+    static native void clearPointerMoveListener(long nodePtr);
+    static native void clearPointerDownListener(long nodePtr);
+    static native void clearPointerUpListener(long nodePtr);
+    static native void clearPointerEnterListener(long nodePtr);
+    static native void clearPointerLeaveListener(long nodePtr);
+    static native void clearMouseWheelListener(long nodePtr);
+    static native void clearKeyListener(long nodePtr);
+    static native void clearKeyTypeListener(long nodePtr);
 
     static native void destroy(long nodePtr);
 }

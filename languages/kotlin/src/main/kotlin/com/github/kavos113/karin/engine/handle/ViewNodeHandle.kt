@@ -13,6 +13,7 @@ internal open class ViewNodeHandle(
     ptr: Long,
     val eventManager: EventManager = NativeEventManager(ptr)
 ) : ViewUpdateRequester, EventManager by eventManager {
+
     private var internalPtr = ptr
     private val cleanupTask = CleanupTask(ptr)
     private val cleanable: Cleaner.Cleanable = NativeResourceManager.cleaner.register(this, cleanupTask)

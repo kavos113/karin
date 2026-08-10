@@ -244,38 +244,86 @@ YGNodeRef ViewNode::getYogaNode() const
 
 void ViewNode::setPointerMoveHandler(std::function<void(Point)> func)
 {
-    m_pointerMoveHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    if (func != nullptr)
+    {
+        m_pointerMoveHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    }
+    else
+    {
+        m_pointerMoveHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::PointerMove));
+    }
 }
 
 void ViewNode::setPointerDownHandler(std::function<void(Point, MouseButtonType)> func)
 {
-    m_pointerDownHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
+    if (func != nullptr)
+    {
+        m_pointerDownHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
+    }
+    else
+    {
+        m_pointerDownHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::PointerClick));
+    }
 }
 
 void ViewNode::setPointerUpHandler(std::function<void(Point, MouseButtonType)> func)
 {
-    m_pointerUpHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
+    if (func != nullptr)
+    {
+        m_pointerUpHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::PointerClick));
+    }
+    else
+    {
+        m_pointerUpHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::PointerClick));
+    }
 }
 
 void ViewNode::setPointerEnterHandler(std::function<void(Point)> func)
 {
-    m_pointerEnterHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    if (func != nullptr)
+    {
+        m_pointerEnterHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    }
+    else
+    {
+        m_pointerEnterHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::PointerMove));
+    }
 }
 
 void ViewNode::setPointerLeaveHandler(std::function<void(Point)> func)
 {
-    m_pointerLeaveHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    if (func != nullptr)
+    {
+        m_pointerLeaveHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::PointerMove));
+    }
+    else
+    {
+        m_pointerLeaveHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::PointerMove));
+    }
 }
 
 void ViewNode::setMouseWheelHandler(std::function<void(Point, int)> func)
 {
-    m_mouseWheelHandler = std::move(func);
-    m_enableHandlers.set(static_cast<size_t>(EventType::MouseWheel));
+    if (func != nullptr)
+    {
+        m_mouseWheelHandler = std::move(func);
+        m_enableHandlers.set(static_cast<size_t>(EventType::MouseWheel));
+    }
+    else
+    {
+        m_mouseWheelHandler = nullptr;
+        m_enableHandlers.reset(static_cast<size_t>(EventType::MouseWheel));
+    }
 }
 
 void ViewNode::setKeyHandler(std::function<void(KeyEvent)> func)

@@ -25,6 +25,7 @@ internal object JniViewNodeBridge {
     fun requestRelayout(nodePtr: Long) = JniViewNode.requestRelayout(nodePtr)
     fun requestRedraw(nodePtr: Long) = JniViewNode.requestRedraw(nodePtr)
 
+    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean) = JniViewNode.setIsFocusable(nodePtr, isFocusable)
     fun setPointerMoveHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerMoveListener(nodePtr, target)
     fun setPointerDownHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerDownListener(nodePtr, target)
     fun setPointerUpHandler(nodePtr: Long, target: EventManager) = JniViewNode.setPointerUpListener(nodePtr, target)
@@ -33,7 +34,14 @@ internal object JniViewNodeBridge {
     fun setMouseWheelHandler(nodePtr: Long, target: EventManager) = JniViewNode.setMouseWheelListener(nodePtr, target)
     fun setKeyListener(nodePtr: Long, target: EventManager) = JniViewNode.setKeyListener(nodePtr, target)
     fun setKeyTypeListener(nodePtr: Long, target: EventManager) = JniViewNode.setKeyTypeListener(nodePtr, target)
-    fun setIsFocusable(nodePtr: Long, isFocusable: Boolean) = JniViewNode.setIsFocusable(nodePtr, isFocusable)
+    fun clearPointerMoveHandler(nodePtr: Long) = JniViewNode.clearPointerMoveListener(nodePtr)
+    fun clearPointerDownHandler(nodePtr: Long) = JniViewNode.clearPointerDownListener(nodePtr)
+    fun clearPointerUpHandler(nodePtr: Long) = JniViewNode.clearPointerUpListener(nodePtr)
+    fun clearPointerEnterHandler(nodePtr: Long) = JniViewNode.clearPointerEnterListener(nodePtr)
+    fun clearPointerLeaveHandler(nodePtr: Long) = JniViewNode.clearPointerLeaveListener(nodePtr)
+    fun clearMouseWheelHandler(nodePtr: Long) = JniViewNode.clearMouseWheelListener(nodePtr)
+    fun clearKeyHandler(nodePtr: Long) = JniViewNode.clearKeyListener(nodePtr)
+    fun clearKeyTypeHandler(nodePtr: Long) = JniViewNode.clearKeyTypeListener(nodePtr)
 
     fun destroy(nodePtr: Long) = JniViewNode.destroy(nodePtr)
 }
