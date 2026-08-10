@@ -3,6 +3,10 @@ package com.github.kavos113.karin.ui.component
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
+import com.github.kavos113.karin.ui.event.Key
+import com.github.kavos113.karin.ui.internal.isControlChar
+import com.github.kavos113.karin.ui.internal.unicodeLength
+import com.github.kavos113.karin.ui.internal.unicodeSubstr
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
@@ -42,10 +46,25 @@ fun UiBuilder.TextInput(
         style
     }
 
-    val finalEvent = event.onKeyType {
-        text.value += it
-        println("current text: ${text.value}")
-    }
+    val finalEvent = event
+        .onKeyType {
+            val codePoint = it.codePointAt(0)
+            if (codePoint.isControlChar()) {
+                return@onKeyType
+            }
+
+            text.value += it
+            println("current text: ${text.value}")
+        }
+        .onKeyDown {
+            when (it.key) {
+                Key.Backspace -> {
+                    text.value = text.value.unicodeSubstr(0, text.value.unicodeLength() - 1)
+                }
+                // TODO: tab, delete, etc..
+                else -> {}
+            }
+        }
 
     val height = layout.height ?: (textStyle.fontSize + 4)
     val width = layout.width ?: DEFAULT_WIDTH
