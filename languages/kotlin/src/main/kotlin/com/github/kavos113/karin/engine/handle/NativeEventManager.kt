@@ -127,7 +127,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         if (nativeHandlerEnabled and mask != 0L) {
             return
         }
-        JniViewNodeBridge.setKeyListener(ptr, this)
+        JniViewNodeBridge.setKeyHandler(ptr, this)
 
         nativeHandlerEnabled = nativeHandlerEnabled or mask
     }
@@ -138,7 +138,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         if (nativeHandlerEnabled and mask != 0L) {
             return
         }
-        JniViewNodeBridge.setKeyTypeListener(ptr, this)
+        JniViewNodeBridge.setKeyTypeHandler(ptr, this)
 
         nativeHandlerEnabled = nativeHandlerEnabled or mask
     }
