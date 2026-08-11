@@ -62,3 +62,7 @@ endif ()
 if (UNIX)
     target_link_libraries(karin_system PRIVATE X11)
 endif ()
+
+if (MSVC)
+    target_compile_options(karin_system PRIVATE /utf-8)
+endif ()

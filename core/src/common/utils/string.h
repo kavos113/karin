@@ -18,6 +18,8 @@ inline std::string toString(const std::wstring& str)
         return "";
     }
 
+    const wchar_t* buf = str.c_str();
+
 #ifdef KARIN_PLATFORM_WINDOWS
     int newSize = WideCharToMultiByte(
         CP_UTF8,
@@ -33,7 +35,7 @@ inline std::string toString(const std::wstring& str)
     {
         return "";
     }
-    std::vector<char> buffer(newSize);
+    std::vector<char> buffer(newSize, 0);
     int result = WideCharToMultiByte(
         CP_UTF8,
         0,
@@ -114,12 +116,16 @@ inline std::wstring toWString(const std::string& str)
         return L"";
     }
 
-    std::vector<wchar_t> buffer(newSize);
+    std::vector<wchar_t> buffer(newSize + 1, 0);
     size_t convertedSize = std::mbstowcs(buffer.data(), str.c_str(), newSize);
     if (convertedSize == -1)
     {
         return L"";
     }
+
+    std::wstring buf(buffer.data());
+    const wchar_t* buf1 = buffer.data();
+    const wchar_t* buf2 = buf.c_str();
     return {buffer.data()};
 #endif
 }
