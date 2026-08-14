@@ -18,7 +18,7 @@ TextBlob TextEngineImpl::layoutText(
     std::shared_ptr<IFontFace> fontFace = m_fontManager->getFontFace(textStyle.font);
 
     Size layoutSize{};
-    std::vector<GlyphPosition> glyphs = TextLayouter::layout(
+    std::vector<GlyphInfo> glyphs = TextLayouter::layout(
         fontFace.get(),
         text,
         textStyle,

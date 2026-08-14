@@ -57,12 +57,12 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob)
 
     if (m_caretIndex == blob.glyphs.size())
     {
-        GlyphPosition glyph = blob.glyphs[blob.glyphs.size() - 1];
+        GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
 
     }
     else
     {
-        GlyphPosition glyph = blob.glyphs[m_caretIndex];
+        GlyphInfo glyph = blob.glyphs[m_caretIndex];
     }
 }
 } // karin::gui

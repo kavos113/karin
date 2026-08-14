@@ -10,18 +10,19 @@
 namespace karin
 {
 
-struct GlyphPosition
+struct GlyphInfo
 {
     // position in layout. pixels
     // bottom-left of the glyph bounding box
     Point position;
 
+    float advanceX;
     uint32_t glyphIndex;
 };
 
 struct TextBlob
 {
-    std::vector<GlyphPosition> glyphs;
+    std::vector<GlyphInfo> glyphs;
     std::shared_ptr<IFontFace> fontFace;
     Font font;
     float fontEmSize;
