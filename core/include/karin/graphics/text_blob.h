@@ -1,7 +1,6 @@
 #ifndef KARIN_GRAPHICS_TEXT_BLOB_H
 #define KARIN_GRAPHICS_TEXT_BLOB_H
 
-#include <karin/common/geometry/rectangle.h>
 #include "font_face.h"
 #include "font.h"
 

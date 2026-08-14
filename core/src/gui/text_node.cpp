@@ -37,4 +37,32 @@ YGSize TextNode::measure(Size availableSize) const
     Size measuredSize = textBlob.layoutSize;
     return YGSize{measuredSize.width, measuredSize.height};
 }
+
+void TextNode::setDrawCaret(bool drawCaret)
+{
+    m_drawCaret = drawCaret;
+}
+
+void TextNode::setCaretIndex(uint32_t caretIndex)
+{
+    m_caretIndex = caretIndex;
+}
+
+void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob)
+{
+    if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
+    {
+        return;
+    }
+
+    if (m_caretIndex == blob.glyphs.size())
+    {
+        GlyphPosition glyph = blob.glyphs[blob.glyphs.size() - 1];
+
+    }
+    else
+    {
+        GlyphPosition glyph = blob.glyphs[m_caretIndex];
+    }
+}
 } // karin::gui
