@@ -9,6 +9,7 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
     , m_textStyle(std::move(textStyle))
     , m_paragraphStyle(paragraphStyle)
     , m_pattern(std::move(pattern))
+    , m_caretPattern(SolidColorPattern(Color(Color::Black)))
 {
 }
 
@@ -48,21 +49,34 @@ void TextNode::setCaretIndex(uint32_t caretIndex)
     m_caretIndex = caretIndex;
 }
 
-void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob)
+void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
 {
     if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
     {
         return;
     }
 
+    FontMetrics metrics = blob.fontFace->getFontMetrics();
+
     if (m_caretIndex == blob.glyphs.size())
     {
         GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
 
+        float x = glyph.position.x + glyph.advanceX;
+        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight));
+        Point bottom = Point(x, glyph.position.y);
+
+        gc.drawLine(top, bottom, m_caretPattern);
     }
     else
     {
         GlyphInfo glyph = blob.glyphs[m_caretIndex];
+
+        float x = glyph.position.x;
+        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight));
+        Point bottom = Point(x, glyph.position.y);
+
+        gc.drawLine(top, bottom, m_caretPattern);
     }
 }
 } // karin::gui

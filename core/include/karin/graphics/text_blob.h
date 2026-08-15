@@ -1,11 +1,13 @@
 #ifndef KARIN_GRAPHICS_TEXT_BLOB_H
 #define KARIN_GRAPHICS_TEXT_BLOB_H
 
-#include "font_face.h"
-#include "font.h"
-
 #include <vector>
 #include <memory>
+
+#include "font_face.h"
+#include "font.h"
+#include <karin/common/geometry/point.h>
+#include <karin/common/geometry/size.h>
 
 namespace karin
 {

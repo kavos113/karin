@@ -32,7 +32,7 @@ public:
     YGSize measure(Size availableSize) const override;
 
 private:
-    void drawCaret(GraphicsContext& gc, const TextBlob& blob);
+    void drawCaret(GraphicsContext& gc, const TextBlob& blob) const;
 
     std::string m_text;
 
@@ -40,8 +40,9 @@ private:
     ParagraphStyle m_paragraphStyle;
     Pattern m_pattern;
 
-    bool m_drawCaret;
+    bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
+    Pattern m_caretPattern;
 };
 } // karin::gui
 
