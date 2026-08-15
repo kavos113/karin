@@ -43,6 +43,8 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
+
+    static constexpr float CARET_WIDTH = 2.0f;
 };
 } // karin::gui
 

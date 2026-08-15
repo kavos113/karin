@@ -62,28 +62,29 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
     }
 
     FontMetrics metrics = blob.fontFace->getFontMetrics();
+    float scale = blob.fontEmSize / static_cast<float>(metrics.unitsPerEm);
 
     if (m_caretIndex == blob.glyphs.size())
     {
         GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
 
         float x = glyph.position.x + glyph.advanceX;
-        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight));
+        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight) * scale);
         Point bottom = Point(x, glyph.position.y);
 
-        gc.drawLine(top, bottom, m_caretPattern);
+        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
     else
     {
         GlyphInfo glyph = blob.glyphs[m_caretIndex];
 
-        float x = glyph.position.x;
-        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight));
+        float x = glyph.position.x - CARET_WIDTH / 2;
+        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight) * scale);
         Point bottom = Point(x, glyph.position.y);
 
         std::cout << "caret top: " << top << ", bottom: " << bottom << std::endl;
 
-        gc.drawLine(top, bottom, m_caretPattern);
+        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
 }
 } // karin::gui

@@ -32,7 +32,7 @@ int main()
         pattern
     );
     textNode->setDrawCaret(true);
-    textNode->setCaretIndex(7);
+    textNode->setCaretIndex(8);
     rootView->addChild(textNode.get());
 
     rootView->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Row);
