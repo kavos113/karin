@@ -28,6 +28,11 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
     gc.drawText(textBlob, start, m_pattern);
+
+    if (m_drawCaret)
+    {
+        drawCaret(gc, textBlob);
+    }
 }
 
 YGSize TextNode::measure(Size availableSize) const
@@ -75,6 +80,8 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         float x = glyph.position.x;
         Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight));
         Point bottom = Point(x, glyph.position.y);
+
+        std::cout << "caret top: " << top << ", bottom: " << bottom << std::endl;
 
         gc.drawLine(top, bottom, m_caretPattern);
     }
