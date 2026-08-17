@@ -49,5 +49,8 @@ internal object JniTextNodeBridge {
         a
     )
 
-    fun setText(nodeId: Long, text: String) = JniTextNode.setText(nodeId, text)
+    fun setText(nodePtr: Long, text: String) = JniTextNode.setText(nodePtr, text)
+
+    fun setEnableCaret(nodePtr: Long, enableCaret: Boolean) = JniTextNode.setEnableCaret(nodePtr, enableCaret)
+    fun setCaretIndex(nodePtr: Long, caretIndex: Int) = JniTextNode.setCaretIndex(nodePtr, caretIndex)
 }

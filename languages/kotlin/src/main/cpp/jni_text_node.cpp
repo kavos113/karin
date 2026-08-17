@@ -87,3 +87,21 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
 
     env->ReleaseStringUTFChars(text, textChars);
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setEnableCaret
+    (JNIEnv *env, jclass cls, jlong nodePtr, jboolean enableCaret)
+{
+    CHECK_JNI_PTR(nodePtr);
+    TextNode *textNode = reinterpret_cast<TextNode*>(nodePtr);
+
+    textNode->setDrawCaret(enableCaret);
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setCaretIndex
+    (JNIEnv *env, jclass cls, jlong nodePtr, jint caretIndex)
+{
+    CHECK_JNI_PTR(nodePtr);
+    TextNode *textNode = reinterpret_cast<TextNode*>(nodePtr);
+
+    textNode->setCaretIndex(caretIndex);
+}
