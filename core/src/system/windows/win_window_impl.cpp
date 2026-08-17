@@ -246,6 +246,6 @@ void WinWindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
 {
     auto* allocData = new std::any(data);
 
-    SendMessage(m_hwnd, WM_KARIN_ACTION, id, reinterpret_cast<LPARAM>(allocData));
+    PostMessage(m_hwnd, WM_KARIN_ACTION, id, reinterpret_cast<LPARAM>(allocData));
 }
 } // karin
