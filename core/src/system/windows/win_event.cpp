@@ -117,7 +117,7 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
     case WM_KARIN_ACTION:
         return ActionEvent(
             static_cast<uint32_t>(wParam),
-            *reinterpret_cast<std::shared_ptr<std::any>*>(lParam)
+            *reinterpret_cast<std::any*>(lParam)
         );
 
     default:
