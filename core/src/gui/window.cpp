@@ -68,8 +68,15 @@ uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& hand
 {
     if (m_eventDispatcher)
     {
-        m_eventDispatcher->addActionEventHandler(handler);
+        return m_eventDispatcher->addActionEventHandler(handler);
     }
+
+    return 0;
+}
+
+void Window::triggerActionEvent(uint32_t id, const std::any& data) const
+{
+    m_window->triggerActionEvent(id, data);
 }
 
 void Window::setRootView(std::unique_ptr<ViewNode> rootView)

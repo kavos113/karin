@@ -34,7 +34,7 @@ private:
     ViewNode *m_focusNode = nullptr;
 
     std::unordered_map<uint32_t, std::function<void(std::any)>> m_actionEventHandlers;
-    uint32_t m_nextHandlerId = 0;
+    uint32_t m_nextHandlerId = 1;
 };
 
 } // karin::gui
