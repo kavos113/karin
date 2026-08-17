@@ -115,10 +115,16 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
         return std::nullopt;
 
     case WM_KARIN_ACTION:
+    {
+        auto *ptr = reinterpret_cast<std::any*>(lParam);
+        std::any data = std::move(*ptr);
+        delete ptr;
+
         return ActionEvent(
             static_cast<uint32_t>(wParam),
-            *reinterpret_cast<std::any*>(lParam)
+            data
         );
+    }
 
     default:
         return std::nullopt;
