@@ -34,6 +34,13 @@ fun UiBuilder.TextInput(
     val text = State<String>(initialText)
     val caretIndex = State<Int>(initialText.unicodeLength())
 
+    val textNodeHandle = TextNodeHandle(
+        text = text.value,
+        style = textStyle,
+        paragraphStyle = paragraphStyle
+    )
+    textNodeHandle.setCaretIndex(caretIndex.value)
+
     val disposable = text.onChange {
         onTextChange(it)
     }
@@ -68,6 +75,9 @@ fun UiBuilder.TextInput(
                 else -> {}
             }
         }
+        .onChangeFocus {
+            textNodeHandle.setEnableCaret(it)
+        }
 
     val height = layout.height ?: (textStyle.fontSize + 4)
     val width = layout.width ?: DEFAULT_WIDTH
@@ -80,22 +90,16 @@ fun UiBuilder.TextInput(
         layout = finalLayout,
         event = finalEvent
     ) {
-        val handle = TextNodeHandle(
-            text = text.value,
-            style = textStyle,
-            paragraphStyle = paragraphStyle
-        )
-        handle.setCaretIndex(caretIndex.value)
-        parentContainer.addChild(handle)
+        parentContainer.addChild(textNodeHandle)
         childrenCount++
 
         val disposable = text.onChange { newText ->
-            handle.setText(newText)
+            textNodeHandle.setText(newText)
         }
         registerDisposable(disposable)
 
         val caretDisposable = caretIndex.onChange { newIndex ->
-            handle.setCaretIndex(newIndex)
+            textNodeHandle.setCaretIndex(newIndex)
         }
         registerDisposable(caretDisposable)
     }

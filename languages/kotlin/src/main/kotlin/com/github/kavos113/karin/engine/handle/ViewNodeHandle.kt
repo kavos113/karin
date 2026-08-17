@@ -494,4 +494,42 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
         }
         setIsFocusable(state.value != null)
     }
+
+    event.onChangeHover?.let {
+        isHovered.onChange(it)
+    }
+
+    event.onChangeHoverState?.let { state ->
+        state.onChange { handler ->
+            if (handler != null) {
+                isHovered.onChange(handler)
+            }
+        }
+    }
+
+    event.onChangePress?.let {
+        isPressed.onChange(it)
+    }
+
+    event.onChangeHoverState?.let { state ->
+        state.onChange { handler ->
+            if (handler != null) {
+                isPressed.onChange(handler)
+            }
+        }
+    }
+
+    event.onChangeFocus?.let {
+        isFocused.onChange(it)
+    }
+
+    event.onChangeHoverState?.let { state ->
+        state.onChange { handler ->
+            if (handler != null) {
+                isFocused.onChange(handler)
+            }
+        }
+    }
+
+    applyEventState()
 }
