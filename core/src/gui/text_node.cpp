@@ -1,5 +1,8 @@
 #include <karin/gui/text_node.h>
 
+#include <ranges>
+#include <algorithm>
+
 #include "application_context.h"
 
 namespace karin::gui
@@ -9,6 +12,7 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
     , m_textStyle(std::move(textStyle))
     , m_paragraphStyle(paragraphStyle)
     , m_pattern(std::move(pattern))
+    , m_caretPattern(SolidColorPattern(Color(Color::Black)))
 {
 }
 
@@ -27,6 +31,11 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
     gc.drawText(textBlob, start, m_pattern);
+
+    if (m_drawCaret)
+    {
+        drawCaret(gc, textBlob);
+    }
 }
 
 YGSize TextNode::measure(Size availableSize) const
@@ -36,5 +45,56 @@ YGSize TextNode::measure(Size availableSize) const
 
     Size measuredSize = textBlob.layoutSize;
     return YGSize{measuredSize.width, measuredSize.height};
+}
+
+void TextNode::setDrawCaret(bool drawCaret)
+{
+    m_drawCaret = drawCaret;
+}
+
+void TextNode::setCaretIndex(uint32_t caretIndex)
+{
+    m_caretIndex = caretIndex;
+}
+
+void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
+{
+    if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
+    {
+        return;
+    }
+
+    const FontMetrics metrics = blob.fontFace->getFontMetrics();
+    const float scale = blob.fontEmSize / static_cast<float>(metrics.unitsPerEm);
+
+    if (m_caretIndex == blob.glyphs.size())
+    {
+        Point baseLeft;
+        if (blob.glyphs.size() == 0)
+        {
+            Rectangle layout = getLayout();
+            baseLeft = Point(layout.pos.x, layout.pos.y + blob.layoutSize.height);
+        }
+        else
+        {
+            const GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
+            baseLeft = Point(glyph.position.x + glyph.advanceX + CARET_WIDTH / 2, glyph.position.y);
+        }
+
+        const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
+
+        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+    }
+    else
+    {
+        const GlyphInfo glyph = blob.glyphs[m_caretIndex];
+
+        const float x = glyph.position.x - CARET_WIDTH / 2;
+        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
+
+        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+    }
 }
 } // karin::gui

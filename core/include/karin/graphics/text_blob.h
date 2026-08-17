@@ -1,28 +1,30 @@
 #ifndef KARIN_GRAPHICS_TEXT_BLOB_H
 #define KARIN_GRAPHICS_TEXT_BLOB_H
 
-#include <karin/common/geometry/rectangle.h>
-#include "font_face.h"
-#include "font.h"
-
 #include <vector>
 #include <memory>
+
+#include "font_face.h"
+#include "font.h"
+#include <karin/common/geometry/point.h>
+#include <karin/common/geometry/size.h>
 
 namespace karin
 {
 
-struct GlyphPosition
+struct GlyphInfo
 {
     // position in layout. pixels
     // bottom-left of the glyph bounding box
     Point position;
 
+    float advanceX;
     uint32_t glyphIndex;
 };
 
 struct TextBlob
 {
-    std::vector<GlyphPosition> glyphs;
+    std::vector<GlyphInfo> glyphs;
     std::shared_ptr<IFontFace> fontFace;
     Font font;
     float fontEmSize;

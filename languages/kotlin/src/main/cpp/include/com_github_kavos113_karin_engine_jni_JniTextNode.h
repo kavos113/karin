@@ -23,6 +23,22 @@ JNIEXPORT jlong JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_cr
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setText
   (JNIEnv *, jclass, jlong, jstring);
 
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniTextNode
+ * Method:    setEnableCaret
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setEnableCaret
+  (JNIEnv *, jclass, jlong, jboolean);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniTextNode
+ * Method:    setCaretIndex
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setCaretIndex
+  (JNIEnv *, jclass, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif

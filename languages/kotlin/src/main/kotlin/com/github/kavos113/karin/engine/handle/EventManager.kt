@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.engine.handle
 
+import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.event.KeyEvent
 
@@ -24,15 +25,10 @@ internal interface EventManager {
     fun setOnKeyUp(handler: (KeyEvent) -> Unit)
     fun setOnKeyType(handler: (String) -> Unit)
 
-    /**
-     * start: called when mouse enter that node. when called, isHovered() = true
-     * end: called when mouse leave that node. when called, isHovered() = false
-     *
-     * press and focus are the same
-     */
-    fun setHoverHandler(start: () -> Unit, end: () -> Unit)
-    fun setPressHandler(start: () -> Unit, end: () -> Unit)
-    fun setFocusHandler(start: () -> Unit, end: () -> Unit)
+    val isHovered: State<Boolean>
+    val isPressed: State<Boolean>
+    val isFocused: State<Boolean>
+    fun applyEventState()
 
     fun clearOnClick()
     fun clearOnPointerMove()
@@ -44,10 +40,6 @@ internal interface EventManager {
     fun clearOnKeyDown()
     fun clearOnKeyUp()
     fun clearOnKeyType()
-
-    fun isHovered(): Boolean
-    fun isPressed(): Boolean
-    fun isFocused(): Boolean
 
     fun setIsFocusable(isFocusable: Boolean)
 }

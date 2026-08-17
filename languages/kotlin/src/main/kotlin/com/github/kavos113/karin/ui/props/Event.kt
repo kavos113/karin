@@ -28,6 +28,13 @@ data class Event private constructor(
     val onKeyUpState: State<((KeyEvent) -> Unit)?>? = null,
     val onKeyType: ((String) -> Unit)? = null,
     val onKeyTypeState: State<((String) -> Unit)?>? = null,
+
+    val onChangeHover: ((Boolean) -> Unit)? = null,
+    val onChangeHoverState: State<((Boolean) -> Unit)?>? = null,
+    val onChangePress: ((Boolean) -> Unit)? = null,
+    val onChangePressState: State<((Boolean) -> Unit)?>? = null,
+    val onChangeFocus: ((Boolean) -> Unit)? = null,
+    val onChangeFocusState: State<((Boolean) -> Unit)?>? = null
 ) {
     fun onClick(handler: () -> Unit) = copy(onClick = handler)
     fun onClick(state: State<(() -> Unit)?>) = copy(onClickState = state)
@@ -51,6 +58,13 @@ data class Event private constructor(
     fun onKeyUp(state: State<((KeyEvent) -> Unit)?>) = copy(onKeyUpState = state)
     fun onKeyType(handler: (String) -> Unit) = copy(onKeyType = handler)
     fun onKeyType(state: State<((String) -> Unit)?>) = copy(onKeyTypeState = state)
+
+    fun onChangeHover(handler: (Boolean) -> Unit) = copy(onChangeHover = handler)
+    fun onChangeHover(state: State<((Boolean) -> Unit)?>) = copy(onChangeHoverState = state)
+    fun onChangePress(handler: (Boolean) -> Unit) = copy(onChangePress = handler)
+    fun onChangePress(state: State<((Boolean) -> Unit)?>) = copy(onChangePressState = state)
+    fun onChangeFocus(handler: (Boolean) -> Unit) = copy(onChangeFocus = handler)
+    fun onChangeFocus(state: State<((Boolean) -> Unit)?>) = copy(onChangeFocusState = state)
 
     companion object {
         val Default = Event()
@@ -77,5 +91,12 @@ data class Event private constructor(
         fun onKeyUp(state: State<((KeyEvent) -> Unit)?>) = Event().onKeyUp(state)
         fun onKeyType(handler: (String) -> Unit) = Event().onKeyType(handler)
         fun onKeyType(state: State<((String) -> Unit)?>) = Event().onKeyType(state)
+
+        fun onChangeHover(handler: (Boolean) -> Unit) = Event().onChangeHover(handler)
+        fun onChangeHover(state: State<((Boolean) -> Unit)?>) = Event().onChangeHover(state)
+        fun onChangePress(handler: (Boolean) -> Unit) = Event().onChangePress(handler)
+        fun onChangePress(state: State<((Boolean) -> Unit)?>) = Event().onChangePress(state)
+        fun onChangeFocus(handler: (Boolean) -> Unit) = Event().onChangeFocus(handler)
+        fun onChangeFocus(state: State<((Boolean) -> Unit)?>) = Event().onChangeFocus(state)
     }
 }

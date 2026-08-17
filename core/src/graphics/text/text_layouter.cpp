@@ -121,7 +121,7 @@ bool isBreakable(uint32_t codepoint)
 
 namespace karin
 {
-std::vector<GlyphPosition> TextLayouter::layout(
+std::vector<GlyphInfo> TextLayouter::layout(
     const IFontFace* face,
     const std::string& text,
     const TextStyle& textStyle,
@@ -148,7 +148,7 @@ std::vector<GlyphPosition> TextLayouter::layout(
     hb_font_t* hbFont = hbProvider->getHbFont();
 
     FontMetrics fontMetrics = face->getFontMetrics();
-    std::vector<GlyphPosition> glyphs;
+    std::vector<GlyphInfo> glyphs;
 
     float initPenX = 0;
     float scale = textStyle.size / static_cast<float>(fontMetrics.unitsPerEm);
@@ -209,8 +209,9 @@ std::vector<GlyphPosition> TextLayouter::layout(
                 penY,
             };
 
-            glyphs.push_back(GlyphPosition{
+            glyphs.push_back(GlyphInfo{
                 .position = position,
+                .advanceX = metricsList[i].advanceX,
                 .glyphIndex = metricsList[i].glyphIndex,
             });
             penX += static_cast<float>(glyphPos[i].x_advance) * scale;

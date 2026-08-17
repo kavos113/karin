@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui.component
 
+import com.github.kavos113.karin.engine.handle.TextNodeHandle
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
@@ -31,8 +32,16 @@ fun UiBuilder.TextInput(
     onTextChange: (String) -> Unit,
 ) {
     val text = State<String>(initialText)
+    val caretIndex = State<Int>(initialText.unicodeLength())
 
-    text.onChange {
+    val textNodeHandle = TextNodeHandle(
+        text = text.value,
+        style = textStyle,
+        paragraphStyle = paragraphStyle
+    )
+    textNodeHandle.setCaretIndex(caretIndex.value)
+
+    val disposable = text.onChange {
         onTextChange(it)
     }
 
@@ -54,16 +63,33 @@ fun UiBuilder.TextInput(
             }
 
             text.value += it
+            caretIndex.value += it.unicodeLength()
             println("current text: ${text.value}")
         }
         .onKeyDown {
             when (it.key) {
                 Key.Backspace -> {
                     text.value = text.value.unicodeSubstr(0, text.value.unicodeLength() - 1)
+                    if (caretIndex.value > 0) {
+                        caretIndex.value--
+                    }
+                }
+                Key.LeftArrow -> {
+                    if (caretIndex.value > 0) {
+                        caretIndex.value--
+                    }
+                }
+                Key.RightArrow -> {
+                    if (caretIndex.value < text.value.unicodeLength()) {
+                        caretIndex.value++
+                    }
                 }
                 // TODO: tab, delete, etc..
                 else -> {}
             }
+        }
+        .onChangeFocus {
+            textNodeHandle.setEnableCaret(it)
         }
 
     val height = layout.height ?: (textStyle.fontSize + 4)
@@ -77,10 +103,21 @@ fun UiBuilder.TextInput(
         layout = finalLayout,
         event = finalEvent
     ) {
-        Text(
-            text = text,
-            style = textStyle,
-            paragraphStyle = paragraphStyle
-        )
+        parentContainer.addChild(textNodeHandle)
+        childrenCount++
+
+        val disposable = text.onChange { newText ->
+            textNodeHandle.setText(newText)
+            textNodeHandle.requestRedraw()
+        }
+        registerDisposable(disposable)
+
+        val caretDisposable = caretIndex.onChange { newIndex ->
+            textNodeHandle.setCaretIndex(newIndex)
+            textNodeHandle.requestRedraw()
+        }
+        registerDisposable(caretDisposable)
     }
+
+    registerDisposable(disposable)
 }

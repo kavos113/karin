@@ -36,6 +36,13 @@ class State<T>(initialValue: T) {
         }
     }
 
+    fun active(): Boolean {
+        val snapshot = synchronized(lock) {
+            listeners.toList()
+        }
+        return snapshot.isNotEmpty()
+    }
+
     fun <R> map(transform: (T) -> R): State<R> {
         val mappedState = State(transform(value))
         onChange { mappedState.value = transform(it) }

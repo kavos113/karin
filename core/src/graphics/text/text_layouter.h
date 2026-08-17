@@ -18,7 +18,7 @@ public:
     TextLayouter() = default;
     ~TextLayouter() = default;
 
-    static std::vector<GlyphPosition> layout(
+    static std::vector<GlyphInfo> layout(
         const IFontFace* face,
         const std::string& text,
         const TextStyle& textStyle,

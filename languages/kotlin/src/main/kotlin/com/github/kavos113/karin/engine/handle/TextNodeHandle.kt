@@ -40,4 +40,12 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     fun setText(text: String) {
         JniTextNodeBridge.setText(ptr, text)
     }
+
+    fun setEnableCaret(enableCaret: Boolean) {
+        JniTextNodeBridge.setEnableCaret(ptr, enableCaret)
+    }
+
+    fun setCaretIndex(caretIndex: Int) {
+        JniTextNodeBridge.setCaretIndex(ptr, caretIndex)
+    }
 }
