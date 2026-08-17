@@ -1,6 +1,7 @@
 add_subdirectory(system/hello_window)
 add_subdirectory(system/maximize_window)
 add_subdirectory(system/set_window_size)
+add_subdirectory(system/action_event)
 
 add_subdirectory(graphics/hello_graphics)
 add_subdirectory(graphics/fill_primitive_geometry)
