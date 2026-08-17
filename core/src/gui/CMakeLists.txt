@@ -9,6 +9,7 @@ set(GUI_SOURCES
         text_node.cpp
         event_dispatcher.cpp
         event.cpp
+        timer.cpp
 )
 set(GUI_HEADERS
         application_context.h
