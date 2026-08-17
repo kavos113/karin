@@ -70,6 +70,9 @@ fun UiBuilder.TextInput(
             when (it.key) {
                 Key.Backspace -> {
                     text.value = text.value.unicodeSubstr(0, text.value.unicodeLength() - 1)
+                    if (caretIndex.value > 0) {
+                        caretIndex.value--
+                    }
                 }
                 Key.LeftArrow -> {
                     if (caretIndex.value > 0) {
