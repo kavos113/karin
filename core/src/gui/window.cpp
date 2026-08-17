@@ -64,11 +64,11 @@ void Window::dispatchEvent(const Event& event) const
     }
 }
 
-void Window::addActionEventHandler(uint32_t id, const std::function<void(std::any)>& handler) const
+void Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
 {
     if (m_eventDispatcher)
     {
-        m_eventDispatcher->addActionEventHandler(id, handler);
+        m_eventDispatcher->addActionEventHandler(handler);
     }
 }
 

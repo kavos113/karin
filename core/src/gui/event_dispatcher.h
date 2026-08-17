@@ -19,7 +19,7 @@ public:
     explicit EventDispatcher(ViewNode *rootView);
 
     void dispatchEvent(const Event& event);
-    void addActionEventHandler(uint32_t id, const std::function<void(std::any)>& handler);
+    void addActionEventHandler(const std::function<void(std::any)>& handler);
 
 private:
     void handleMouseMoveEvent(const MouseMoveEvent& event);
@@ -34,6 +34,7 @@ private:
     ViewNode *m_focusNode = nullptr;
 
     std::unordered_map<uint32_t, std::function<void(std::any)>> m_actionEventHandlers;
+    uint32_t m_nextHandlerId = 0;
 };
 
 } // karin::gui

@@ -52,9 +52,10 @@ void EventDispatcher::dispatchEvent(const Event& event)
     );
 }
 
-void EventDispatcher::addActionEventHandler(uint32_t id, const std::function<void(std::any)>& handler)
+void EventDispatcher::addActionEventHandler(const std::function<void(std::any)>& handler)
 {
-    m_actionEventHandlers[id] = handler;
+    m_actionEventHandlers[m_nextHandlerId] = handler;
+    m_nextHandlerId++;
 }
 
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
