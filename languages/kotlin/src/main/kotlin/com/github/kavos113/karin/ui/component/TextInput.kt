@@ -1,5 +1,6 @@
 package com.github.kavos113.karin.ui.component
 
+import com.github.kavos113.karin.engine.handle.TextNodeHandle
 import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
@@ -31,8 +32,9 @@ fun UiBuilder.TextInput(
     onTextChange: (String) -> Unit,
 ) {
     val text = State<String>(initialText)
+    val caretIndex = State<Int>(initialText.unicodeLength())
 
-    text.onChange {
+    val disposable = text.onChange {
         onTextChange(it)
     }
 
@@ -54,6 +56,7 @@ fun UiBuilder.TextInput(
             }
 
             text.value += it
+            caretIndex.value += it.unicodeLength()
             println("current text: ${text.value}")
         }
         .onKeyDown {
@@ -77,10 +80,25 @@ fun UiBuilder.TextInput(
         layout = finalLayout,
         event = finalEvent
     ) {
-        Text(
-            text = text,
+        val handle = TextNodeHandle(
+            text = text.value,
             style = textStyle,
             paragraphStyle = paragraphStyle
         )
+        handle.setCaretIndex(caretIndex.value)
+        parentContainer.addChild(handle)
+        childrenCount++
+
+        val disposable = text.onChange { newText ->
+            handle.setText(newText)
+        }
+        registerDisposable(disposable)
+
+        val caretDisposable = caretIndex.onChange { newIndex ->
+            handle.setCaretIndex(newIndex)
+        }
+        registerDisposable(caretDisposable)
     }
+
+    registerDisposable(disposable)
 }
