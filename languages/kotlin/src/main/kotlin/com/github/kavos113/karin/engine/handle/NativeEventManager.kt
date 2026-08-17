@@ -272,6 +272,9 @@ internal class NativeEventManager(ptr: Long) : EventManager {
             enablePointerUpHandler()
             enablePointerDownHandler()
         }
+        if (isFocused.active()) {
+            setIsFocusable(true)
+        }
     }
 
     override fun setOnKeyDown(handler: (KeyEvent) -> Unit) {
