@@ -65,7 +65,7 @@ void EventDispatcher::clearActionEvent(uint32_t id)
 {
     if (m_actionEventHandlers.contains(id))
     {
-        m_actionEventHandlers[id] = nullptr;
+        m_actionEventHandlers.erase(id);
     }
 }
 
