@@ -1,6 +1,8 @@
 #include <karin/gui/event.h>
 
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include <karin/gui/window.h>
 
@@ -8,15 +10,30 @@ namespace karin::gui
 {
 void setTimeout(Window* target, uint32_t milliseconds, const std::function<void()>& handler)
 {
-    uint32_t id = target->addActionEventHandler([&handler](const std::any& data)
+    uint32_t id = target->addActionEventHandler([handler](const std::any& data)
     {
         handler();
     });
 
-    std::thread([milliseconds, target, id]
+    std::mutex mtx;
+    std::condition_variable_any cv;
+
+    std::jthread th([milliseconds, target, id, &mtx, &cv](const std::stop_token& s)
     {
-        std::this_thread::sleep_for(std::chrono::duration(std::chrono::milliseconds(milliseconds)));
+        std::unique_lock lock(mtx);
+        cv.wait_for(lock, s, std::chrono::milliseconds(milliseconds), []{ return false; });
+
+        if (s.stop_requested())
+        {
+            return;
+        }
+
         target->triggerActionEvent(id, std::any{});
-    }).detach();
+    });
+
+    target->registerDisposable([&th]
+    {
+        th.request_stop();
+    });
 }
 }
