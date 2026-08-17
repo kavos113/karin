@@ -79,6 +79,14 @@ void Window::triggerActionEvent(uint32_t id, const std::any& data) const
     m_window->triggerActionEvent(id, data);
 }
 
+void Window::clearActionEvent(uint32_t id) const
+{
+    if (m_eventDispatcher)
+    {
+        m_eventDispatcher->clearActionEvent(id);
+    }
+}
+
 void Window::setRootView(std::unique_ptr<ViewNode> rootView)
 {
     m_rootView = std::move(rootView);

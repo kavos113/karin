@@ -61,6 +61,14 @@ uint32_t EventDispatcher::addActionEventHandler(const std::function<void(std::an
     return id;
 }
 
+void EventDispatcher::clearActionEvent(uint32_t id)
+{
+    if (m_actionEventHandlers.contains(id))
+    {
+        m_actionEventHandlers[id] = nullptr;
+    }
+}
+
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));

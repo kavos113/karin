@@ -39,6 +39,7 @@ public:
     void dispatchEvent(const Event& event) const;
     uint32_t addActionEventHandler(const std::function<void(std::any)>& handler) const;
     void triggerActionEvent(uint32_t id, const std::any& data) const;
+    void clearActionEvent(uint32_t id) const;
 
 private:
 
