@@ -69,11 +69,20 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
 
     if (m_caretIndex == blob.glyphs.size())
     {
-        const GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
+        Point baseLeft;
+        if (blob.glyphs.size() == 0)
+        {
+            Rectangle layout = getLayout();
+            baseLeft = Point(layout.pos.x, layout.pos.y + blob.layoutSize.height);
+        }
+        else
+        {
+            const GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
+            baseLeft = Point(glyph.position.x + glyph.advanceX + CARET_WIDTH / 2, glyph.position.y);
+        }
 
-        const float x = glyph.position.x + glyph.advanceX;
-        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
-        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
+        const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
 
         gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
