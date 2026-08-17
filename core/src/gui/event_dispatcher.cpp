@@ -40,9 +40,21 @@ void EventDispatcher::dispatchEvent(const Event& event)
             {
                 handleKeyTypeEvent(e);
             }
+            else if constexpr (std::is_same_v<T, ActionEvent>)
+            {
+                if (m_actionEventHandlers.contains(e.actionId))
+                {
+                    m_actionEventHandlers[e.actionId](e.data);
+                }
+            }
         },
         event
     );
+}
+
+void EventDispatcher::addActionEventHandler(uint32_t id, const std::function<void(std::any)>& handler)
+{
+    m_actionEventHandlers[id] = handler;
 }
 
 void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)

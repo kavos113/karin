@@ -1,6 +1,12 @@
 #ifndef GUI_EVENT_DISPATCHER_H
 #define GUI_EVENT_DISPATCHER_H
 
+#include <cstdint>
+
+#include <any>
+#include <unordered_map>
+#include <functional>
+
 #include <karin/system/event.h>
 #include <karin/gui/view_node.h>
 
@@ -13,6 +19,7 @@ public:
     explicit EventDispatcher(ViewNode *rootView);
 
     void dispatchEvent(const Event& event);
+    void addActionEventHandler(uint32_t id, const std::function<void(std::any)>& handler);
 
 private:
     void handleMouseMoveEvent(const MouseMoveEvent& event);
@@ -25,6 +32,8 @@ private:
 
     ViewNode *m_hoveredNode = nullptr;
     ViewNode *m_focusNode = nullptr;
+
+    std::unordered_map<uint32_t, std::function<void(std::any)>> m_actionEventHandlers;
 };
 
 } // karin::gui
