@@ -161,6 +161,8 @@ X11WindowImpl::X11WindowImpl(
     {
         throw std::runtime_error("failed to create input context");
     }
+
+    m_actionEventAtom = XInternAtom(X11Context::instance().display(), "WM_KARIN_ACTION_EVENT", False);
 }
 
 X11WindowImpl::~X11WindowImpl()
@@ -355,6 +357,30 @@ void X11WindowImpl::invalidate()
         m_window,
         False,
         ExposureMask,
+        &event
+    );
+
+    XFlush(X11Context::instance().display());
+}
+
+void X11WindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
+{
+    XEvent event = {};
+    event.type = ClientMessage;
+    event.xclient.display = X11Context::instance().display();
+    event.xclient.window = m_window;
+    event.xclient.message_type = m_actionEventAtom;
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = id;
+
+    auto *allocData = new std::any(data);
+    event.xclient.data.l[1] = reinterpret_cast<long>(allocData);
+
+    XSendEvent(
+        X11Context::instance().display(),
+        m_window,
+        False,
+        NoEventMask,
         &event
     );
 

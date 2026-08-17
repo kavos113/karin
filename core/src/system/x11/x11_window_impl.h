@@ -42,6 +42,8 @@ public:
 
     void invalidate() override;
 
+    void triggerActionEvent(uint32_t id, const std::any& data) override;
+
     [[nodiscard]] Window::NativeHandle handle() const override;
 
     void handleEvent(const XEvent& event);
@@ -53,6 +55,7 @@ private:
     GC m_gc;
     XIM m_xim;
     XIC m_xic;
+    Atom m_actionEventAtom;
 
     std::vector<std::function<bool()>> m_paintCallbacks;
     std::vector<std::function<void(Size)>> m_resizeCallbacks;
