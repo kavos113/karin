@@ -8,6 +8,7 @@ set(GUI_SOURCES
         application_context.cpp
         text_node.cpp
         event_dispatcher.cpp
+        event.cpp
 )
 set(GUI_HEADERS
         application_context.h
