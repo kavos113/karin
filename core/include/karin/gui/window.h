@@ -37,7 +37,7 @@ public:
     void requestRedraw() const;
 
     void dispatchEvent(const Event& event) const;
-    void addActionEventHandler(const std::function<void(std::any)>& handler) const;
+    uint32_t addActionEventHandler(const std::function<void(std::any)>& handler) const;
 
 private:
 

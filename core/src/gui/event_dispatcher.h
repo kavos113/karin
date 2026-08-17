@@ -19,7 +19,7 @@ public:
     explicit EventDispatcher(ViewNode *rootView);
 
     void dispatchEvent(const Event& event);
-    void addActionEventHandler(const std::function<void(std::any)>& handler);
+    uint32_t addActionEventHandler(const std::function<void(std::any)>& handler);
 
 private:
     void handleMouseMoveEvent(const MouseMoveEvent& event);

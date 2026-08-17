@@ -64,7 +64,7 @@ void Window::dispatchEvent(const Event& event) const
     }
 }
 
-void Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
+uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
 {
     if (m_eventDispatcher)
     {
