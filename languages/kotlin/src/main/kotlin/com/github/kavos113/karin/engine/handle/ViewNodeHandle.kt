@@ -499,6 +499,7 @@ internal fun ViewNodeHandle.applyEvent(event: Event) {
         isHovered.onChange(it)
     }
 
+    // TODO: 既存のものを消す
     event.onChangeHoverState?.let { state ->
         state.onChange { handler ->
             if (handler != null) {
