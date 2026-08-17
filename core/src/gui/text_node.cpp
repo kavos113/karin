@@ -66,15 +66,14 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
 
     const FontMetrics metrics = blob.fontFace->getFontMetrics();
     const float scale = blob.fontEmSize / static_cast<float>(metrics.unitsPerEm);
-    const float biggestY = std::ranges::max(blob.glyphs | std::views::transform(&GlyphInfo::advanceX));
 
     if (m_caretIndex == blob.glyphs.size())
     {
         const GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
 
         const float x = glyph.position.x + glyph.advanceX;
-        const Point top = Point(x, biggestY - static_cast<float>(metrics.capHeight) * scale);
-        const Point bottom = Point(x, biggestY);
+        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
         gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
@@ -83,10 +82,8 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         const GlyphInfo glyph = blob.glyphs[m_caretIndex];
 
         const float x = glyph.position.x - CARET_WIDTH / 2;
-        const Point top = Point(x, biggestY - static_cast<float>(metrics.capHeight) * scale);
-        const Point bottom = Point(x, biggestY);
-
-        std::cout << "caret top: " << top << ", bottom: " << bottom << std::endl;
+        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
         gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
