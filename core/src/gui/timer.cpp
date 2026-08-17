@@ -33,16 +33,19 @@ void Timer::start()
         return;
     }
 
-    uint32_t id = m_window->addActionEventHandler([this](const std::any& data)
+    if (!m_isRegistered)
     {
-        m_handler(std::any_cast<uint32_t>(m_count));
-    });
+        m_eventHandlerId = m_window->addActionEventHandler([this](const std::any& data)
+        {
+            m_handler(std::any_cast<uint32_t>(m_count));
+        });
+    }
 
-    m_timerThread = std::jthread([&](const std::stop_token& s)
+    m_timerThread = std::jthread([this](const std::stop_token& s)
     {
         while (!s.stop_requested())
         {
-            m_window->triggerActionEvent(id, std::any(m_count));
+            m_window->triggerActionEvent(m_eventHandlerId, std::any(m_count));
             std::this_thread::sleep_for(std::chrono::milliseconds(m_intervalMs));
         }
     });
@@ -63,18 +66,21 @@ void Timer::startLater(uint32_t delayMs)
         return;
     }
 
-    uint32_t id = m_window->addActionEventHandler([this](const std::any& data)
+    if (!m_isRegistered)
     {
-        m_handler(std::any_cast<uint32_t>(m_count));
-    });
+        m_eventHandlerId = m_window->addActionEventHandler([this](const std::any& data)
+        {
+            m_handler(std::any_cast<uint32_t>(m_count));
+        });
+    }
 
-    m_timerThread = std::jthread([&](const std::stop_token& s)
+    m_timerThread = std::jthread([this, delayMs](const std::stop_token& s)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
 
         while (!s.stop_requested())
         {
-            m_window->triggerActionEvent(id, std::any(m_count));
+            m_window->triggerActionEvent(m_eventHandlerId, std::any(m_count));
             std::this_thread::sleep_for(std::chrono::milliseconds(m_intervalMs));
         }
     });
