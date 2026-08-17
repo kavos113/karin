@@ -1,6 +1,7 @@
 package com.github.kavos113.karin.engine.handle
 
 import com.github.kavos113.karin.engine.jni.JniViewNodeBridge
+import com.github.kavos113.karin.runtime.State
 import com.github.kavos113.karin.ui.common.Point
 import com.github.kavos113.karin.ui.event.Key
 import com.github.kavos113.karin.ui.event.KeyEvent
@@ -17,12 +18,6 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     private var onPointerEnter: (() -> Unit)? = null
     private var onPointerLeave: (() -> Unit)? = null
     private var onMouseWheel: ((Int) -> Unit)? = null
-    private var onStartHover: (() -> Unit)? = null
-    private var onEndHover: (() -> Unit)? = null
-    private var onStartPress: (() -> Unit)? = null
-    private var onEndPress: (() -> Unit)? = null
-    private var onStartFocus: (() -> Unit)? = null
-    private var onEndFocus: (() -> Unit)? = null
     private var onKeyDown: ((KeyEvent) -> Unit)? = null
     private var onKeyUp: ((KeyEvent) -> Unit)? = null
     private var onKeyType: ((String) -> Unit)? = null
@@ -44,12 +39,9 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     }
     private var nativeHandlerEnabled = 0L
 
-    private var isPressed = false
-    private var isHovered = false
-    private var isFocused = false
-    override fun isPressed(): Boolean = isPressed
-    override fun isHovered(): Boolean = isHovered
-    override fun isFocused(): Boolean = isFocused
+    override val isHovered: State<Boolean> = State(false)
+    override val isPressed: State<Boolean> = State(false)
+    override val isFocused: State<Boolean> = State(false)
 
     val ptr: Long
         get() {
@@ -271,23 +263,15 @@ internal class NativeEventManager(ptr: Long) : EventManager {
         enableMouseWheelHandler()
     }
 
-    override fun setHoverHandler(start: () -> Unit, end: () -> Unit) {
-        onStartHover = start
-        onEndHover = end
-        enablePointerEnterHandler()
-        enablePointerLeaveHandler()
-    }
-
-    override fun setPressHandler(start: () -> Unit, end: () -> Unit) {
-        onStartPress = start
-        onEndPress = end
-        enablePointerUpHandler()
-        enablePointerDownHandler()
-    }
-
-    override fun setFocusHandler(start: () -> Unit, end: () -> Unit) {
-        onStartFocus = start
-        onEndFocus = end
+    override fun applyEventState() {
+        if (isHovered.active()) {
+            enablePointerEnterHandler()
+            enablePointerLeaveHandler()
+        }
+        if (isPressed.active()) {
+            enablePointerUpHandler()
+            enablePointerDownHandler()
+        }
     }
 
     override fun setOnKeyDown(handler: (KeyEvent) -> Unit) {
@@ -318,15 +302,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     @JvmName("onChangeFocusState")
     internal fun onChangeFocusState(focused: Boolean) {
         val oldFocused = isFocused
-        isFocused = focused
-
-        if (oldFocused != isFocused) {
-            if (isFocused) {
-                onStartFocus?.invoke()
-            } else {
-                onEndFocus?.invoke()
-            }
-        }
+        isFocused.value = focused
     }
 
     override fun clearOnClick() {
@@ -351,7 +327,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun clearOnPointerDown() {
         onPointerDown = null
 
-        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onStartPress == null) {
+        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && !isPressed.active()) {
             disablePointerDownHandler()
         }
     }
@@ -359,7 +335,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun clearOnPointerUp() {
         onPointerUp = null
 
-        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && onEndPress == null) {
+        if (onKeyDown == null && onKeyUp == null && onKeyType == null && onPointerClick == null && !isPressed.active()) {
             disablePointerUpHandler()
         }
     }
@@ -367,7 +343,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun clearOnPointerEnter() {
         onPointerEnter = null
 
-        if (onStartHover == null) {
+        if (!isHovered.active()) {
             disablePointerEnterHandler()
         }
     }
@@ -375,7 +351,7 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     override fun clearOnPointerLeave() {
         onPointerLeave = null
 
-        if (onEndHover == null) {
+        if (!isHovered.active()) {
             disablePointerLeaveHandler()
         }
     }
@@ -417,9 +393,8 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerDown")
     internal fun dispatchPointerDown(x: Float, y: Float) {
-        isPressed = true
+        isPressed.value = true
         onPointerDown?.invoke(Point(x, y))
-        onStartPress?.invoke()
     }
 
     @SuppressWarnings("unused")
@@ -427,28 +402,25 @@ internal class NativeEventManager(ptr: Long) : EventManager {
     internal fun dispatchPointerUp(x: Float, y: Float) {
         onPointerUp?.invoke(Point(x, y))
 
-        if (isPressed && onPointerClick != null) {
-            onPointerClick!!.invoke()
+        if (isPressed.value) {
+            onPointerClick?.invoke()
         }
 
-        isPressed = false
-        onEndPress?.invoke()
+        isPressed.value = false
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerEnter")
     internal fun dispatchPointerEnter() {
-        isHovered = true
+        isHovered.value = true
         onPointerEnter?.invoke()
-        onStartHover?.invoke()
     }
 
     @SuppressWarnings("unused")
     @JvmName("dispatchPointerLeave")
     internal fun dispatchPointerLeave() {
-        isHovered = false
+        isHovered.value = false
         onPointerLeave?.invoke()
-        onEndHover?.invoke()
     }
 
     @SuppressWarnings("unused")

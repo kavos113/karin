@@ -198,11 +198,11 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     }
 
     val applyInteractionStyle = {
-        if (isFocused() && style.focusStyle != null) {
+        if (isFocused.value && style.focusStyle != null) {
             applyStyle(style = style.focusStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-        } else if (isPressed() && style.pressedStyle != null) {
+        } else if (isPressed.value && style.pressedStyle != null) {
             applyStyle(style = style.pressedStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
-        } else if (isHovered() && style.hoverStyle != null) {
+        } else if (isHovered.value && style.hoverStyle != null) {
             applyStyle(style = style.hoverStyle.copy(hoverStyle = null, pressedStyle = null, focusStyle = null))
         } else {
             applyStyle(style = style.copy(pressedStyle = null, hoverStyle = null, focusStyle = null))
@@ -210,41 +210,24 @@ internal fun ViewNodeHandle.applyStyle(style: Style) {
     }
 
     style.hoverStyle?.let {
-        setHoverHandler(
-            start = {
-                applyInteractionStyle()
-                requestRedraw()
-            },
-            end = {
-                applyInteractionStyle()
-                requestRedraw()
-            }
-        )
+        isHovered.onChange {
+            applyInteractionStyle()
+            requestRedraw()
+        }
     }
     style.pressedStyle?.let {
-        setPressHandler(
-            start = {
-                applyInteractionStyle()
-                requestRedraw()
-            },
-            end = {
-                applyInteractionStyle()
-                requestRedraw()
-            }
-        )
+        isPressed.onChange {
+            applyInteractionStyle()
+            requestRedraw()
+        }
     }
     style.focusStyle?.let {
-        setFocusHandler(
-            start = {
-                applyInteractionStyle()
-                requestRedraw()
-            },
-            end = {
-                applyInteractionStyle()
-                requestRedraw()
-            }
-        )
+        isFocused.onChange {
+            applyInteractionStyle()
+            requestRedraw()
+        }
     }
+    applyEventState()
 }
 
 internal fun ViewNodeHandle.applyLayout(layout: Layout) {
