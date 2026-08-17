@@ -46,7 +46,14 @@ void Timer::start()
         while (!s.stop_requested())
         {
             m_window->triggerActionEvent(m_eventHandlerId, std::any(m_count));
-            std::this_thread::sleep_for(std::chrono::milliseconds(m_intervalMs));
+
+            std::unique_lock lock(m_mtx);
+            m_cv.wait_for(lock, s, std::chrono::milliseconds(m_intervalMs), []{ return false; });
+
+            if (s.stop_requested())
+            {
+                return;
+            }
         }
     });
 
@@ -76,12 +83,25 @@ void Timer::startLater(uint32_t delayMs)
 
     m_timerThread = std::jthread([this, delayMs](const std::stop_token& s)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        std::unique_lock lock(m_mtx);
+        m_cv.wait_for(lock, s, std::chrono::milliseconds(delayMs), []{ return false; });
+
+        if (s.stop_requested())
+        {
+            return;
+        }
 
         while (!s.stop_requested())
         {
             m_window->triggerActionEvent(m_eventHandlerId, std::any(m_count));
-            std::this_thread::sleep_for(std::chrono::milliseconds(m_intervalMs));
+
+            std::unique_lock l(m_mtx);
+            m_cv.wait_for(l, s, std::chrono::milliseconds(m_intervalMs), []{ return false; });
+
+            if (s.stop_requested())
+            {
+                return;
+            }
         }
     });
 

@@ -5,6 +5,8 @@
 
 #include <functional>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include "window.h"
 
@@ -30,6 +32,8 @@ private:
     uint32_t m_eventHandlerId = 0;
 
     std::jthread m_timerThread;
+    std::mutex m_mtx;
+    std::condition_variable_any m_cv;
 
     Window *m_window;
 };
