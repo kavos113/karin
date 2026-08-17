@@ -8,6 +8,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <any>
 
 #include "win_application_impl.h"
 
@@ -42,6 +43,8 @@ public:
     void addFinishResizeCallback(std::function<void()> onFinishResize) override;
 
     void invalidate() override;
+
+    void triggerActionEvent(uint32_t id, const std::any& data) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 

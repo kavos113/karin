@@ -17,7 +17,7 @@ bool Application::waitEvent(EventPayload &event) const
     return m_impl->waitEvent(event);
 }
 
-std::unique_ptr<Window> Application::createWindow(const std::string& title, int x, int y, int width, int height)
+std::unique_ptr<Window> Application::createWindow(const std::string& title, int x, int y, int width, int height) const
 {
     return std::make_unique<Window>(
         m_impl.get(),
@@ -29,7 +29,7 @@ std::unique_ptr<Window> Application::createWindow(const std::string& title, int 
     );
 }
 
-std::unique_ptr<Window> Application::createWindow(const std::string& title, Rectangle rect)
+std::unique_ptr<Window> Application::createWindow(const std::string& title, Rectangle rect) const
 {
     return std::make_unique<Window>(
         m_impl.get(),
