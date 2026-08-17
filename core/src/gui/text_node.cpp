@@ -1,5 +1,8 @@
 #include <karin/gui/text_node.h>
 
+#include <ranges>
+#include <algorithm>
+
 #include "application_context.h"
 
 namespace karin::gui
@@ -61,26 +64,27 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         return;
     }
 
-    FontMetrics metrics = blob.fontFace->getFontMetrics();
-    float scale = blob.fontEmSize / static_cast<float>(metrics.unitsPerEm);
+    const FontMetrics metrics = blob.fontFace->getFontMetrics();
+    const float scale = blob.fontEmSize / static_cast<float>(metrics.unitsPerEm);
+    const float biggestY = std::ranges::max(blob.glyphs | std::views::transform(&GlyphInfo::advanceX));
 
     if (m_caretIndex == blob.glyphs.size())
     {
-        GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
+        const GlyphInfo glyph = blob.glyphs[blob.glyphs.size() - 1];
 
-        float x = glyph.position.x + glyph.advanceX;
-        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight) * scale);
-        Point bottom = Point(x, glyph.position.y);
+        const float x = glyph.position.x + glyph.advanceX;
+        const Point top = Point(x, biggestY - static_cast<float>(metrics.capHeight) * scale);
+        const Point bottom = Point(x, biggestY);
 
         gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
     else
     {
-        GlyphInfo glyph = blob.glyphs[m_caretIndex];
+        const GlyphInfo glyph = blob.glyphs[m_caretIndex];
 
-        float x = glyph.position.x - CARET_WIDTH / 2;
-        Point top = Point(x, glyph.position.y - static_cast<float>(metrics.capHeight) * scale);
-        Point bottom = Point(x, glyph.position.y);
+        const float x = glyph.position.x - CARET_WIDTH / 2;
+        const Point top = Point(x, biggestY - static_cast<float>(metrics.capHeight) * scale);
+        const Point bottom = Point(x, biggestY);
 
         std::cout << "caret top: " << top << ", bottom: " << bottom << std::endl;
 
