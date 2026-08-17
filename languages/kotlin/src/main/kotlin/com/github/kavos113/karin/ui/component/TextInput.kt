@@ -71,6 +71,16 @@ fun UiBuilder.TextInput(
                 Key.Backspace -> {
                     text.value = text.value.unicodeSubstr(0, text.value.unicodeLength() - 1)
                 }
+                Key.LeftArrow -> {
+                    if (caretIndex.value > 0) {
+                        caretIndex.value--
+                    }
+                }
+                Key.RightArrow -> {
+                    if (caretIndex.value < text.value.unicodeLength()) {
+                        caretIndex.value++
+                    }
+                }
                 // TODO: tab, delete, etc..
                 else -> {}
             }
@@ -95,11 +105,13 @@ fun UiBuilder.TextInput(
 
         val disposable = text.onChange { newText ->
             textNodeHandle.setText(newText)
+            textNodeHandle.requestRedraw()
         }
         registerDisposable(disposable)
 
         val caretDisposable = caretIndex.onChange { newIndex ->
             textNodeHandle.setCaretIndex(newIndex)
+            textNodeHandle.requestRedraw()
         }
         registerDisposable(caretDisposable)
     }
