@@ -25,7 +25,7 @@ void ActionEventDispatcher::sendActionEvent(uint32_t id, const std::any& data)
 
         if (shouldPost)
         {
-            m_target->triggerActionEvent();
+            m_target->notifyActionEvent();
         }
     }
 }

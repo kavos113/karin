@@ -14,6 +14,8 @@
 
 #include "win_application_impl.h"
 
+#define WM_KARIN_ACTION (WM_USER + 1)
+
 namespace karin
 {
 class WinWindowImpl : public IWindowImpl, public IActionEventManager
@@ -46,7 +48,9 @@ public:
 
     void invalidate() override;
 
-    void triggerActionEvent() override;
+    void setDispatcher(ActionEventDispatcher* dispatcher) override;
+
+    void notifyActionEvent() override;
     void addActionEvent(const ActionEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
@@ -65,6 +69,8 @@ private:
 
     WinApplicationImpl* m_appImpl = nullptr;
     WindowID m_owner;
+
+    ActionEventDispatcher* m_eventDispatcher = nullptr;
 };
 } // karin
 

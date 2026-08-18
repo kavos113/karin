@@ -5,6 +5,8 @@
 
 #include <utils/string.h>
 
+#include "action_event_dispatcher.h"
+
 namespace karin
 {
 WinWindowImpl::WinWindowImpl(
@@ -99,6 +101,10 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
         {
             callback();
         }
+        return 0;
+
+    case WM_KARIN_ACTION:
+        m_eventDispatcher->handlePostActionEvent();
         return 0;
 
     default:
@@ -242,7 +248,12 @@ void WinWindowImpl::invalidate()
     }
 }
 
-void WinWindowImpl::triggerActionEvent()
+void WinWindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
+{
+    m_eventDispatcher = dispatcher;
+}
+
+void WinWindowImpl::notifyActionEvent()
 {
     PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
 }
