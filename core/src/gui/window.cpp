@@ -19,6 +19,11 @@ Window::Window(const std::string& title, int x, int y, int width, int height)
 
 Window::~Window()
 {
+    for (const auto & disposable : m_disposables)
+    {
+        disposable();
+    }
+
     m_renderer->cleanUp();
 }
 
@@ -62,6 +67,34 @@ void Window::dispatchEvent(const Event& event) const
     {
         m_eventDispatcher->dispatchEvent(event);
     }
+}
+
+uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
+{
+    if (m_eventDispatcher)
+    {
+        return m_eventDispatcher->addActionEventHandler(handler);
+    }
+
+    return 0;
+}
+
+void Window::triggerActionEvent(uint32_t id, const std::any& data) const
+{
+    m_window->triggerActionEvent(id, data);
+}
+
+void Window::clearActionEvent(uint32_t id) const
+{
+    if (m_eventDispatcher)
+    {
+        m_eventDispatcher->clearActionEvent(id);
+    }
+}
+
+void Window::registerDisposable(const std::function<void()>& disposable)
+{
+    m_disposables.push_back(disposable);
 }
 
 void Window::setRootView(std::unique_ptr<ViewNode> rootView)

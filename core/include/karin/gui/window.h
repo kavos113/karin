@@ -9,6 +9,8 @@
 
 #include <memory>
 #include <string>
+#include <functional>
+#include <vector>
 
 namespace karin::gui
 {
@@ -37,6 +39,11 @@ public:
     void requestRedraw() const;
 
     void dispatchEvent(const Event& event) const;
+    uint32_t addActionEventHandler(const std::function<void(std::any)>& handler) const;
+    void triggerActionEvent(uint32_t id, const std::any& data) const;
+    void clearActionEvent(uint32_t id) const;
+
+    void registerDisposable(const std::function<void()>& disposable);
 
 private:
 
@@ -45,6 +52,8 @@ private:
     std::unique_ptr<karin::Window> m_window;
     std::unique_ptr<WindowRenderer> m_renderer;
     std::unique_ptr<EventDispatcher> m_eventDispatcher;
+
+    std::vector<std::function<void()>> m_disposables;
 
     bool m_needRelayout = true;
 };

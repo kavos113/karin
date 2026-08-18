@@ -28,6 +28,8 @@ public:
 
     virtual void invalidate() = 0;
 
+    virtual void triggerActionEvent(uint32_t id, const std::any& data) = 0;
+
     virtual Window::NativeHandle handle() const = 0;
 };
 } // karin

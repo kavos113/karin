@@ -1,11 +1,11 @@
 #ifndef KARIN_SYSTEM_APPLICATION_H
 #define KARIN_SYSTEM_APPLICATION_H
 
+#include <memory>
+#include <unordered_map>
+
 #include "window.h"
 #include "event.h"
-
-#include <memory>
-
 
 namespace karin
 {
@@ -27,12 +27,12 @@ public:
         int y = 0,
         int width = Window::DEFAULT_WIDTH,
         int height = Window::DEFAULT_HEIGHT
-    );
+    ) const;
 
     std::unique_ptr<Window> createWindow(
         const std::string& title,
         Rectangle rect = Rectangle(0, 0, Window::DEFAULT_WIDTH, Window::DEFAULT_HEIGHT)
-    );
+    ) const;
 
     WindowID registerWindow(Window* window);
     void unregisterWindow(WindowID id);

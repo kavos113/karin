@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-set(EXAMPLE_NAME set_size)
+set(EXAMPLE_NAME action_event)
 
 project(system_${EXAMPLE_NAME})
 

@@ -134,6 +134,11 @@ void Window::invalidate()
     m_impl->invalidate();
 }
 
+void Window::triggerActionEvent(uint32_t id, const std::any& data) const
+{
+    m_impl->triggerActionEvent(id, data);
+}
+
 void Window::setUserData(void* data)
 {
     m_userData = data;

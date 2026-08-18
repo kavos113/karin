@@ -105,6 +105,18 @@ std::optional<Event> translateX11Event(XEvent* event)
         );
     }
 
+    case ClientMessage:
+    {
+        auto *ptr = reinterpret_cast<std::any*>(event->xclient.data.l[1]);
+        std::any data = std::move(*ptr);
+        delete ptr;
+
+        return ActionEvent(
+            event->xclient.data.l[0],
+            data
+        );
+    }
+
     default:
         return std::nullopt;
     }
