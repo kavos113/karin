@@ -1,8 +1,8 @@
 #include <karin/system/window.h>
 
-#include "platform.h"
-
 #include <karin/system/application.h>
+#include "platform.h"
+#include "action_event_dispatcher.h"
 
 namespace karin
 {
@@ -18,6 +18,7 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, int 
 {
     m_id = Application::instance().registerWindow(this);
     m_impl = createWindowImpl(title, x, y, width, height, applicationImpl, m_id);
+    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(m_impl.get());
 }
 
 Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rectangle rect)
