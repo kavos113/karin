@@ -134,11 +134,6 @@ void Window::invalidate()
     m_impl->invalidate();
 }
 
-void Window::triggerActionEvent() const
-{
-    m_impl->triggerActionEvent();
-}
-
 void Window::setUserData(void* data)
 {
     m_userData = data;

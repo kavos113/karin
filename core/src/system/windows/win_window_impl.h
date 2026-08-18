@@ -46,6 +46,7 @@ public:
     void invalidate() override;
 
     void triggerActionEvent() override;
+    void addActionEvent(const ActionEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 

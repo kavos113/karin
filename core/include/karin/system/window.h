@@ -4,7 +4,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <any>
 
 #include <karin/common/geometry/point.h>
 #include <karin/common/geometry/size.h>
@@ -76,9 +75,6 @@ public:
 
     // request redraw, will trigger paint callbacks
     void invalidate();
-
-    // dispatch action event to main event loop. thread safe
-    void triggerActionEvent() const;
 
     void setUserData(void* data);
     void* userData() const;

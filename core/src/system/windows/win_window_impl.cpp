@@ -246,4 +246,9 @@ void WinWindowImpl::triggerActionEvent()
 {
     PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
 }
+
+void WinWindowImpl::addActionEvent(const ActionEvent& event)
+{
+    m_appImpl->pushEvent(event, m_owner);
+}
 } // karin
