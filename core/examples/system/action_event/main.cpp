@@ -19,7 +19,7 @@ int main()
     std::thread timer([&window]
     {
         std::this_thread::sleep_for(std::chrono::seconds(3));
-        window->triggerActionEvent();
+        window->sendActionEvent(10, std::string("from timer"));
     });
 
     karin::EventPayload event;
