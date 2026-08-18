@@ -44,9 +44,11 @@ inline std::pair<std::unique_ptr<IWindowImpl>, IActionEventManager*> createWindo
     IActionEventManager *mng = impl.get();
     return {std::move(impl), mng};
 #elifdef KARIN_PLATFORM_UNIX
-    return std::make_unique<X11WindowImpl>(
+    auto impl = std::make_unique<X11WindowImpl>(
         title, x, y, width, height, dynamic_cast<X11ApplicationImpl*>(applicationImpl), owner
     );
+    IActionEventManager *mng = impl.get();
+    return {std::move(impl), mng};
 #endif
 
     return {nullptr, nullptr};
