@@ -20,6 +20,7 @@ struct MouseButtonEvent;
 struct MouseWheelEvent;
 struct WindowEvent;
 struct ActionEvent;
+struct TaskEvent;
 
 using Event = std::variant<
     std::monostate,
@@ -29,7 +30,8 @@ using Event = std::variant<
     MouseButtonEvent,
     MouseWheelEvent,
     WindowEvent,
-    ActionEvent
+    ActionEvent,
+    TaskEvent
 >;
 
 struct MouseMoveEvent
@@ -80,10 +82,23 @@ struct WindowEvent
     Type type;
 };
 
+/**
+ * ActionEvent represents user-defined action.
+ * Similar to TaskEvent, but ActionEvent is used as an event that is frequently reused such as timer.
+ */
 struct ActionEvent
 {
     uint32_t actionId;
     std::any data;
+};
+
+/**
+ * TaskEvent represents user-defined task.
+ * Similar to ActionEvent, but TaskEvent is used as single task to run thread-safe ui update
+ */
+struct TaskEvent
+{
+    std::function<void()> task;
 };
 
 struct KeyEvent
