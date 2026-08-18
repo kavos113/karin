@@ -242,10 +242,8 @@ void WinWindowImpl::invalidate()
     }
 }
 
-void WinWindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
+void WinWindowImpl::triggerActionEvent()
 {
-    auto* allocData = new std::any(data);
-
-    PostMessage(m_hwnd, WM_KARIN_ACTION, id, reinterpret_cast<LPARAM>(allocData));
+    PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
 }
 } // karin

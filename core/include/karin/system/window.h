@@ -17,6 +17,7 @@ using WindowID = uint32_t;
 
 class IWindowImpl;
 class IApplicationImpl;
+class ActionEventDispatcher;
 
 class Window
 {
@@ -77,7 +78,7 @@ public:
     void invalidate();
 
     // dispatch action event to main event loop. thread safe
-    void triggerActionEvent(uint32_t id, const std::any& data) const;
+    void triggerActionEvent() const;
 
     void setUserData(void* data);
     void* userData() const;
@@ -93,6 +94,7 @@ private:
     WindowID m_id;
 
     std::unique_ptr<IWindowImpl> m_impl;
+    std::unique_ptr<ActionEventDispatcher> m_eventDispatcher;
 };
 
 } // karin
