@@ -221,6 +221,10 @@ void X11WindowImpl::handleEvent(const XEvent& event)
         {
             m_onClose();
         }
+        else if (event.xclient.message_type == m_actionEventAtom)
+        {
+            m_eventDispatcher->handlePostActionEvent();
+        }
         break;
 
     default:
@@ -363,7 +367,12 @@ void X11WindowImpl::invalidate()
     XFlush(X11Context::instance().display());
 }
 
-void X11WindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
+void X11WindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
+{
+    m_eventDispatcher = dispatcher;
+}
+
+void X11WindowImpl::notifyActionEvent()
 {
     XEvent event = {};
     event.type = ClientMessage;
@@ -371,10 +380,6 @@ void X11WindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
     event.xclient.window = m_window;
     event.xclient.message_type = m_actionEventAtom;
     event.xclient.format = 32;
-    event.xclient.data.l[0] = id;
-
-    auto *allocData = new std::any(data);
-    event.xclient.data.l[1] = reinterpret_cast<long>(allocData);
 
     XSendEvent(
         X11Context::instance().display(),
@@ -385,6 +390,11 @@ void X11WindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
     );
 
     XFlush(X11Context::instance().display());
+}
+
+void X11WindowImpl::addActionEvent(const ActionEvent& event)
+{
+    m_appImpl->pushEvent(event, m_id);
 }
 
 Window::NativeHandle X11WindowImpl::handle() const
