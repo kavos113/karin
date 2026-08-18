@@ -1,20 +1,24 @@
 #ifndef SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
 #define SYSTEM_WINDOWS_WIN_WINDOW_IMPL_H
 
-#include <windows.h>
-#include <window_impl.h>
-
-#include <karin/system/window.h>
 #include <string>
 #include <functional>
 #include <vector>
 #include <any>
 
+#include <windows.h>
+
+#include <karin/system/window.h>
+#include <window_impl.h>
+#include <action_event_manager.h>
+
 #include "win_application_impl.h"
+
+#define WM_KARIN_ACTION (WM_USER + 1)
 
 namespace karin
 {
-class WinWindowImpl : public IWindowImpl
+class WinWindowImpl : public IWindowImpl, public IActionEventManager
 {
 public:
     WinWindowImpl(
@@ -44,7 +48,10 @@ public:
 
     void invalidate() override;
 
-    void triggerActionEvent(uint32_t id, const std::any& data) override;
+    void setDispatcher(ActionEventDispatcher* dispatcher) override;
+
+    void notifyActionEvent() override;
+    void addActionEvent(const ActionEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 
@@ -62,6 +69,8 @@ private:
 
     WinApplicationImpl* m_appImpl = nullptr;
     WindowID m_owner;
+
+    ActionEventDispatcher* m_eventDispatcher = nullptr;
 };
 } // karin
 

@@ -5,6 +5,8 @@
 
 #include <utils/string.h>
 
+#include "action_event_dispatcher.h"
+
 namespace karin
 {
 WinWindowImpl::WinWindowImpl(
@@ -99,6 +101,10 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
         {
             callback();
         }
+        return 0;
+
+    case WM_KARIN_ACTION:
+        m_eventDispatcher->handlePostActionEvent();
         return 0;
 
     default:
@@ -242,10 +248,18 @@ void WinWindowImpl::invalidate()
     }
 }
 
-void WinWindowImpl::triggerActionEvent(uint32_t id, const std::any& data)
+void WinWindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
 {
-    auto* allocData = new std::any(data);
+    m_eventDispatcher = dispatcher;
+}
 
-    PostMessage(m_hwnd, WM_KARIN_ACTION, id, reinterpret_cast<LPARAM>(allocData));
+void WinWindowImpl::notifyActionEvent()
+{
+    PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
+}
+
+void WinWindowImpl::addActionEvent(const ActionEvent& event)
+{
+    m_appImpl->pushEvent(event, m_owner);
 }
 } // karin

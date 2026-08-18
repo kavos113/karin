@@ -81,7 +81,7 @@ uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& hand
 
 void Window::triggerActionEvent(uint32_t id, const std::any& data) const
 {
-    m_window->triggerActionEvent(id, data);
+    m_window->sendActionEvent(id, data);
 }
 
 void Window::clearActionEvent(uint32_t id) const

@@ -8,11 +8,14 @@
 #include <karin/system/window.h>
 #include <x11/window.h>
 #include <window_impl.h>
+#include <action_event_manager.h>
+#include <action_event_dispatcher.h>
+
 #include "x11_application_impl.h"
 
 namespace karin
 {
-class X11WindowImpl : public IWindowImpl
+class X11WindowImpl : public IWindowImpl, public IActionEventManager
 {
 public:
     X11WindowImpl(
@@ -42,7 +45,9 @@ public:
 
     void invalidate() override;
 
-    void triggerActionEvent(uint32_t id, const std::any& data) override;
+    void setDispatcher(ActionEventDispatcher* dispatcher) override;
+    void notifyActionEvent() override;
+    void addActionEvent(const ActionEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 
@@ -77,6 +82,8 @@ private:
 
     X11ApplicationImpl* m_appImpl = nullptr;
     WindowID m_id;
+
+    ActionEventDispatcher *m_eventDispatcher;
 };
 } // karin
 

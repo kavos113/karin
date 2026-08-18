@@ -4,6 +4,7 @@
 
 #include <karin/common/geometry/size.h>
 #include <karin/system/window.h>
+#include <karin/system/event.h>
 
 namespace karin
 {
@@ -27,8 +28,6 @@ public:
     virtual void addFinishResizeCallback(std::function<void()> onFinishResize) = 0;
 
     virtual void invalidate() = 0;
-
-    virtual void triggerActionEvent(uint32_t id, const std::any& data) = 0;
 
     virtual Window::NativeHandle handle() const = 0;
 };

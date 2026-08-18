@@ -1,11 +1,14 @@
 set(SYSTEM_SOURCE
         application.cpp
         window.cpp
+        action_event_dispatcher.cpp
 )
 set(SYSTEM_HEADER
         application_impl.h
         window_impl.h
         platform.h
+        action_event_dispatcher.h
+        action_event_manager.h
 )
 
 if (WIN32)
