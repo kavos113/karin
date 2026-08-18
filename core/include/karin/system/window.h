@@ -78,6 +78,7 @@ public:
     void invalidate();
 
     void sendActionEvent(uint32_t actionId, const std::any& data) const;
+    void sendTaskEvent(std::function<void()> task) const;
 
     void setUserData(void* data);
     void* userData() const;

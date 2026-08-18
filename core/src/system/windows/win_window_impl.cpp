@@ -262,4 +262,9 @@ void WinWindowImpl::addActionEvent(const ActionEvent& event)
 {
     m_appImpl->pushEvent(event, m_owner);
 }
+
+void WinWindowImpl::addTaskEvent(const TaskEvent& event)
+{
+    m_appImpl->pushEvent(event, m_owner);
+}
 } // karin

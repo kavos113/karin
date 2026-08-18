@@ -9,30 +9,51 @@ ActionEventDispatcher::ActionEventDispatcher(IActionEventManager* target)
 
 ActionEventDispatcher::~ActionEventDispatcher() = default;
 
-void ActionEventDispatcher::sendActionEvent(uint32_t id, const std::any& data)
+void ActionEventDispatcher::sendAction(uint32_t id, const std::any& data)
 {
     bool shouldPost = false;
 
     {
         std::lock_guard<std::mutex> lock(m_mtx);
-        m_pendingActions.push(ActionEvent(id, data));
+        m_pendingActions.emplace(ActionEvent(id, data));
 
         if (!m_isAlertPending)
         {
             m_isAlertPending = true;
             shouldPost = true;
         }
+    }
 
-        if (shouldPost)
+    if (shouldPost)
+    {
+        m_target->notifyActionEvent();
+    }
+}
+
+void ActionEventDispatcher::sendTask(const std::function<void()>& task)
+{
+    bool shouldPost = false;
+
+    {
+        std::lock_guard<std::mutex> lock(m_mtx);
+        m_pendingActions.emplace(TaskEvent(task));
+
+        if (!m_isAlertPending)
         {
-            m_target->notifyActionEvent();
+            m_isAlertPending = true;
+            shouldPost = true;
         }
+    }
+
+    if (shouldPost)
+    {
+        m_target->notifyActionEvent();
     }
 }
 
 void ActionEventDispatcher::handlePostActionEvent()
 {
-    std::queue<ActionEvent> snapshot;
+    std::queue<PendingItem> snapshot;
 
     {
         std::lock_guard<std::mutex> lock(m_mtx);
@@ -42,10 +63,17 @@ void ActionEventDispatcher::handlePostActionEvent()
 
     while (!snapshot.empty())
     {
-        ActionEvent e = snapshot.front();
+        auto item = snapshot.front();
         snapshot.pop();
 
-        m_target->addActionEvent(e);
+        if (std::holds_alternative<TaskEvent>(item))
+        {
+            m_target->addTaskEvent(std::get<TaskEvent>(item));
+        }
+        else
+        {
+            m_target->addActionEvent(std::get<ActionEvent>(item));
+        }
     }
 }
 } // karin

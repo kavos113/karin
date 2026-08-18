@@ -153,6 +153,6 @@ void* Window::userData() const
 
 void Window::sendActionEvent(uint32_t actionId, const std::any& data) const
 {
-    m_eventDispatcher->sendActionEvent(actionId, data);
+    m_eventDispatcher->sendAction(actionId, data);
 }
 } // karin
