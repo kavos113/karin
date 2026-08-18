@@ -22,7 +22,7 @@ public:
 
     void shutdown() override;
     bool waitEvent(EventPayload& event) override;
-    void pushEvent(const Event& event, WindowID window) override;
+    void pushEvent(const Event& event, WindowID window);
 
 private:
     static int errorHandler(Display* display, XErrorEvent* error);

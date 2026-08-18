@@ -16,9 +16,9 @@ public:
     ~WinApplicationImpl() override = default;
 
     bool waitEvent(EventPayload& event) override;
-    void pushEvent(const Event& event, WindowID window) override;
-
     void shutdown() override;
+
+    void pushEvent(const Event& event, WindowID window);
 
     bool m_isRunning = false;
 

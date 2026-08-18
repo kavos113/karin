@@ -13,7 +13,6 @@ public:
     virtual void shutdown() = 0;
 
     virtual bool waitEvent(EventPayload& event) = 0;
-    virtual void pushEvent(const Event& event, WindowID window) = 0;
 };
 } // karin
 
