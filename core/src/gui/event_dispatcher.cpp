@@ -47,6 +47,10 @@ void EventDispatcher::dispatchEvent(const Event& event)
                     m_actionEventHandlers[e.actionId](e.data);
                 }
             }
+            else if constexpr (std::is_same_v<T, TaskEvent>)
+            {
+                e.task();
+            }
         },
         event
     );
