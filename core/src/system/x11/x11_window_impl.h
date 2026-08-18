@@ -48,6 +48,7 @@ public:
     void setDispatcher(ActionEventDispatcher* dispatcher) override;
     void notifyActionEvent() override;
     void addActionEvent(const ActionEvent& event) override;
+    void addTaskEvent(const TaskEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 

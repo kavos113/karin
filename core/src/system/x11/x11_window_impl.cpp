@@ -397,6 +397,11 @@ void X11WindowImpl::addActionEvent(const ActionEvent& event)
     m_appImpl->pushEvent(event, m_id);
 }
 
+void X11WindowImpl::addTaskEvent(const TaskEvent& event)
+{
+    m_appImpl->pushEvent(event, m_id);
+}
+
 Window::NativeHandle X11WindowImpl::handle() const
 {
     return Window::NativeHandle{
