@@ -21,6 +21,7 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, int 
 
     m_impl = std::move(impl);
     m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
+    manager->setDispatcher(m_eventDispatcher.get());
 }
 
 Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rectangle rect)
