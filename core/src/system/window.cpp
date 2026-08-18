@@ -17,8 +17,10 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, int 
       )
 {
     m_id = Application::instance().registerWindow(this);
-    m_impl = createWindowImpl(title, x, y, width, height, applicationImpl, m_id);
-    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(m_impl.get());
+    auto [impl, manager] = createWindowImpl(title, x, y, width, height, applicationImpl, m_id);
+
+    m_impl = std::move(impl);
+    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
 }
 
 Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rectangle rect)
@@ -26,7 +28,7 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rect
 {
     m_id = Application::instance().registerWindow(this);
 
-    m_impl = createWindowImpl(
+    auto [impl, manager] = createWindowImpl(
         title,
         static_cast<int>(rect.pos.x),
         static_cast<int>(rect.pos.y),
@@ -35,6 +37,9 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rect
         applicationImpl,
         m_id
     );
+
+    m_impl = std::move(impl);
+    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
 }
 
 Window::~Window()
