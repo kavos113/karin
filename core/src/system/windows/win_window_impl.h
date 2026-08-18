@@ -10,12 +10,13 @@
 
 #include <karin/system/window.h>
 #include <window_impl.h>
+#include <action_event_manager.h>
 
 #include "win_application_impl.h"
 
 namespace karin
 {
-class WinWindowImpl : public IWindowImpl
+class WinWindowImpl : public IWindowImpl, public IActionEventManager
 {
 public:
     WinWindowImpl(

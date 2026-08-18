@@ -3,6 +3,7 @@
 
 #include "application_impl.h"
 #include "window_impl.h"
+#include "action_event_manager.h"
 
 #include <memory>
 #include <string>
@@ -28,7 +29,7 @@ inline std::unique_ptr<IApplicationImpl> createApplicationImpl()
     return nullptr;
 }
 
-inline std::unique_ptr<IWindowImpl> createWindowImpl(
+inline std::pair<std::unique_ptr<IWindowImpl>, IActionEventManager*> createWindowImpl(
     const std::string& title,
     int x,
     int y,
@@ -39,14 +40,16 @@ inline std::unique_ptr<IWindowImpl> createWindowImpl(
 )
 {
 #ifdef KARIN_PLATFORM_WINDOWS
-    return std::make_unique<WinWindowImpl>(title, x, y, width, height, dynamic_cast<WinApplicationImpl*>(applicationImpl), owner);
+    auto impl = std::make_unique<WinWindowImpl>(title, x, y, width, height, dynamic_cast<WinApplicationImpl*>(applicationImpl), owner);
+    IActionEventManager *mng = impl.get();
+    return {std::move(impl), mng};
 #elifdef KARIN_PLATFORM_UNIX
     return std::make_unique<X11WindowImpl>(
         title, x, y, width, height, dynamic_cast<X11ApplicationImpl*>(applicationImpl), owner
     );
 #endif
 
-    return nullptr;
+    return {nullptr, nullptr};
 }
 }
 

@@ -8,6 +8,7 @@ set(SYSTEM_HEADER
         window_impl.h
         platform.h
         action_event_dispatcher.h
+        action_event_manager.h
 )
 
 if (WIN32)

@@ -29,9 +29,6 @@ public:
 
     virtual void invalidate() = 0;
 
-    virtual void triggerActionEvent() = 0;
-    virtual void addActionEvent(const ActionEvent& event) = 0;
-
     virtual Window::NativeHandle handle() const = 0;
 };
 } // karin

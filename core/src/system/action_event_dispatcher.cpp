@@ -2,7 +2,7 @@
 
 namespace karin
 {
-ActionEventDispatcher::ActionEventDispatcher(IWindowImpl* target)
+ActionEventDispatcher::ActionEventDispatcher(IActionEventManager* target)
     : m_target(target)
 {
 }

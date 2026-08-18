@@ -6,15 +6,14 @@
 #include <any>
 
 #include <karin/system/event.h>
-#include <karin/system/window.h>
-#include "window_impl.h"
+#include "action_event_manager.h"
 
 namespace karin
 {
 class ActionEventDispatcher
 {
 public:
-    ActionEventDispatcher(IWindowImpl *target);
+    ActionEventDispatcher(IActionEventManager *target);
     ~ActionEventDispatcher();
 
     void sendActionEvent(uint32_t id, const std::any& data);
@@ -30,7 +29,7 @@ private:
     std::queue<ActionEvent> m_pendingActions;
     bool m_isAlertPending = false;
 
-    IWindowImpl *m_target;
+    IActionEventManager *m_target;
 };
 } // karin
 
