@@ -29,6 +29,8 @@ WinApplicationImpl::WinApplicationImpl()
     m_messageWindow = std::make_unique<WinMessageWindow>(this);
 }
 
+WinApplicationImpl::~WinApplicationImpl() = default;
+
 void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
 {
     EventPayload payload{
