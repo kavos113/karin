@@ -62,7 +62,7 @@ using Event = std::variant<
  * @param event target event
  * @return true if event is [Application Event], false if event is [Window Event]
  */
-inline bool isApplicationEvent(const Event& event);
+bool isApplicationEvent(const Event& event);
 
 struct MouseMoveEvent
 {
