@@ -84,10 +84,12 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
         return;
     }
 
-    Application::sendTaskEvent([text, textChars, textNode, env]
+    std::string textStr(textChars);
+    env->ReleaseStringUTFChars(text, textChars);
+
+    Application::sendTaskEvent([textNode, textStr]
     {
-        textNode->setText(textChars);
-        env->ReleaseStringUTFChars(text, textChars);
+        textNode->setText(textStr);
     });
 }
 
