@@ -4,7 +4,6 @@
 #include <string>
 #include <functional>
 #include <vector>
-#include <any>
 
 #include <windows.h>
 
@@ -62,8 +61,6 @@ private:
 
     WinApplicationImpl* m_appImpl = nullptr;
     WindowID m_owner;
-
-    ActionEventDispatcher* m_eventDispatcher = nullptr;
 };
 } // karin
 

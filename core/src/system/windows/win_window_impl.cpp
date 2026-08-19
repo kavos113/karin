@@ -103,9 +103,6 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
         }
         return 0;
 
-    case WM_KARIN_ACTION:
-        m_eventDispatcher->handlePostActionEvent();
-        return 0;
 
     default:
         if (event.has_value())
