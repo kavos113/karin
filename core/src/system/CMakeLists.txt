@@ -27,6 +27,7 @@ if (WIN32)
             windows/win_event.h
             windows/win_converter.h
             windows/win_context.h
+            windows/win_message_handler.h
 
     )
 elseif (UNIX)

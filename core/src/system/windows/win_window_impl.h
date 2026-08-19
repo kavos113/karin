@@ -13,12 +13,13 @@
 #include <action_event_manager.h>
 
 #include "win_application_impl.h"
+#include "win_message_handler.h"
 
 #define WM_KARIN_ACTION (WM_USER + 1)
 
 namespace karin
 {
-class WinWindowImpl : public IWindowImpl, public IActionEventManager
+class WinWindowImpl : public IWindowImpl, public IActionEventManager, public IWinMessageHandler
 {
 public:
     WinWindowImpl(
@@ -55,10 +56,10 @@ public:
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 
+    LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) override;
     static LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
-    LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) const;
 
     HWND m_hwnd;
 

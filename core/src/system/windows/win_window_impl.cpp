@@ -50,7 +50,7 @@ WinWindowImpl::WinWindowImpl(
     }
 }
 
-LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam) const
+LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     std::optional<Event> event = translateWinEvent(message, wParam, lParam);
     if (event.has_value())
