@@ -14,25 +14,11 @@ Application::Application()
     }
 
     m_context = std::make_unique<ApplicationContext>();
-    m_dispatcher = std::make_unique<ApplicationEventDispatcher>();
     s_appContext = m_context.get();
 }
 
 Application::~Application()
 {
-    for (const auto & disposable : m_disposables)
-    {
-        try
-        {
-            disposable();
-        }
-        catch (...)
-        {
-            std::cerr << "exception in disposable" << std::endl;
-            continue;
-        }
-    }
-
     s_appContext = nullptr;
 }
 
@@ -62,7 +48,7 @@ void Application::run()
 
         if (isApplicationEvent(event.event))
         {
-            m_dispatcher->dispatchEvent(event.event);
+            s_appContext->m_dispatcher->dispatchEvent(event.event);
         }
         else
         {
@@ -80,33 +66,6 @@ void Application::run()
             }
         }
     }
-}
-
-uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler) const
-{
-    return m_dispatcher->addActionEventHandler(handler);
-}
-
-void Application::clearActionEvent(uint32_t id) const
-{
-    m_dispatcher->clearActionEvent(id);
-}
-
-void Application::sendActionEvent(uint32_t id, const std::any& data) const
-{
-    karin::Application& app = karin::Application::instance();
-    app.sendAction(id, data);
-}
-
-void Application::sendTaskEvent(const std::function<void()>& task) const
-{
-    karin::Application& app = karin::Application::instance();
-    app.sendTask(task);
-}
-
-void Application::registerDisposable(const std::function<void()>& disposable)
-{
-    m_disposables.push_back(disposable);
 }
 
 ApplicationContext& getAppContext()
