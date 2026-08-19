@@ -37,8 +37,6 @@ X11ApplicationImpl::~X11ApplicationImpl()
     {
         close(m_pollfds[1].fd);
     }
-
-    XCloseDisplay(X11Context::instance().display());
 }
 
 void X11ApplicationImpl::addWindow(XlibWindow window, X11WindowImpl* impl)
@@ -51,47 +49,54 @@ bool X11ApplicationImpl::waitEvent(EventPayload& event)
     if (!m_running)
         return false;
 
-    if (!m_eventQueue.empty())
+    // to return non-empty event
+    while (m_running)
     {
-        event = m_eventQueue.front();
-        m_eventQueue.pop();
-        return true;
+        if (!m_eventQueue.empty())
+        {
+            event = m_eventQueue.front();
+            m_eventQueue.pop();
+            return true;
+        }
+
+        int timeout = (XPending(X11Context::instance().display()) > 0) ? 0 : -1;
+
+        int ret = poll(m_pollfds, 2, timeout);
+        if (ret < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            return false;
+        }
+
+        // eventfd
+        if (m_pollfds[1].revents & POLLIN)
+        {
+            uint64_t val;
+            read(m_pollfds[1].fd, &val, sizeof(uint64_t));
+
+            m_dispatcher->handlePostActionEvent();
+        }
+
+        // x11 fd
+        if ((m_pollfds[0].revents & POLLIN) || XPending(X11Context::instance().display()) > 0)
+        {
+            while (XPending(X11Context::instance().display()) > 0)
+            {
+                XEvent xevent;
+                XNextEvent(X11Context::instance().display(), &xevent);
+
+                if (m_windows.contains(xevent.xany.window))
+                {
+                    m_windows[xevent.xany.window]->handleEvent(xevent);
+                }
+            }
+        }
     }
 
-    int timeout = (XPending(X11Context::instance().display()) > 0) ? 0 : -1;
-
-    int ret = poll(m_pollfds, 2, timeout);
-    if (ret < 0)
-    {
-        return false;
-    }
-
-    // eventfd
-    if (m_pollfds[1].revents & POLLIN)
-    {
-        uint64_t val;
-        read(m_pollfds[1].fd, &val, sizeof(uint64_t));
-
-        m_dispatcher->handlePostActionEvent();
-    }
-
-    // x11 fd
-    if ((m_pollfds[0].revents & POLLIN) || XPending(X11Context::instance().display()) > 0)
-    {
-        XEvent xevent;
-        XNextEvent(X11Context::instance().display(), &xevent);
-
-        m_windows[xevent.xany.window]->handleEvent(xevent);
-    }
-
-    if (!m_eventQueue.empty())
-    {
-        event = m_eventQueue.front();
-        m_eventQueue.pop();
-        return true;
-    }
-
-    return true;
+    return false;
 }
 
 void X11ApplicationImpl::pushEvent(const Event& event, WindowID window)
