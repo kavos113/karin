@@ -84,6 +84,9 @@ void Application::sendTask(const std::function<void()>& task) const
     {
         task();
     }
-    m_eventDispatcher->sendTask(task);
+    else
+    {
+        m_eventDispatcher->sendTask(task);
+    }
 }
 }
