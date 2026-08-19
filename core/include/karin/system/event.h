@@ -41,6 +41,7 @@ struct TaskEvent;
  *
  * [Application Event]
  * - ActionEvent
+ * - TaskEvent
  *
  * Application Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
  *
