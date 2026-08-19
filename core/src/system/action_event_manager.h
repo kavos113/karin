@@ -10,8 +10,6 @@ class IActionEventManager
 public:
     virtual ~IActionEventManager() = default;
 
-    virtual void setDispatcher(ActionEventDispatcher* dispatcher) = 0;
-
     virtual void notifyActionEvent() = 0;
     virtual void addActionEvent(const ActionEvent& event) = 0;
     virtual void addTaskEvent(const TaskEvent& event) = 0;

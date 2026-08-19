@@ -1,15 +1,17 @@
 #ifndef SYSTEM_WINDOWS_WIN_APPLICATION_IMPL_H
 #define SYSTEM_WINDOWS_WIN_APPLICATION_IMPL_H
 
-#include <application_impl.h>
+#include <queue>
 
 #include <karin/system/event.h>
 #include <karin/system/window.h>
-#include <queue>
+
+#include <application_impl.h>
+#include <action_event_manager.h>
 
 namespace karin
 {
-class WinApplicationImpl : public IApplicationImpl
+class WinApplicationImpl : public IApplicationImpl, public IActionEventManager
 {
 public:
     WinApplicationImpl();
