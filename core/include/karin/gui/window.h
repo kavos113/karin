@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include <vector>
 
 namespace karin::gui
 {
@@ -40,8 +39,6 @@ public:
 
     void dispatchEvent(const Event& event) const;
 
-    void registerDisposable(const std::function<void()>& disposable);
-
 private:
 
     std::unique_ptr<ViewNode> m_rootView;
@@ -49,8 +46,6 @@ private:
     std::unique_ptr<karin::Window> m_window;
     std::unique_ptr<WindowRenderer> m_renderer;
     std::unique_ptr<WindowEventDispatcher> m_eventDispatcher;
-
-    std::vector<std::function<void()>> m_disposables;
 
     bool m_needRelayout = true;
 };

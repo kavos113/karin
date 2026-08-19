@@ -19,6 +19,11 @@ Application::Application()
 
 Application::~Application()
 {
+    for (const auto & disposable : m_disposables)
+    {
+        disposable();
+    }
+
     s_appContext = nullptr;
 }
 
@@ -82,6 +87,11 @@ void Application::sendActionEvent(uint32_t id, const std::any& data) const
 {
     karin::Application& app = karin::Application::instance();
     app.sendActionEvent(id, data);
+}
+
+void Application::registerDisposable(const std::function<void()>& disposable)
+{
+    m_disposables.push_back(disposable);
 }
 
 ApplicationContext& getAppContext()
