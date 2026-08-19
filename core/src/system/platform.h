@@ -22,7 +22,7 @@ inline std::pair<std::unique_ptr<IApplicationImpl>, IActionEventManager *> creat
 {
 #ifdef KARIN_PLATFORM_WINDOWS
     auto impl = std::make_unique<WinApplicationImpl>();
-    IActionEventManager *mng = impl.get();
+    IActionEventManager *mng = impl->getActionEventManager();
 
     return {std::move(impl), mng};
 #elifdef KARIN_PLATFORM_UNIX
