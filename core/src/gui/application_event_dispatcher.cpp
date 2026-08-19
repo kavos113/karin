@@ -19,11 +19,22 @@ void ApplicationEventDispatcher::clearActionEvent(uint32_t id)
     }
 }
 
-void ApplicationEventDispatcher::dispatchActionEvent(const ActionEvent& event)
+void ApplicationEventDispatcher::dispatchEvent(const Event& event)
 {
-    if (m_actionEventHandlers.contains(event.actionId))
-    {
-        m_actionEventHandlers[event.actionId](event.data);
-    }
+    std::visit(
+        [this]<typename T0>(const T0& e)
+        {
+            using T = std::decay_t<T0>;
+
+            if constexpr (std::is_same_v<T, ActionEvent>)
+            {
+                if (m_actionEventHandlers.contains(e.actionId))
+                {
+                    m_actionEventHandlers[e.actionId](e.data);
+                }
+            }
+        },
+        event
+    );
 }
 } // karin::gui

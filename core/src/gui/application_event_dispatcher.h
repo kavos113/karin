@@ -20,7 +20,11 @@ public:
     uint32_t addActionEventHandler(const std::function<void(std::any)>& handler);
     void clearActionEvent(uint32_t id);
 
-    void dispatchActionEvent(const ActionEvent& event);
+    /**
+     * dispatch application event
+     * @param event expected that event is [Application Event]
+     */
+    void dispatchEvent(const Event& event);
 
 private:
     std::unordered_map<uint32_t, std::function<void(std::any)>> m_actionEventHandlers;

@@ -14,7 +14,7 @@ public:
 
     /**
      * dispatch window related events.
-     * @param event expected to not include ActionEvent
+     * @param event expected that event is [Window Event]
      */
     void dispatchEvent(const Event& event);
 
