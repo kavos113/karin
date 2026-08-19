@@ -18,18 +18,24 @@
 
 namespace karin
 {
-inline std::unique_ptr<IApplicationImpl> createApplicationImpl()
+inline std::pair<std::unique_ptr<IApplicationImpl>, IActionEventManager *> createApplicationImpl()
 {
 #ifdef KARIN_PLATFORM_WINDOWS
-    return std::make_unique<WinApplicationImpl>();
+    auto impl = std::make_unique<WinApplicationImpl>();
+    IActionEventManager *mng = impl.get();
+
+    return {std::move(impl), mng};
 #elifdef KARIN_PLATFORM_UNIX
-    return std::make_unique<X11ApplicationImpl>();
+    auto impl = std::make_unique<X11ApplicationImpl>();
+    IActionEventManager *mng = impl.get();
+
+    return {std::move(impl), mng};
 #endif
 
-    return nullptr;
+    return {nullptr, nullptr};
 }
 
-inline std::pair<std::unique_ptr<IWindowImpl>, IActionEventManager*> createWindowImpl(
+inline std::unique_ptr<IWindowImpl> createWindowImpl(
     const std::string& title,
     int x,
     int y,
@@ -40,18 +46,14 @@ inline std::pair<std::unique_ptr<IWindowImpl>, IActionEventManager*> createWindo
 )
 {
 #ifdef KARIN_PLATFORM_WINDOWS
-    auto impl = std::make_unique<WinWindowImpl>(title, x, y, width, height, dynamic_cast<WinApplicationImpl*>(applicationImpl), owner);
-    IActionEventManager *mng = impl.get();
-    return {std::move(impl), mng};
+    return std::make_unique<WinWindowImpl>(title, x, y, width, height, dynamic_cast<WinApplicationImpl*>(applicationImpl), owner);
 #elifdef KARIN_PLATFORM_UNIX
-    auto impl = std::make_unique<X11WindowImpl>(
+    return std::make_unique<X11WindowImpl>(
         title, x, y, width, height, dynamic_cast<X11ApplicationImpl*>(applicationImpl), owner
     );
-    IActionEventManager *mng = impl.get();
-    return {std::move(impl), mng};
 #endif
 
-    return {nullptr, nullptr};
+    return nullptr;
 }
 }
 

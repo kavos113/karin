@@ -76,8 +76,6 @@ public:
     // request redraw, will trigger paint callbacks
     void invalidate();
 
-    void sendActionEvent(uint32_t actionId, const std::any& data) const;
-
     void setUserData(void* data);
     void* userData() const;
 
