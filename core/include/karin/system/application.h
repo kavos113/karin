@@ -10,6 +10,7 @@
 namespace karin
 {
 class IApplicationImpl;
+class ActionEventDispatcher;
 
 class Application
 {
@@ -43,6 +44,7 @@ private:
     ~Application() = default;
 
     std::unique_ptr<IApplicationImpl> m_impl;
+    std::unique_ptr<ActionEventDispatcher> m_eventDispatcher;
 
     std::unordered_map<WindowID, Window*> m_windowRegistry;
     WindowID m_nextWindowID = 1;

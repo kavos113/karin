@@ -227,19 +227,4 @@ void WinWindowImpl::invalidate()
         InvalidateRect(m_hwnd, nullptr, FALSE);
     }
 }
-
-void WinWindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
-{
-    m_eventDispatcher = dispatcher;
-}
-
-void WinWindowImpl::notifyActionEvent()
-{
-    PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
-}
-
-void WinWindowImpl::addActionEvent(const ActionEvent& event)
-{
-    m_appImpl->pushEvent(event, m_owner);
-}
 } // karin

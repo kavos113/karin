@@ -10,16 +10,13 @@
 
 #include <karin/system/window.h>
 #include <window_impl.h>
-#include <action_event_manager.h>
 
 #include "win_application_impl.h"
 #include "win_message_handler.h"
 
-#define WM_KARIN_ACTION (WM_USER + 1)
-
 namespace karin
 {
-class WinWindowImpl : public IWindowImpl, public IActionEventManager, public IWinMessageHandler
+class WinWindowImpl : public IWindowImpl, public IWinMessageHandler
 {
 public:
     WinWindowImpl(
@@ -48,11 +45,6 @@ public:
     void addFinishResizeCallback(std::function<void()> onFinishResize) override;
 
     void invalidate() override;
-
-    void setDispatcher(ActionEventDispatcher* dispatcher) override;
-
-    void notifyActionEvent() override;
-    void addActionEvent(const ActionEvent& event) override;
 
     [[nodiscard]] Window::NativeHandle handle() const override;
 

@@ -1,7 +1,5 @@
 #include "win_application_impl.h"
 
-#include <windows.h>
-
 #include "win_window_class_registry.h"
 #include "win_window_impl.h"
 #include "win_context.h"
@@ -26,6 +24,8 @@ WinApplicationImpl::WinApplicationImpl()
     };
 
     WinContext::instance().windowClassRegistry().registerClass(wc, CLASS_NAME);
+
+    createMessageWindow();
 }
 
 void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
@@ -74,5 +74,20 @@ void WinApplicationImpl::shutdown()
         return;
 
     PostQuitMessage(0);
+}
+
+void WinApplicationImpl::setDispatcher(ActionEventDispatcher* dispatcher)
+{
+    m_dispatcher = dispatcher;
+}
+
+void WinApplicationImpl::notifyActionEvent()
+{
+    PostMessage(m_messageWindow, WM_KARIN_ACTION, 0, 0);
+}
+
+void WinApplicationImpl::addActionEvent(const ActionEvent& event)
+{
+    pushEvent(event, 0);
 }
 } // karin
