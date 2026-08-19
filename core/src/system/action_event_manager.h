@@ -3,10 +3,10 @@
 
 #include <karin/system/event.h>
 
-#include "action_event_dispatcher.h"
-
 namespace karin
 {
+class ActionEventDispatcher;
+
 class IActionEventManager
 {
 public:
