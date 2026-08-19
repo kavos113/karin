@@ -1,5 +1,6 @@
 #include "win_message_window.h"
 
+#include <karin/system/window.h>
 #include "action_event_dispatcher.h"
 
 namespace karin
@@ -34,7 +35,7 @@ void WinMessageWindow::notifyActionEvent()
 
 void WinMessageWindow::addActionEvent(const ActionEvent& event)
 {
-    m_appImpl->pushEvent(event, 0);
+    m_appImpl->pushEvent(event, WINDOW_ID_NONE);
 }
 
 LRESULT WinMessageWindow::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)

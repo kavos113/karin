@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <sys/eventfd.h>
 
+#include <karin/system/window.h>
+
 #include "x11_window_impl.h"
 #include "x11_context.h"
 
@@ -123,9 +125,16 @@ void X11ApplicationImpl::setDispatcher(ActionEventDispatcher* dispatcher)
 
 void X11ApplicationImpl::notifyActionEvent()
 {
+    uint64_t val = 1;
+    ssize_t ret = write(m_pollfds[1].fd, &val, sizeof(uint64_t));
+    if (ret == -1)
+    {
+        throw std::runtime_error("failed to write to eventfd");
+    }
 }
 
 void X11ApplicationImpl::addActionEvent(const ActionEvent& event)
 {
+    pushEvent(event, WINDOW_ID_NONE);
 }
 } // karin
