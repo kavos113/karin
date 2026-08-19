@@ -16,7 +16,7 @@ namespace karin
 {
 class X11WindowImpl;
 
-class X11ApplicationImpl : public IApplicationImpl, IActionEventManager
+class X11ApplicationImpl : public IApplicationImpl, public IActionEventManager
 {
 public:
     X11ApplicationImpl();
