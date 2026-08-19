@@ -72,6 +72,10 @@ bool X11ApplicationImpl::waitEvent(EventPayload& event)
         }
 
         // eventfd
+        if (m_pollfds[1].revents & (POLLERR|POLLHUP|POLLNVAL))
+        {
+            return false;
+        }
         if (m_pollfds[1].revents & POLLIN)
         {
             uint64_t val;
