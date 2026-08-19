@@ -40,7 +40,10 @@ struct ActionEvent;
  * [Application Event]
  * - ActionEvent
  *
- * Action Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
+ * Application Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
+ *
+ *
+ * To check these types, use isApplicationEvent(const Event& event);
  */
 using Event = std::variant<
     std::monostate,
@@ -52,6 +55,14 @@ using Event = std::variant<
     WindowEvent,
     ActionEvent
 >;
+
+/**
+ * classify event type. (see above)
+ *
+ * @param event target event
+ * @return true if event is [Application Event], false if event is [Window Event]
+ */
+inline bool isApplicationEvent(const Event& event);
 
 struct MouseMoveEvent
 {

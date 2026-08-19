@@ -15,7 +15,7 @@
 namespace karin::gui
 {
 class Application;
-class EventDispatcher;
+class WindowEventDispatcher;
 
 class Window
 {
@@ -51,7 +51,7 @@ private:
 
     std::unique_ptr<karin::Window> m_window;
     std::unique_ptr<WindowRenderer> m_renderer;
-    std::unique_ptr<EventDispatcher> m_eventDispatcher;
+    std::unique_ptr<WindowEventDispatcher> m_eventDispatcher;
 
     std::vector<std::function<void()>> m_disposables;
 

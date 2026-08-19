@@ -1,15 +1,15 @@
-#include "event_dispatcher.h"
+#include "window_event_dispatcher.h"
 
 #include <karin/common/geometry/point.h>
 
 namespace karin::gui
 {
-EventDispatcher::EventDispatcher(ViewNode* rootView)
+WindowEventDispatcher::WindowEventDispatcher(ViewNode* rootView)
     : m_rootView(rootView)
 {
 }
 
-void EventDispatcher::dispatchEvent(const Event& event)
+void WindowEventDispatcher::dispatchEvent(const Event& event)
 {
     if (!m_rootView)
     {
@@ -45,7 +45,7 @@ void EventDispatcher::dispatchEvent(const Event& event)
     );
 }
 
-void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
+void WindowEventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
@@ -68,7 +68,7 @@ void EventDispatcher::handleMouseMoveEvent(const MouseMoveEvent& event)
     }
 }
 
-void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
+void WindowEventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
@@ -113,7 +113,7 @@ void EventDispatcher::handleMouseButtonEvent(const MouseButtonEvent& event)
     }
 }
 
-void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
+void WindowEventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
 {
     Point point(static_cast<float>(event.x), static_cast<float>(event.y));
 
@@ -124,7 +124,7 @@ void EventDispatcher::handleMouseWheelEvent(const MouseWheelEvent& event) const
     }
 }
 
-void EventDispatcher::handleKeyEvent(const KeyEvent& event) const
+void WindowEventDispatcher::handleKeyEvent(const KeyEvent& event) const
 {
     if (m_focusNode)
     {
@@ -136,7 +136,7 @@ void EventDispatcher::handleKeyEvent(const KeyEvent& event) const
     }
 }
 
-void EventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
+void WindowEventDispatcher::handleKeyTypeEvent(const KeyTypeEvent& event) const
 {
     if (m_focusNode)
     {

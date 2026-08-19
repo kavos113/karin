@@ -11,9 +11,12 @@
 
 namespace karin::gui
 {
-class ActionEventExecuter
+class ApplicationEventDispatcher
 {
 public:
+    ApplicationEventDispatcher() = default;
+    ~ApplicationEventDispatcher() = default;
+
     uint32_t addActionEventHandler(const std::function<void(std::any)>& handler);
     void clearActionEvent(uint32_t id);
 

@@ -1,8 +1,8 @@
-#include "action_event_executer.h"
+#include "application_event_dispatcher.h"
 
 namespace karin::gui
 {
-uint32_t ActionEventExecuter::addActionEventHandler(const std::function<void(std::any)>& handler)
+uint32_t ApplicationEventDispatcher::addActionEventHandler(const std::function<void(std::any)>& handler)
 {
     uint32_t id = m_nextHandlerId;
     m_actionEventHandlers[id] = handler;
@@ -11,7 +11,7 @@ uint32_t ActionEventExecuter::addActionEventHandler(const std::function<void(std
     return id;
 }
 
-void ActionEventExecuter::clearActionEvent(uint32_t id)
+void ApplicationEventDispatcher::clearActionEvent(uint32_t id)
 {
     if (m_actionEventHandlers.contains(id))
     {
@@ -19,7 +19,7 @@ void ActionEventExecuter::clearActionEvent(uint32_t id)
     }
 }
 
-void ActionEventExecuter::dispatchActionEvent(const ActionEvent& event)
+void ApplicationEventDispatcher::dispatchActionEvent(const ActionEvent& event)
 {
     if (m_actionEventHandlers.contains(event.actionId))
     {

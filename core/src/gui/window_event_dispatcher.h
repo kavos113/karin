@@ -7,10 +7,10 @@
 namespace karin::gui
 {
 
-class EventDispatcher
+class WindowEventDispatcher
 {
 public:
-    explicit EventDispatcher(ViewNode *rootView);
+    explicit WindowEventDispatcher(ViewNode *rootView);
 
     /**
      * dispatch window related events.

@@ -3,7 +3,7 @@
 #include <karin/system/application.h>
 #include <karin/common/color/color.h>
 
-#include "event_dispatcher.h"
+#include "window_event_dispatcher.h"
 
 namespace karin::gui
 {
@@ -100,7 +100,7 @@ void Window::registerDisposable(const std::function<void()>& disposable)
 void Window::setRootView(std::unique_ptr<ViewNode> rootView)
 {
     m_rootView = std::move(rootView);
-    m_eventDispatcher = std::make_unique<EventDispatcher>(m_rootView.get());
+    m_eventDispatcher = std::make_unique<WindowEventDispatcher>(m_rootView.get());
 
     m_rootView->onAttachToWindow(this);
 }

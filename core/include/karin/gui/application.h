@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "action_event_executer.h"
+#include "application_event_dispatcher.h"
 
 namespace karin::gui
 {
@@ -32,7 +32,7 @@ public:
 
 private:
     std::unique_ptr<ApplicationContext> m_context;
-    std::unique_ptr<ActionEventExecuter> m_actionEventExecuter;
+    std::unique_ptr<ApplicationEventDispatcher> m_actionEventExecuter;
 
     std::vector<std::shared_ptr<Window>> m_windows;
 };

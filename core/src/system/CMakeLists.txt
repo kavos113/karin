@@ -2,6 +2,7 @@ set(SYSTEM_SOURCE
         application.cpp
         window.cpp
         action_event_dispatcher.cpp
+        event.cpp
 )
 set(SYSTEM_HEADER
         application_impl.h

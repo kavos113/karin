@@ -7,15 +7,15 @@ set(GUI_SOURCES
         application.cpp
         application_context.cpp
         text_node.cpp
-        event_dispatcher.cpp
+        window_event_dispatcher.cpp
+        application_event_dispatcher.cpp
         event.cpp
         timer.cpp
-        action_event_executer.cpp
 )
 set(GUI_HEADERS
         application_context.h
-        event_dispatcher.h
-        action_event_executer.h
+        window_event_dispatcher.h
+        application_event_dispatcher.h
 )
 
 add_library(karin_gui STATIC ${GUI_SOURCES} ${GUI_HEADERS})
