@@ -13,7 +13,7 @@ Application::Application()
     }
 
     m_context = std::make_unique<ApplicationContext>();
-    m_actionEventExecuter = std::make_unique<ApplicationEventDispatcher>();
+    m_dispatcher = std::make_unique<ApplicationEventDispatcher>();
     s_appContext = m_context.get();
 }
 
@@ -46,17 +46,24 @@ void Application::run()
             continue;
         }
 
-        karin::Window* window = app.findWindow(event.windowId);
-        if (!window)
+        if (isApplicationEvent(event.event))
         {
-            continue;
+            m_dispatcher->dispatchEvent(event.event);
         }
-
-        void* userData = window->userData();
-        if (userData)
+        else
         {
-            auto* guiWindow = static_cast<Window*>(userData);
-            guiWindow->dispatchEvent(event.event);
+            karin::Window* window = app.findWindow(event.windowId);
+            if (!window)
+            {
+                continue;
+            }
+
+            void* userData = window->userData();
+            if (userData)
+            {
+                auto* guiWindow = static_cast<Window*>(userData);
+                guiWindow->dispatchEvent(event.event);
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ public:
 
 private:
     std::unique_ptr<ApplicationContext> m_context;
-    std::unique_ptr<ApplicationEventDispatcher> m_actionEventExecuter;
+    std::unique_ptr<ApplicationEventDispatcher> m_dispatcher;
 
     std::vector<std::shared_ptr<Window>> m_windows;
 };
