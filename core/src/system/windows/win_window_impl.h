@@ -4,21 +4,18 @@
 #include <string>
 #include <functional>
 #include <vector>
-#include <any>
 
 #include <windows.h>
 
 #include <karin/system/window.h>
 #include <window_impl.h>
-#include <action_event_manager.h>
 
 #include "win_application_impl.h"
-
-#define WM_KARIN_ACTION (WM_USER + 1)
+#include "win_message_handler.h"
 
 namespace karin
 {
-class WinWindowImpl : public IWindowImpl, public IActionEventManager
+class WinWindowImpl : public IWindowImpl, public IWinMessageHandler
 {
 public:
     WinWindowImpl(
@@ -30,7 +27,7 @@ public:
         WinApplicationImpl* appImpl,
         WindowID owner
     );
-    ~WinWindowImpl() override = default;
+    ~WinWindowImpl() override;
 
     void show() override;
     void hide() override;
@@ -48,18 +45,12 @@ public:
 
     void invalidate() override;
 
-    void setDispatcher(ActionEventDispatcher* dispatcher) override;
-
-    void notifyActionEvent() override;
-    void addActionEvent(const ActionEvent& event) override;
-    void addTaskEvent(const TaskEvent& event) override;
-
     [[nodiscard]] Window::NativeHandle handle() const override;
 
-    static LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) override;
+    void setHwnd(HWND hwnd) override;
 
 private:
-    LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) const;
 
     HWND m_hwnd;
 
@@ -70,8 +61,6 @@ private:
 
     WinApplicationImpl* m_appImpl = nullptr;
     WindowID m_owner;
-
-    ActionEventDispatcher* m_eventDispatcher = nullptr;
 };
 } // karin
 

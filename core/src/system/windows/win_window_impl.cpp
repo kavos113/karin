@@ -50,7 +50,9 @@ WinWindowImpl::WinWindowImpl(
     }
 }
 
-LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam) const
+WinWindowImpl::~WinWindowImpl() = default;
+
+LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     std::optional<Event> event = translateWinEvent(message, wParam, lParam);
     if (event.has_value())
@@ -103,9 +105,6 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
         }
         return 0;
 
-    case WM_KARIN_ACTION:
-        m_eventDispatcher->handlePostActionEvent();
-        return 0;
 
     default:
         if (event.has_value())
@@ -117,29 +116,9 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(m_hwnd, message, wParam, lParam);
 }
 
-LRESULT WinWindowImpl::windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+void WinWindowImpl::setHwnd(HWND hwnd)
 {
-    WinWindowImpl * self = nullptr;
-
-    if (message == WM_CREATE)
-    {
-        auto cs = reinterpret_cast<CREATESTRUCT*>(lParam);
-        self = static_cast<WinWindowImpl*>(cs->lpCreateParams);
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
-
-        self->m_hwnd = hwnd;
-    }
-    else
-    {
-        self = reinterpret_cast<WinWindowImpl*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-    }
-
-    if (self)
-    {
-        return self->handleMessage(message, wParam, lParam);
-    }
-
-    return DefWindowProc(hwnd, message, wParam, lParam);
+    m_hwnd = hwnd;
 }
 
 void WinWindowImpl::show()
@@ -246,25 +225,5 @@ void WinWindowImpl::invalidate()
     {
         InvalidateRect(m_hwnd, nullptr, FALSE);
     }
-}
-
-void WinWindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
-{
-    m_eventDispatcher = dispatcher;
-}
-
-void WinWindowImpl::notifyActionEvent()
-{
-    PostMessage(m_hwnd, WM_KARIN_ACTION, 0, 0);
-}
-
-void WinWindowImpl::addActionEvent(const ActionEvent& event)
-{
-    m_appImpl->pushEvent(event, m_owner);
-}
-
-void WinWindowImpl::addTaskEvent(const TaskEvent& event)
-{
-    m_appImpl->pushEvent(event, m_owner);
 }
 } // karin

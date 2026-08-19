@@ -16,10 +16,10 @@ int main()
         std::cout << "Window resized to " << newSize.width << "x" << newSize.height << std::endl;
     });
 
-    std::thread timer([&window]
+    std::thread timer([&app]
     {
         std::this_thread::sleep_for(std::chrono::seconds(3));
-        window->sendActionEvent(10, std::string("from timer"));
+        app.sendActionEvent(10, std::string("from timer"));
     });
 
     karin::EventPayload event;

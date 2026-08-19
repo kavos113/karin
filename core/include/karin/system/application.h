@@ -1,6 +1,8 @@
 #ifndef KARIN_SYSTEM_APPLICATION_H
 #define KARIN_SYSTEM_APPLICATION_H
 
+#include <cstdint>
+
 #include <memory>
 #include <unordered_map>
 
@@ -10,6 +12,7 @@
 namespace karin
 {
 class IApplicationImpl;
+class ActionEventDispatcher;
 
 class Application
 {
@@ -38,11 +41,14 @@ public:
     void unregisterWindow(WindowID id);
     Window* findWindow(WindowID id) const;
 
+    void sendActionEvent(uint32_t actionId, const std::any& data) const;
+
 private:
     Application();
     ~Application() = default;
 
     std::unique_ptr<IApplicationImpl> m_impl;
+    std::unique_ptr<ActionEventDispatcher> m_eventDispatcher;
 
     std::unordered_map<WindowID, Window*> m_windowRegistry;
     WindowID m_nextWindowID = 1;

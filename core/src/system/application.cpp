@@ -1,7 +1,8 @@
 #include <karin/system/application.h>
 
-#include "platform.h"
 #include "application_impl.h"
+#include "action_event_dispatcher.h"
+#include "platform.h"
 
 namespace karin
 {
@@ -61,6 +62,15 @@ Window* Application::findWindow(WindowID id) const
 
 Application::Application()
 {
-    m_impl = createApplicationImpl();
+    auto [impl, manager] = createApplicationImpl();
+
+    m_impl = std::move(impl);
+    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
+    manager->setDispatcher(m_eventDispatcher.get());
+}
+
+void Application::sendActionEvent(uint32_t actionId, const std::any& data) const
+{
+    m_eventDispatcher->sendActionEvent(actionId, data);
 }
 }

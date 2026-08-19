@@ -23,6 +23,30 @@ struct WindowEvent;
 struct ActionEvent;
 struct TaskEvent;
 
+/**
+ * Event.
+ *
+ * Event is classified into two types: [Window Event] and [Application Event].
+ *
+ * [Window Event]
+ * - KeyEvent
+ * - KeyTypeEvent
+ * - MouseMoveEvent
+ * - MouseButtonEvent
+ * - MouseWheelEvent
+ * - WindowEvent
+ *
+ * Window Event relates to specific window. ID of that window is given in application message loop.
+ *
+ *
+ * [Application Event]
+ * - ActionEvent
+ *
+ * Application Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
+ *
+ *
+ * To check these types, use isApplicationEvent(const Event& event);
+ */
 using Event = std::variant<
     std::monostate,
     KeyEvent,
@@ -34,6 +58,14 @@ using Event = std::variant<
     ActionEvent,
     TaskEvent
 >;
+
+/**
+ * classify event type. (see above)
+ *
+ * @param event target event
+ * @return true if event is [Application Event], false if event is [Window Event]
+ */
+bool isApplicationEvent(const Event& event);
 
 struct MouseMoveEvent
 {

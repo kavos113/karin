@@ -1,5 +1,6 @@
 #include <karin/gui/application.h>
 #include "application_context.h"
+#include "application_event_dispatcher.h"
 
 namespace karin::gui
 {
@@ -13,11 +14,25 @@ Application::Application()
     }
 
     m_context = std::make_unique<ApplicationContext>();
+    m_dispatcher = std::make_unique<ApplicationEventDispatcher>();
     s_appContext = m_context.get();
 }
 
 Application::~Application()
 {
+    for (const auto & disposable : m_disposables)
+    {
+        try
+        {
+            disposable();
+        }
+        catch (...)
+        {
+            std::cerr << "exception in disposable" << std::endl;
+            continue;
+        }
+    }
+
     s_appContext = nullptr;
 }
 
@@ -45,19 +60,47 @@ void Application::run()
             continue;
         }
 
-        karin::Window* window = app.findWindow(event.windowId);
-        if (!window)
+        if (isApplicationEvent(event.event))
         {
-            continue;
+            m_dispatcher->dispatchEvent(event.event);
         }
-
-        void* userData = window->userData();
-        if (userData)
+        else
         {
-            auto* guiWindow = static_cast<Window*>(userData);
-            guiWindow->dispatchEvent(event.event);
+            karin::Window* window = app.findWindow(event.windowId);
+            if (!window)
+            {
+                continue;
+            }
+
+            void* userData = window->userData();
+            if (userData)
+            {
+                auto* guiWindow = static_cast<Window*>(userData);
+                guiWindow->dispatchEvent(event.event);
+            }
         }
     }
+}
+
+uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler) const
+{
+    return m_dispatcher->addActionEventHandler(handler);
+}
+
+void Application::clearActionEvent(uint32_t id) const
+{
+    m_dispatcher->clearActionEvent(id);
+}
+
+void Application::sendActionEvent(uint32_t id, const std::any& data) const
+{
+    karin::Application& app = karin::Application::instance();
+    app.sendActionEvent(id, data);
+}
+
+void Application::registerDisposable(const std::function<void()>& disposable)
+{
+    m_disposables.push_back(disposable);
 }
 
 ApplicationContext& getAppContext()

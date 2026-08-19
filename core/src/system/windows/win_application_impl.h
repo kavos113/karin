@@ -3,6 +3,8 @@
 
 #include <queue>
 
+#include <windows.h>
+
 #include <karin/system/event.h>
 #include <karin/system/window.h>
 
@@ -11,16 +13,20 @@
 
 namespace karin
 {
-class WinApplicationImpl : public IApplicationImpl, public IActionEventManager
+class WinMessageWindow;
+
+class WinApplicationImpl : public IApplicationImpl
 {
 public:
     WinApplicationImpl();
-    ~WinApplicationImpl() override = default;
+    ~WinApplicationImpl() override;
 
     bool waitEvent(EventPayload& event) override;
     void shutdown() override;
 
     void pushEvent(const Event& event, WindowID window);
+
+    IActionEventManager *getActionEventManager() const;
 
     bool m_isRunning = false;
 
@@ -28,6 +34,8 @@ public:
 
 private:
     std::queue<EventPayload> m_eventQueue;
+
+    std::unique_ptr<WinMessageWindow> m_messageWindow;
 };
 } // karin
 

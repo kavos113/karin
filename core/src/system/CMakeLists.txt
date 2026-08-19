@@ -2,6 +2,7 @@ set(SYSTEM_SOURCE
         application.cpp
         window.cpp
         action_event_dispatcher.cpp
+        event.cpp
 )
 set(SYSTEM_HEADER
         application_impl.h
@@ -19,6 +20,7 @@ if (WIN32)
             windows/win_event.cpp
             windows/win_converter.cpp
             windows/win_context.cpp
+            windows/win_message_window.cpp
     )
     set(SYSTEM_HEADER ${SYSTEM_HEADER}
             windows/win_application_impl.h
@@ -27,7 +29,8 @@ if (WIN32)
             windows/win_event.h
             windows/win_converter.h
             windows/win_context.h
-
+            windows/win_message_handler.h
+            windows/win_message_window.h
     )
 elseif (UNIX)
     set(SYSTEM_SOURCE ${SYSTEM_SOURCE}

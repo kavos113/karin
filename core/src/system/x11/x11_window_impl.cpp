@@ -161,8 +161,6 @@ X11WindowImpl::X11WindowImpl(
     {
         throw std::runtime_error("failed to create input context");
     }
-
-    m_actionEventAtom = XInternAtom(X11Context::instance().display(), "WM_KARIN_ACTION_EVENT", False);
 }
 
 X11WindowImpl::~X11WindowImpl()
@@ -220,10 +218,6 @@ void X11WindowImpl::handleEvent(const XEvent& event)
         if (event.xclient.data.l[0] == XInternAtom(X11Context::instance().display(), "WM_DELETE_WINDOW", False))
         {
             m_onClose();
-        }
-        else if (event.xclient.message_type == m_actionEventAtom)
-        {
-            m_eventDispatcher->handlePostActionEvent();
         }
         break;
 
@@ -365,41 +359,6 @@ void X11WindowImpl::invalidate()
     );
 
     XFlush(X11Context::instance().display());
-}
-
-void X11WindowImpl::setDispatcher(ActionEventDispatcher* dispatcher)
-{
-    m_eventDispatcher = dispatcher;
-}
-
-void X11WindowImpl::notifyActionEvent()
-{
-    XEvent event = {};
-    event.type = ClientMessage;
-    event.xclient.display = X11Context::instance().display();
-    event.xclient.window = m_window;
-    event.xclient.message_type = m_actionEventAtom;
-    event.xclient.format = 32;
-
-    XSendEvent(
-        X11Context::instance().display(),
-        m_window,
-        False,
-        NoEventMask,
-        &event
-    );
-
-    XFlush(X11Context::instance().display());
-}
-
-void X11WindowImpl::addActionEvent(const ActionEvent& event)
-{
-    m_appImpl->pushEvent(event, m_id);
-}
-
-void X11WindowImpl::addTaskEvent(const TaskEvent& event)
-{
-    m_appImpl->pushEvent(event, m_id);
 }
 
 Window::NativeHandle X11WindowImpl::handle() const

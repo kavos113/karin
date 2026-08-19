@@ -17,11 +17,7 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, int 
       )
 {
     m_id = Application::instance().registerWindow(this);
-    auto [impl, manager] = createWindowImpl(title, x, y, width, height, applicationImpl, m_id);
-
-    m_impl = std::move(impl);
-    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
-    manager->setDispatcher(m_eventDispatcher.get());
+    m_impl = createWindowImpl(title, x, y, width, height, applicationImpl, m_id);
 }
 
 Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rectangle rect)
@@ -29,7 +25,7 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rect
 {
     m_id = Application::instance().registerWindow(this);
 
-    auto [impl, manager] = createWindowImpl(
+    m_impl = createWindowImpl(
         title,
         static_cast<int>(rect.pos.x),
         static_cast<int>(rect.pos.y),
@@ -38,9 +34,6 @@ Window::Window(IApplicationImpl* applicationImpl, const std::string& title, Rect
         applicationImpl,
         m_id
     );
-
-    m_impl = std::move(impl);
-    m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
 }
 
 Window::~Window()
@@ -149,10 +142,5 @@ void Window::setUserData(void* data)
 void* Window::userData() const
 {
     return m_userData;
-}
-
-void Window::sendActionEvent(uint32_t actionId, const std::any& data) const
-{
-    m_eventDispatcher->sendAction(actionId, data);
 }
 } // karin

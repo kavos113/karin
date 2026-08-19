@@ -3,7 +3,7 @@
 #include <karin/system/application.h>
 #include <karin/common/color/color.h>
 
-#include "event_dispatcher.h"
+#include "window_event_dispatcher.h"
 
 namespace karin::gui
 {
@@ -19,11 +19,6 @@ Window::Window(const std::string& title, int x, int y, int width, int height)
 
 Window::~Window()
 {
-    for (const auto & disposable : m_disposables)
-    {
-        disposable();
-    }
-
     m_renderer->cleanUp();
 }
 
@@ -69,38 +64,10 @@ void Window::dispatchEvent(const Event& event) const
     }
 }
 
-uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
-{
-    if (m_eventDispatcher)
-    {
-        return m_eventDispatcher->addActionEventHandler(handler);
-    }
-
-    return 0;
-}
-
-void Window::triggerActionEvent(uint32_t id, const std::any& data) const
-{
-    m_window->sendActionEvent(id, data);
-}
-
-void Window::clearActionEvent(uint32_t id) const
-{
-    if (m_eventDispatcher)
-    {
-        m_eventDispatcher->clearActionEvent(id);
-    }
-}
-
-void Window::registerDisposable(const std::function<void()>& disposable)
-{
-    m_disposables.push_back(disposable);
-}
-
 void Window::setRootView(std::unique_ptr<ViewNode> rootView)
 {
     m_rootView = std::move(rootView);
-    m_eventDispatcher = std::make_unique<EventDispatcher>(m_rootView.get());
+    m_eventDispatcher = std::make_unique<WindowEventDispatcher>(m_rootView.get());
 
     m_rootView->onAttachToWindow(this);
 }
