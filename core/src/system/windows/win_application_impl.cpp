@@ -4,6 +4,7 @@
 #include "win_window_impl.h"
 #include "win_context.h"
 #include "win_message_handler.h"
+#include "win_message_window.h"
 
 namespace karin
 {

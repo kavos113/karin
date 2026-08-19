@@ -1,5 +1,7 @@
 #include "win_message_window.h"
 
+#include "action_event_dispatcher.h"
+
 namespace karin
 {
 WinMessageWindow::WinMessageWindow(WinApplicationImpl* appImpl)

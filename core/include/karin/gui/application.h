@@ -8,11 +8,11 @@
 #include <karin/system/application.h>
 
 #include "window.h"
-#include "application_event_dispatcher.h"
 
 namespace karin::gui
 {
 class ApplicationContext;
+class ApplicationEventDispatcher;
 
 class Application
 {

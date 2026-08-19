@@ -1,5 +1,6 @@
 #include <karin/gui/application.h>
 #include "application_context.h"
+#include "application_event_dispatcher.h"
 
 namespace karin::gui
 {
