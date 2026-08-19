@@ -79,6 +79,11 @@ void WinApplicationImpl::shutdown()
     PostQuitMessage(0);
 }
 
+bool WinApplicationImpl::isRunning()
+{
+    return m_isRunning;
+}
+
 IActionEventManager* WinApplicationImpl::getActionEventManager() const
 {
     return m_messageWindow.get();

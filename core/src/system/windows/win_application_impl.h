@@ -23,12 +23,11 @@ public:
 
     bool waitEvent(EventPayload& event) override;
     void shutdown() override;
+    bool isRunning() override;
 
     void pushEvent(const Event& event, WindowID window);
 
     IActionEventManager *getActionEventManager() const;
-
-    bool m_isRunning = false;
 
     static constexpr auto CLASS_NAME = L"KarinWindow";
 
@@ -36,6 +35,7 @@ private:
     std::queue<EventPayload> m_eventQueue;
 
     std::unique_ptr<WinMessageWindow> m_messageWindow;
+    bool m_isRunning = false;
 };
 } // karin
 

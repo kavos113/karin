@@ -71,11 +71,19 @@ Application::Application()
 
 void Application::sendAction(uint32_t actionId, const std::any& data) const
 {
+    if (!m_impl->isRunning())
+    {
+        return;
+    }
     m_eventDispatcher->sendAction(actionId, data);
 }
 
 void Application::sendTask(const std::function<void()>& task) const
 {
+    if (!m_impl->isRunning())
+    {
+        task();
+    }
     m_eventDispatcher->sendTask(task);
 }
 }

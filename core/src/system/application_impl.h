@@ -13,6 +13,7 @@ public:
     virtual void shutdown() = 0;
 
     virtual bool waitEvent(EventPayload& event) = 0;
+    virtual bool isRunning() = 0;
 };
 } // karin
 
