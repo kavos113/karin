@@ -4,12 +4,11 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <karin/gui/window.h>
-
 namespace karin::gui
 {
-void setTimeout(Window* target, uint32_t milliseconds, const std::function<void()>& handler)
+void setTimeout(Application* target, uint32_t milliseconds, const std::function<void()>& handler)
 {
+
     uint32_t id = target->addActionEventHandler([handler](const std::any& data)
     {
         handler();
@@ -28,7 +27,7 @@ void setTimeout(Window* target, uint32_t milliseconds, const std::function<void(
             return;
         }
 
-        target->triggerActionEvent(id, std::any{});
+        target->sendActionEvent(id, std::any());
     });
 
     target->registerDisposable([&th]
