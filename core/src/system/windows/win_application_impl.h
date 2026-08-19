@@ -34,7 +34,6 @@ public:
 
 private:
     std::queue<EventPayload> m_eventQueue;
-    ActionEventDispatcher *m_dispatcher = nullptr;
 
     std::unique_ptr<WinMessageWindow> m_messageWindow;
 };

@@ -16,19 +16,24 @@ X11ApplicationImpl::X11ApplicationImpl()
     XSetErrorHandler(errorHandler);
     XSynchronize(X11Context::instance().display(), True);
 
-    m_x11fd = ConnectionNumber(X11Context::instance().display());
-    m_eventfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-    if (m_eventfd == -1)
+    int x11fd = ConnectionNumber(X11Context::instance().display());
+    int efd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if (efd == -1)
     {
         throw std::runtime_error("failed to create eventfd");
     }
+
+    m_pollfds[0].fd = x11fd;
+    m_pollfds[0].events = POLLIN;
+    m_pollfds[1].fd = efd;
+    m_pollfds[1].events = POLLIN;
 }
 
 X11ApplicationImpl::~X11ApplicationImpl()
 {
-    if (m_eventfd != -1)
+    if (m_pollfds[1].fd != -1)
     {
-        close(m_eventfd);
+        close(m_pollfds[1].fd);
     }
 
     XCloseDisplay(X11Context::instance().display());
@@ -51,10 +56,31 @@ bool X11ApplicationImpl::waitEvent(EventPayload& event)
         return true;
     }
 
-    XEvent xevent;
-    XNextEvent(X11Context::instance().display(), &xevent);
+    int timeout = (XPending(X11Context::instance().display()) > 0) ? 0 : -1;
 
-    m_windows[xevent.xany.window]->handleEvent(xevent);
+    int ret = poll(m_pollfds, 2, timeout);
+    if (ret < 0)
+    {
+        return false;
+    }
+
+    // eventfd
+    if (m_pollfds[1].revents & POLLIN)
+    {
+        uint64_t val;
+        read(m_pollfds[1].fd, &val, sizeof(uint64_t));
+
+        m_dispatcher->handlePostActionEvent();
+    }
+
+    // x11 fd
+    if ((m_pollfds[0].revents & POLLIN) || XPending(X11Context::instance().display()) > 0)
+    {
+        XEvent xevent;
+        XNextEvent(X11Context::instance().display(), &xevent);
+
+        m_windows[xevent.xany.window]->handleEvent(xevent);
+    }
 
     if (!m_eventQueue.empty())
     {
@@ -88,5 +114,18 @@ int X11ApplicationImpl::errorHandler(Display* display, XErrorEvent* error)
         << ", minor code: " << error->minor_code << ")" << std::endl;
 
     return 0;
+}
+
+void X11ApplicationImpl::setDispatcher(ActionEventDispatcher* dispatcher)
+{
+    m_dispatcher = dispatcher;
+}
+
+void X11ApplicationImpl::notifyActionEvent()
+{
+}
+
+void X11ApplicationImpl::addActionEvent(const ActionEvent& event)
+{
 }
 } // karin
