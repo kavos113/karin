@@ -22,7 +22,15 @@ Application::~Application()
 {
     for (const auto & disposable : m_disposables)
     {
-        disposable();
+        try
+        {
+            disposable();
+        }
+        catch (...)
+        {
+            std::cerr << "exception in disposable" << std::endl;
+            continue;
+        }
     }
 
     s_appContext = nullptr;
