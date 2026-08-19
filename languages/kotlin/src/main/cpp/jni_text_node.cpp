@@ -79,13 +79,16 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
     TextNode *textNode = reinterpret_cast<TextNode *>(nodePtr);
 
     const char *textChars = env->GetStringUTFChars(text, nullptr);
-    if (textChars == nullptr) {
+    if (textChars == nullptr)
+    {
         return;
     }
 
-    textNode->setText(textChars);
-
-    env->ReleaseStringUTFChars(text, textChars);
+    Application::sendTaskEvent([text, textChars, textNode, env]
+    {
+        textNode->setText(textChars);
+        env->ReleaseStringUTFChars(text, textChars);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setEnableCaret
@@ -94,7 +97,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
     CHECK_JNI_PTR(nodePtr);
     TextNode *textNode = reinterpret_cast<TextNode*>(nodePtr);
 
-    textNode->setDrawCaret(enableCaret);
+    Application::sendTaskEvent([textNode, enableCaret]
+    {
+        textNode->setDrawCaret(enableCaret);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setCaretIndex
@@ -103,5 +109,8 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
     CHECK_JNI_PTR(nodePtr);
     TextNode *textNode = reinterpret_cast<TextNode*>(nodePtr);
 
-    textNode->setCaretIndex(caretIndex);
+    Application::sendTaskEvent([textNode, caretIndex]
+    {
+        textNode->setCaretIndex(caretIndex);
+    });
 }

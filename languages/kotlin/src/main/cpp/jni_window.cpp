@@ -1,7 +1,8 @@
 #include "com_github_kavos113_karin_engine_jni_JniWindow.h"
 
-#include <karin/gui.h>
 #include <memory>
+
+#include <karin/gui.h>
 
 #include "jni_resource.h"
 
@@ -16,7 +17,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniWindow_setRo
     auto *window = reinterpret_cast<std::shared_ptr<Window> *>(windowPtr);
     auto *view = reinterpret_cast<ViewNode *>(viewPtr);
 
-    (*window)->setRootView(std::unique_ptr<ViewNode>(view));
+    Application::sendTaskEvent([window, view]
+    {
+        (*window)->setRootView(std::unique_ptr<ViewNode>(view));
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniWindow_destroy
@@ -24,5 +28,9 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniWindow_destr
 {
     CHECK_JNI_PTR(windowPtr);
     auto *window = reinterpret_cast<std::shared_ptr<Window> *>(windowPtr);
-    delete window;
+
+    Application::sendTaskEvent([window]
+    {
+        delete window;
+    });
 }

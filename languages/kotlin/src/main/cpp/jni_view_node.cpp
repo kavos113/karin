@@ -15,7 +15,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setSize({width, height});
+
+    Application::sendTaskEvent([width, height, node]
+    {
+        node->setSize({width, height});
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setWidth
@@ -23,7 +27,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setWidth(width);
+
+    Application::sendTaskEvent([node, width]
+    {
+        node->setWidth(width);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setHeight
@@ -31,7 +39,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setHeight(height);
+
+    Application::sendTaskEvent([node, height]
+    {
+        node->setHeight(height);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBackgroundColor
@@ -39,7 +51,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setBackgroundColor({r, g, b, a});
+
+    Application::sendTaskEvent([node, r, g, b, a]
+    {
+        node->setBackgroundColor({r, g, b, a});
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setOpacity
@@ -47,7 +63,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setOpacity(opacity);
+
+    Application::sendTaskEvent([node, opacity]
+    {
+        node->setOpacity(opacity);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMargin
@@ -56,25 +76,29 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
+    Application::sendTaskEvent([flags, node, left, top, bottom, right]
     {
-        node->setMargin(ViewNode::Side::Left, left);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
+        {
+            node->setMargin(ViewNode::Side::Left, left);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
-    {
-        node->setMargin(ViewNode::Side::Top, top);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
+        {
+            node->setMargin(ViewNode::Side::Top, top);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
-    {
-        node->setMargin(ViewNode::Side::Right, right);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
+        {
+            node->setMargin(ViewNode::Side::Right, right);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
-    {
-        node->setMargin(ViewNode::Side::Bottom, bottom);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
+        {
+            node->setMargin(ViewNode::Side::Bottom, bottom);
+        }
+    });
+
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPadding
@@ -83,25 +107,28 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
+    Application::sendTaskEvent([flags, node, left, top, bottom, right]
     {
-        node->setPadding(ViewNode::Side::Left, left);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_LEFT)
+        {
+            node->setPadding(ViewNode::Side::Left, left);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
-    {
-        node->setPadding(ViewNode::Side::Top, top);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_TOP)
+        {
+            node->setPadding(ViewNode::Side::Top, top);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
-    {
-        node->setPadding(ViewNode::Side::Right, right);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_RIGHT)
+        {
+            node->setPadding(ViewNode::Side::Right, right);
+        }
 
-    if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
-    {
-        node->setPadding(ViewNode::Side::Bottom, bottom);
-    }
+        if (flags & com_github_kavos113_karin_engine_jni_JniViewNode_SIDE_BOTTOM)
+        {
+            node->setPadding(ViewNode::Side::Bottom, bottom);
+        }
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMarginSide
@@ -109,7 +136,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setMargin(static_cast<ViewNode::Side>(side), margin);
+
+    Application::sendTaskEvent([node, side, margin]
+    {
+        node->setMargin(static_cast<ViewNode::Side>(side), margin);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPaddingSide
@@ -117,7 +148,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->setPadding(static_cast<ViewNode::Side>(side), padding);
+
+    Application::sendTaskEvent([node, side, padding]
+    {
+        node->setPadding(static_cast<ViewNode::Side>(side), padding);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setBorder
@@ -129,7 +164,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     NodeBorder::LineStyle lineStyle = static_cast<NodeBorder::LineStyle>(style);
     karin::Color color(r, g, b, a);
 
-    node->setBorder(static_cast<ViewNode::Side>(side), width, color, lineStyle);
+    Application::sendTaskEvent([node, side, width, color, lineStyle]
+    {
+        node->setBorder(static_cast<ViewNode::Side>(side), width, color, lineStyle);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setShadow
@@ -140,7 +178,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     karin::Color color(r, g, b, a);
 
-    node->setShadow(offsetX, offsetY, color, blurRadius, spreadRadius);
+    Application::sendTaskEvent([node, offsetX, offsetY, color, blurRadius, spreadRadius]
+    {
+        node->setShadow(offsetX, offsetY, color, blurRadius, spreadRadius);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRelayout
@@ -148,7 +189,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_req
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->requestRelayout();
+
+    Application::sendTaskEvent([node]
+    {
+        node->requestRelayout();
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_requestRedraw
@@ -156,7 +201,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_req
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    node->requestRedraw();
+
+    Application::sendTaskEvent([node]
+    {
+        node->requestRedraw();
+    });
 }
 
 
@@ -165,7 +214,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_des
 {
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-    delete node;
+
+    Application::sendTaskEvent([node]
+    {
+        delete node;
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerMoveListener
@@ -176,24 +229,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setPointerMoveHandler(
-        [target](karin::Point point)
-        {
-            target->invoke(
-                [point](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerMove", "(FF)V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setPointerMoveHandler(
+            [target](karin::Point point)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId, point.x, point.y);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerMove", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerDownListener
@@ -204,24 +260,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setPointerDownHandler(
-        [target](karin::Point point, karin::MouseButtonType type)
-        {
-            target->invoke(
-                [point](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerDown", "(FF)V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setPointerDownHandler(
+            [target](karin::Point point, karin::MouseButtonType type)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId, point.x, point.y);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerDown", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerUpListener
@@ -232,24 +291,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setPointerUpHandler(
-        [target](karin::Point point, karin::MouseButtonType type)
-        {
-            target->invoke(
-                [point](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerUp", "(FF)V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setPointerUpHandler(
+            [target](karin::Point point, karin::MouseButtonType type)
+            {
+                target->invoke(
+                    [point](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId, point.x, point.y);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerUp", "(FF)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, point.x, point.y);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerEnterListener
@@ -260,24 +322,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setPointerEnterHandler(
-        [target](karin::Point point)
-        {
-            target->invoke(
-                [](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerEnter", "()V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setPointerEnterHandler(
+            [target](karin::Point point)
+            {
+                target->invoke(
+                    [](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerEnter", "()V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setPointerLeaveListener
@@ -288,24 +353,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setPointerLeaveHandler(
-        [target](karin::Point point)
-        {
-            target->invoke(
-                [](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerLeave", "()V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setPointerLeaveHandler(
+            [target](karin::Point point)
+            {
+                target->invoke(
+                    [](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchPointerLeave", "()V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMouseWheelListener
@@ -316,24 +384,27 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setMouseWheelHandler(
-        [target](karin::Point point, int delta)
-        {
-            target->invoke(
-                [delta](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchMouseWheel", "(I)V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setMouseWheelHandler(
+            [target](karin::Point point, int delta)
+            {
+                target->invoke(
+                    [delta](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(obj, methodId, delta);
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchMouseWheel", "(I)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(obj, methodId, delta);
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyListener
@@ -344,31 +415,34 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setKeyHandler(
-        [target](karin::KeyEvent event)
-        {
-            target->invoke(
-                [&event](JNIEnv* env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyEvent", "(IIII)V");
-                    if (methodId)
+    Application::sendTaskEvent([node, target]
+    {
+        node->setKeyHandler(
+            [target](karin::KeyEvent event)
+            {
+                target->invoke(
+                    [&event](JNIEnv* env, jobject obj)
                     {
-                        env->CallVoidMethod(
-                            obj,
-                            methodId,
-                            static_cast<int>(event.type),
-                            static_cast<int>(event.keyCode),
-                            static_cast<int>(event.scanCode),
-                            static_cast<int>(event.modifierState)
-                        );
-                    }
+                        jclass listenerClass = env->GetObjectClass(obj);
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyEvent", "(IIII)V");
+                        if (methodId)
+                        {
+                            env->CallVoidMethod(
+                                obj,
+                                methodId,
+                                static_cast<int>(event.type),
+                                static_cast<int>(event.keyCode),
+                                static_cast<int>(event.scanCode),
+                                static_cast<int>(event.modifierState)
+                            );
+                        }
 
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
+                        env->DeleteLocalRef(listenerClass);
+                    }
+                );
+            }
+        );
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setKeyTypeListener
@@ -379,50 +453,20 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
     auto target = std::make_shared<JniGlobalRef>(env, listener);
 
-    node->setKeyTypeHandler(
-        [target](std::string character)
-        {
-            target->invoke(
-                [&character](JNIEnv *env, jobject obj)
-                {
-                    jclass listenerClass = env->GetObjectClass(obj);
-                    jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyType", "(Ljava/lang/String;)V");
-                    if (methodId)
-                    {
-                        jstring str = env->NewStringUTF(character.c_str());
-                        env->CallVoidMethod(obj, methodId, str);
-                    }
-
-                    env->DeleteLocalRef(listenerClass);
-                }
-            );
-        }
-    );
-}
-
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
-    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable, jobject listener)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    node->setFocusable(isFocusable);
-
-    if (isFocusable)
+    Application::sendTaskEvent([node, target]
     {
-        auto target = std::make_shared<JniGlobalRef>(env, listener);
-
-        node->setChangeFocusStateHandler(
-            [target](bool focusState)
+        node->setKeyTypeHandler(
+            [target](std::string character)
             {
                 target->invoke(
-                    [focusState](JNIEnv *env, jobject obj)
+                    [&character](JNIEnv *env, jobject obj)
                     {
                         jclass listenerClass = env->GetObjectClass(obj);
-                        jmethodID methodId = env->GetMethodID(listenerClass, "onChangeFocusState", "(Z)V");
+                        jmethodID methodId = env->GetMethodID(listenerClass, "dispatchKeyType", "(Ljava/lang/String;)V");
                         if (methodId)
                         {
-                            env->CallVoidMethod(obj, methodId, focusState);
+                            jstring str = env->NewStringUTF(character.c_str());
+                            env->CallVoidMethod(obj, methodId, str);
                         }
 
                         env->DeleteLocalRef(listenerClass);
@@ -430,7 +474,42 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
                 );
             }
         );
-    }
+    });
+}
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setIsFocusable
+    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean isFocusable, jobject listener)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
+    auto target = std::make_shared<JniGlobalRef>(env, listener);
+
+    Application::sendTaskEvent([node, isFocusable, target]
+    {
+        node->setFocusable(isFocusable);
+
+        if (isFocusable)
+        {
+            node->setChangeFocusStateHandler(
+                [target](bool focusState)
+                {
+                    target->invoke(
+                        [focusState](JNIEnv *env, jobject obj)
+                        {
+                            jclass listenerClass = env->GetObjectClass(obj);
+                            jmethodID methodId = env->GetMethodID(listenerClass, "onChangeFocusState", "(Z)V");
+                            if (methodId)
+                            {
+                                env->CallVoidMethod(obj, methodId, focusState);
+                            }
+
+                            env->DeleteLocalRef(listenerClass);
+                        }
+                    );
+                }
+            );
+        }
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerMoveListener
@@ -439,7 +518,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setPointerMoveHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setPointerMoveHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerDownListener
@@ -448,7 +530,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setPointerDownHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setPointerDownHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerUpListener
@@ -457,7 +542,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setPointerUpHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setPointerUpHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerEnterListener
@@ -466,7 +554,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setPointerEnterHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setPointerEnterHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearPointerLeaveListener
@@ -475,7 +566,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setPointerLeaveHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setPointerLeaveHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearMouseWheelListener
@@ -484,7 +578,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setMouseWheelHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setMouseWheelHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearKeyListener
@@ -493,7 +590,10 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setKeyHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setKeyHandler(nullptr);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_clearKeyTypeListener
@@ -502,5 +602,8 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_cle
     CHECK_JNI_PTR(viewPtr);
     auto *node = reinterpret_cast<ViewNode *>(viewPtr);
 
-    node->setKeyTypeHandler(nullptr);
+    Application::sendTaskEvent([node]
+    {
+        node->setKeyTypeHandler(nullptr);
+    });
 }

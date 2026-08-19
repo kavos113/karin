@@ -3,8 +3,6 @@
 
 #include <jni.h>
 
-#include <string>
-
 namespace karin::jni
 {
 
