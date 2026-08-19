@@ -95,7 +95,13 @@ void Application::clearActionEvent(uint32_t id) const
 void Application::sendActionEvent(uint32_t id, const std::any& data) const
 {
     karin::Application& app = karin::Application::instance();
-    app.sendActionEvent(id, data);
+    app.sendAction(id, data);
+}
+
+void Application::sendTaskEvent(const std::function<void()>& task) const
+{
+    karin::Application& app = karin::Application::instance();
+    app.sendTask(task);
 }
 
 void Application::registerDisposable(const std::function<void()>& disposable)

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+#include <functional>
 #include <memory>
 #include <unordered_map>
 
@@ -41,7 +42,8 @@ public:
     void unregisterWindow(WindowID id);
     Window* findWindow(WindowID id) const;
 
-    void sendActionEvent(uint32_t actionId, const std::any& data) const;
+    void sendAction(uint32_t actionId, const std::any& data) const;
+    void sendTask(const std::function<void()>& task) const;
 
 private:
     Application();
