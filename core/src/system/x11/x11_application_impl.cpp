@@ -146,4 +146,14 @@ void X11ApplicationImpl::addActionEvent(const ActionEvent& event)
 {
     pushEvent(event, WINDOW_ID_NONE);
 }
+
+void X11ApplicationImpl::addTaskEvent(const TaskEvent& event)
+{
+    pushEvent(event, WINDOW_ID_NONE);
+}
+
+bool X11ApplicationImpl::isRunning()
+{
+    return m_running;
+}
 } // karin
