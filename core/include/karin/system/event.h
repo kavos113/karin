@@ -21,6 +21,27 @@ struct MouseWheelEvent;
 struct WindowEvent;
 struct ActionEvent;
 
+/**
+ * Event.
+ *
+ * Event is classified into two types: [Window Event] and [Application Event].
+ *
+ * [Window Event]
+ * - KeyEvent
+ * - KeyTypeEvent
+ * - MouseMoveEvent
+ * - MouseButtonEvent
+ * - MouseWheelEvent
+ * - WindowEvent
+ *
+ * Window Event relates to specific window. ID of that window is given in application message loop.
+ *
+ *
+ * [Application Event]
+ * - ActionEvent
+ *
+ * Action Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
+ */
 using Event = std::variant<
     std::monostate,
     KeyEvent,

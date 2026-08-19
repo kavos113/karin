@@ -4,7 +4,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <any>
 
 #include <karin/common/geometry/point.h>
 #include <karin/common/geometry/size.h>
@@ -14,6 +13,7 @@ namespace karin
 {
 
 using WindowID = uint32_t;
+constexpr WindowID WINDOW_ID_NONE = 0;
 
 class IWindowImpl;
 class IApplicationImpl;
