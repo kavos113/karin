@@ -8,7 +8,7 @@ namespace karin
 class IWinMessageHandler
 {
 public:
-    virtual ~IWinMessageHandler() = 0;
+    virtual ~IWinMessageHandler() = default;
 
     virtual LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) = 0;
     virtual void setHwnd(HWND hwnd) = 0;

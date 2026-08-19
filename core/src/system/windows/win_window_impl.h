@@ -27,7 +27,7 @@ public:
         WinApplicationImpl* appImpl,
         WindowID owner
     );
-    ~WinWindowImpl() override = default;
+    ~WinWindowImpl() override;
 
     void show() override;
     void hide() override;
