@@ -117,29 +117,9 @@ LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(m_hwnd, message, wParam, lParam);
 }
 
-LRESULT WinWindowImpl::windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+void WinWindowImpl::setHwnd(HWND hwnd)
 {
-    WinWindowImpl * self = nullptr;
-
-    if (message == WM_CREATE)
-    {
-        auto cs = reinterpret_cast<CREATESTRUCT*>(lParam);
-        self = static_cast<WinWindowImpl*>(cs->lpCreateParams);
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
-
-        self->m_hwnd = hwnd;
-    }
-    else
-    {
-        self = reinterpret_cast<WinWindowImpl*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-    }
-
-    if (self)
-    {
-        return self->handleMessage(message, wParam, lParam);
-    }
-
-    return DefWindowProc(hwnd, message, wParam, lParam);
+    m_hwnd = hwnd;
 }
 
 void WinWindowImpl::show()

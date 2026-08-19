@@ -19,6 +19,7 @@ if (WIN32)
             windows/win_event.cpp
             windows/win_converter.cpp
             windows/win_context.cpp
+            windows/win_message_handler.h
     )
     set(SYSTEM_HEADER ${SYSTEM_HEADER}
             windows/win_application_impl.h

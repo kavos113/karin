@@ -5,6 +5,7 @@
 #include "win_window_class_registry.h"
 #include "win_window_impl.h"
 #include "win_context.h"
+#include "win_message_handler.h"
 
 namespace karin
 {
@@ -13,7 +14,7 @@ WinApplicationImpl::WinApplicationImpl()
     WNDCLASSEX wc = {
         .cbSize = sizeof(WNDCLASSEX),
         .style = 0,
-        .lpfnWndProc = WinWindowImpl::windowProc,
+        .lpfnWndProc = windowProc,
         .cbClsExtra = 0,
         .cbWndExtra = 0,
         .hInstance = GetModuleHandle(nullptr),

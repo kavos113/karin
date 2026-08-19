@@ -57,7 +57,7 @@ public:
     [[nodiscard]] Window::NativeHandle handle() const override;
 
     LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) override;
-    static LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    void setHwnd(HWND hwnd) override;
 
 private:
 
