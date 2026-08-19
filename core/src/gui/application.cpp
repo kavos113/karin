@@ -32,6 +32,8 @@ std::shared_ptr<Window> Application::createWindow(const std::string& title, int 
 
 void Application::run()
 {
+    s_appContext->flushTasks();
+
     for (auto& window : m_windows)
     {
         window->beforeRun();

@@ -50,4 +50,10 @@ void ApplicationContext::registerDisposable(const std::function<void()>& disposa
 {
     m_disposables.push_back(disposable);
 }
+
+void ApplicationContext::flushTasks()
+{
+    karin::Application& app = karin::Application::instance();
+    app.flushTasks();
+}
 } // karin::gui

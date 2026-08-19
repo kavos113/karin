@@ -25,6 +25,8 @@ public:
 
     void registerDisposable(const std::function<void()>& disposable);
 
+    void flushTasks();
+
     std::unique_ptr<TextEngine> textEngine;
 
 private:

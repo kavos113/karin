@@ -43,7 +43,9 @@ void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
 bool WinApplicationImpl::waitEvent(EventPayload &event)
 {
     if (!m_isRunning)
+    {
         m_isRunning = true;
+    }
 
     if (!m_eventQueue.empty())
     {
@@ -77,11 +79,6 @@ void WinApplicationImpl::shutdown()
         return;
 
     PostQuitMessage(0);
-}
-
-bool WinApplicationImpl::isRunning()
-{
-    return m_isRunning;
 }
 
 IActionEventManager* WinApplicationImpl::getActionEventManager() const

@@ -44,6 +44,7 @@ public:
 
     void sendAction(uint32_t actionId, const std::any& data) const;
     void sendTask(const std::function<void()>& task) const;
+    void flushTasks() const;
 
 private:
     Application();

@@ -23,7 +23,6 @@ public:
 
     bool waitEvent(EventPayload& event) override;
     void shutdown() override;
-    bool isRunning() override;
 
     void pushEvent(const Event& event, WindowID window);
 
