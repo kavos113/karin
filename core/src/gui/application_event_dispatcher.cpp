@@ -30,7 +30,8 @@ void ApplicationEventDispatcher::dispatchEvent(const Event& event)
             {
                 if (m_actionEventHandlers.contains(e.actionId))
                 {
-                    m_actionEventHandlers[e.actionId](e.data);
+                    auto fun = m_actionEventHandlers[e.actionId];
+                    fun(e.data);
                 }
             }
         },
