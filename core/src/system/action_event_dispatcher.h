@@ -4,6 +4,8 @@
 #include <mutex>
 #include <queue>
 #include <any>
+#include <functional>
+#include <variant>
 
 #include <karin/system/event.h>
 #include "action_event_manager.h"
@@ -16,7 +18,8 @@ public:
     ActionEventDispatcher(IActionEventManager *target);
     ~ActionEventDispatcher();
 
-    void sendActionEvent(uint32_t id, const std::any& data);
+    void sendAction(uint32_t id, const std::any& data);
+    void sendTask(const std::function<void()>& task);
 
     /**
      * send events in m_pendingActions to main message loop event queue.
@@ -25,8 +28,10 @@ public:
     void handlePostActionEvent();
 
 private:
+    using PendingItem = std::variant<ActionEvent, TaskEvent>;
+
     std::mutex m_mtx;
-    std::queue<ActionEvent> m_pendingActions;
+    std::queue<PendingItem> m_pendingActions;
     bool m_isAlertPending = false;
 
     IActionEventManager *m_target;

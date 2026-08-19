@@ -15,6 +15,7 @@ int main()
 
     auto rootView = std::make_unique<karin::gui::ContainerNode>(karin::Size(800, 600));
 
+    std::vector<std::unique_ptr<karin::gui::ViewNode>> nodes;
     for (int i = 0; i < 10; ++i)
     {
         auto rect = std::make_unique<karin::gui::RectangleNode>(
@@ -22,6 +23,7 @@ int main()
             karin::Color(dis(gen), dis(gen), dis(gen))
         );
         rootView->addChild(rect.get());
+        nodes.push_back(std::move(rect));
     }
 
     auto bigRect = std::make_unique<karin::gui::RectangleNode>(
@@ -35,6 +37,7 @@ int main()
             karin::Color(dis(gen), dis(gen), dis(gen))
         );
         bigRect->addChild(rect.get());
+        nodes.push_back(std::move(rect));
     }
     bigRect->setLayoutDirection(karin::gui::ContainerNode::LayoutDirection::Column);
     bigRect->setGap(5.0f);

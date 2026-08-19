@@ -2,10 +2,13 @@
 
 #include <chrono>
 
+#include <karin/gui/application.h>
+#include "application_context.h"
+
 namespace karin::gui
 {
-Timer::Timer(Application *target, uint32_t intervalMs, const std::function<void(uint32_t)>& handler)
-    : m_app(target), m_intervalMs(intervalMs), m_handler(handler)
+Timer::Timer(uint32_t intervalMs, const std::function<void(uint32_t)>& handler)
+    : m_intervalMs(intervalMs), m_handler(handler)
 {
 }
 
@@ -17,7 +20,7 @@ Timer::~Timer()
     }
     if (m_isRegistered)
     {
-        m_app->clearActionEvent(m_eventHandlerId);
+        getAppContext().clearActionEvent(m_eventHandlerId);
     }
 }
 
@@ -35,7 +38,7 @@ void Timer::start()
 
     if (!m_isRegistered)
     {
-        m_eventHandlerId = m_app->addActionEventHandler([this](const std::any& data)
+        m_eventHandlerId = getAppContext().addActionEventHandler([this](const std::any& data)
         {
             m_handler(std::any_cast<uint32_t>(m_count));
         });
@@ -45,7 +48,7 @@ void Timer::start()
     {
         while (!s.stop_requested())
         {
-            m_app->sendActionEvent(m_eventHandlerId, std::any(m_count));
+            getAppContext().sendActionEvent(m_eventHandlerId, std::any(m_count));
 
             std::unique_lock lock(m_mtx);
             m_cv.wait_for(lock, s, std::chrono::milliseconds(m_intervalMs), []{ return false; });
@@ -75,7 +78,7 @@ void Timer::startLater(uint32_t delayMs)
 
     if (!m_isRegistered)
     {
-        m_eventHandlerId = m_app->addActionEventHandler([this](const std::any& data)
+        m_eventHandlerId = getAppContext().addActionEventHandler([this](const std::any& data)
         {
             m_handler(std::any_cast<uint32_t>(m_count));
         });
@@ -93,7 +96,7 @@ void Timer::startLater(uint32_t delayMs)
 
         while (!s.stop_requested())
         {
-            m_app->sendActionEvent(m_eventHandlerId, std::any(m_count));
+            getAppContext().sendActionEvent(m_eventHandlerId, std::any(m_count));
 
             std::unique_lock l(m_mtx);
             m_cv.wait_for(l, s, std::chrono::milliseconds(m_intervalMs), []{ return false; });

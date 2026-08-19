@@ -34,6 +34,10 @@ void ApplicationEventDispatcher::dispatchEvent(const Event& event)
                     fun(e.data);
                 }
             }
+            else if constexpr (std::is_same_v<T, TaskEvent>)
+            {
+                e.task();
+            }
         },
         event
     );

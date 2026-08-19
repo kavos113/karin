@@ -4,11 +4,14 @@
 #include <mutex>
 #include <condition_variable>
 
+#include <karin/gui/application.h>
+#include "application_context.h"
+
 namespace karin::gui
 {
-void setTimeout(Application* target, uint32_t milliseconds, const std::function<void()>& handler)
+void setTimeout(uint32_t milliseconds, const std::function<void()>& handler)
 {
-    uint32_t id = target->addActionEventHandler([handler](const std::any& data)
+    uint32_t id = getAppContext().addActionEventHandler([handler](const std::any& data)
     {
         handler();
     });
@@ -21,7 +24,7 @@ void setTimeout(Application* target, uint32_t milliseconds, const std::function<
     };
     auto state = std::make_shared<TimeoutState>();
 
-    state->th = std::jthread([milliseconds, target, id, state](const std::stop_token& s)
+    state->th = std::jthread([milliseconds, id, state](const std::stop_token& s)
     {
         std::unique_lock lock(state->mtx);
         state->cv.wait_for(lock, s, std::chrono::milliseconds(milliseconds), []{ return false; });
@@ -31,10 +34,10 @@ void setTimeout(Application* target, uint32_t milliseconds, const std::function<
             return;
         }
 
-        target->sendActionEvent(id, std::any());
+        getAppContext().sendActionEvent(id, std::any());
     });
 
-    target->registerDisposable([state]
+    getAppContext().registerDisposable([state]
     {
         state->th.request_stop();
     });

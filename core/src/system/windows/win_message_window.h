@@ -27,6 +27,7 @@ public:
     void setDispatcher(ActionEventDispatcher* dispatcher) override;
     void notifyActionEvent() override;
     void addActionEvent(const ActionEvent& event) override;
+    void addTaskEvent(const TaskEvent& event) override;
 
     LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) override;
     void setHwnd(HWND hwnd) override;

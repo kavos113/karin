@@ -31,7 +31,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
-    container->addChild(child);
+
+    Application::sendTaskEvent([container, child]
+    {
+        container->addChild(child);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setLayoutDirection
@@ -39,7 +43,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 {
     CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
-    container->setLayoutDirection(static_cast<ContainerNode::LayoutDirection>(direction));
+
+    Application::sendTaskEvent([container, direction]
+    {
+        container->setLayoutDirection(static_cast<ContainerNode::LayoutDirection>(direction));
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setGap
@@ -47,7 +55,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 {
     CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
-    container->setGap(gap);
+
+    Application::sendTaskEvent([container, gap]
+    {
+        container->setGap(gap);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setWrapMode
@@ -55,7 +67,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 {
     CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
-    container->setWrapMode(static_cast<ContainerNode::WrapMode>(mode));
+
+    Application::sendTaskEvent([container, mode]
+    {
+        container->setWrapMode(static_cast<ContainerNode::WrapMode>(mode));
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_setEnableClip
@@ -63,7 +79,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 {
     CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
-    container->setEnableClip(enable);
+
+    Application::sendTaskEvent([container, enable]
+    {
+        container->setEnableClip(enable);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_removeChild
@@ -74,7 +94,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
-    container->removeChild(child);
+
+    Application::sendTaskEvent([container, child]
+    {
+        container->removeChild(child);
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_clearChildren
@@ -82,7 +106,11 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 {
     CHECK_JNI_PTR(containerPtr);
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
-    container->clearChildren();
+
+    Application::sendTaskEvent([container]
+    {
+        container->clearChildren();
+    });
 }
 
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNode_insertChild
@@ -93,5 +121,9 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniContainerNod
 
     auto *container = reinterpret_cast<ContainerNode *>(containerPtr);
     auto *child = reinterpret_cast<ViewNode *>(childPtr);
-    container->insertChild(child, index);
+
+    Application::sendTaskEvent([container, child, index]
+    {
+        container->insertChild(child, index);
+    });
 }

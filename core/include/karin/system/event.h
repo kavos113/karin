@@ -1,12 +1,13 @@
 #ifndef KARIN_SYSTEM_EVENT_H
 #define KARIN_SYSTEM_EVENT_H
 
-#include "window.h"
-
 #include <any>
 #include <cstdint>
 #include <string>
 #include <variant>
+#include <functional>
+
+#include "window.h"
 
 namespace karin
 {
@@ -20,6 +21,7 @@ struct MouseButtonEvent;
 struct MouseWheelEvent;
 struct WindowEvent;
 struct ActionEvent;
+struct TaskEvent;
 
 /**
  * Event.
@@ -39,6 +41,7 @@ struct ActionEvent;
  *
  * [Application Event]
  * - ActionEvent
+ * - TaskEvent
  *
  * Application Event does not relate specific window. WindowID in application message loop is WINDOW_ID_NONE.
  *
@@ -53,7 +56,8 @@ using Event = std::variant<
     MouseButtonEvent,
     MouseWheelEvent,
     WindowEvent,
-    ActionEvent
+    ActionEvent,
+    TaskEvent
 >;
 
 /**
@@ -112,10 +116,23 @@ struct WindowEvent
     Type type;
 };
 
+/**
+ * ActionEvent represents user-defined action.
+ * Similar to TaskEvent, but ActionEvent is used as an event that is frequently reused such as timer.
+ */
 struct ActionEvent
 {
     uint32_t actionId;
     std::any data;
+};
+
+/**
+ * TaskEvent represents user-defined task.
+ * Similar to ActionEvent, but TaskEvent is used as single task to run thread-safe ui update
+ */
+struct TaskEvent
+{
+    std::function<void()> task;
 };
 
 struct KeyEvent

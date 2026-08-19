@@ -14,25 +14,11 @@ Application::Application()
     }
 
     m_context = std::make_unique<ApplicationContext>();
-    m_dispatcher = std::make_unique<ApplicationEventDispatcher>();
     s_appContext = m_context.get();
 }
 
 Application::~Application()
 {
-    for (const auto & disposable : m_disposables)
-    {
-        try
-        {
-            disposable();
-        }
-        catch (...)
-        {
-            std::cerr << "exception in disposable" << std::endl;
-            continue;
-        }
-    }
-
     s_appContext = nullptr;
 }
 
@@ -46,6 +32,8 @@ std::shared_ptr<Window> Application::createWindow(const std::string& title, int 
 
 void Application::run()
 {
+    s_appContext->flushTasks();
+
     for (auto& window : m_windows)
     {
         window->beforeRun();
@@ -62,7 +50,7 @@ void Application::run()
 
         if (isApplicationEvent(event.event))
         {
-            m_dispatcher->dispatchEvent(event.event);
+            s_appContext->m_dispatcher->dispatchEvent(event.event);
         }
         else
         {
@@ -82,25 +70,24 @@ void Application::run()
     }
 }
 
-uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler) const
+uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler)
 {
-    return m_dispatcher->addActionEventHandler(handler);
+    return s_appContext->addActionEventHandler(handler);
 }
 
-void Application::clearActionEvent(uint32_t id) const
+void Application::clearActionEvent(uint32_t id)
 {
-    m_dispatcher->clearActionEvent(id);
+    return s_appContext->clearActionEvent(id);
 }
 
-void Application::sendActionEvent(uint32_t id, const std::any& data) const
+void Application::sendActionEvent(uint32_t id, const std::any& data)
 {
-    karin::Application& app = karin::Application::instance();
-    app.sendActionEvent(id, data);
+    s_appContext->sendActionEvent(id, data);
 }
 
-void Application::registerDisposable(const std::function<void()>& disposable)
+void Application::sendTaskEvent(const std::function<void()>& task)
 {
-    m_disposables.push_back(disposable);
+    s_appContext->sendTaskEvent(task);
 }
 
 ApplicationContext& getAppContext()

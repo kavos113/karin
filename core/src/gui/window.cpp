@@ -24,12 +24,17 @@ Window::~Window()
 
 void Window::beforeRun()
 {
-    m_rootView->calculateLayout();
-    m_needRelayout = false;
+    // m_rootView->calculateLayout();
+    m_needRelayout = true;
 
     m_renderer->addDrawCommand(
         [this](GraphicsContext& gc)
         {
+            if (!m_rootView)
+            {
+                return;
+            }
+
             if (m_needRelayout)
             {
                 m_rootView->calculateLayout();
@@ -43,7 +48,7 @@ void Window::beforeRun()
     m_window->addResizeCallback(
         [this](Size size)
         {
-            if (size.width == 0 || size.height == 0)
+            if (size.width == 0 || size.height == 0 || !m_rootView)
             {
                 return;
             }
@@ -70,6 +75,7 @@ void Window::setRootView(std::unique_ptr<ViewNode> rootView)
     m_eventDispatcher = std::make_unique<WindowEventDispatcher>(m_rootView.get());
 
     m_rootView->onAttachToWindow(this);
+    requestRelayout();
 }
 
 void Window::requestRelayout()

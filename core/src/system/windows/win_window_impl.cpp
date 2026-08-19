@@ -42,7 +42,7 @@ WinWindowImpl::WinWindowImpl(
         nullptr,
         nullptr,
         GetModuleHandle(nullptr),
-        this
+        static_cast<IWinMessageHandler*>(this)
     );
     if (!m_hwnd)
     {
@@ -123,39 +123,51 @@ void WinWindowImpl::setHwnd(HWND hwnd)
 
 void WinWindowImpl::show()
 {
-    if (m_hwnd)
+    m_appImpl->pushEvent(TaskEvent([this]
     {
-        ShowWindow(m_hwnd, SW_SHOW);
-        UpdateWindow(m_hwnd);
-    }
+        if (m_hwnd)
+        {
+            ShowWindow(m_hwnd, SW_SHOW);
+            UpdateWindow(m_hwnd);
+        }
+    }), WINDOW_ID_NONE);
 }
 
 void WinWindowImpl::hide()
 {
-    if (m_hwnd)
+    m_appImpl->pushEvent(TaskEvent([this]
     {
-        ShowWindow(m_hwnd, SW_HIDE);
-    }
+        if (m_hwnd)
+        {
+            ShowWindow(m_hwnd, SW_HIDE);
+        }
+    }), WINDOW_ID_NONE);
 }
 
 void WinWindowImpl::minimize()
 {
-    if (m_hwnd)
+    m_appImpl->pushEvent(TaskEvent([this]
     {
-        ShowWindow(m_hwnd, SW_MINIMIZE);
-    }
+        if (m_hwnd)
+        {
+            ShowWindow(m_hwnd, SW_MINIMIZE);
+        }
 
-    m_appImpl->pushEvent(WindowEvent(WindowEvent::Type::Minimize), m_owner);
+        m_appImpl->pushEvent(WindowEvent(WindowEvent::Type::Minimize), m_owner);
+    }), WINDOW_ID_NONE);
 }
 
 void WinWindowImpl::maximize()
 {
-    if (m_hwnd)
+    m_appImpl->pushEvent(TaskEvent([this]
     {
-        ShowWindow(m_hwnd, SW_MAXIMIZE);
-    }
+        if (m_hwnd)
+        {
+            ShowWindow(m_hwnd, SW_MAXIMIZE);
+        }
 
-    m_appImpl->pushEvent(WindowEvent(WindowEvent::Type::Maximize), m_owner);
+        m_appImpl->pushEvent(WindowEvent(WindowEvent::Type::Maximize), m_owner);
+    }), WINDOW_ID_NONE);
 }
 
 void WinWindowImpl::setPosition(int x, int y)

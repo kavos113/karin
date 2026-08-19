@@ -17,7 +17,7 @@ WinMessageWindow::WinMessageWindow(WinApplicationImpl* appImpl)
         HWND_MESSAGE,
         nullptr,
         GetModuleHandle(nullptr),
-        this
+        static_cast<IWinMessageHandler*>(this)
     );
 }
 
@@ -40,6 +40,11 @@ void WinMessageWindow::notifyActionEvent()
 }
 
 void WinMessageWindow::addActionEvent(const ActionEvent& event)
+{
+    m_appImpl->pushEvent(event, WINDOW_ID_NONE);
+}
+
+void WinMessageWindow::addTaskEvent(const TaskEvent& event)
 {
     m_appImpl->pushEvent(event, WINDOW_ID_NONE);
 }

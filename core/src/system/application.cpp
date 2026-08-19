@@ -69,8 +69,18 @@ Application::Application()
     manager->setDispatcher(m_eventDispatcher.get());
 }
 
-void Application::sendActionEvent(uint32_t actionId, const std::any& data) const
+void Application::sendAction(uint32_t actionId, const std::any& data) const
 {
-    m_eventDispatcher->sendActionEvent(actionId, data);
+    m_eventDispatcher->sendAction(actionId, data);
+}
+
+void Application::sendTask(const std::function<void()>& task) const
+{
+    m_eventDispatcher->sendTask(task);
+}
+
+void Application::flushTasks() const
+{
+    m_eventDispatcher->handlePostActionEvent();
 }
 }

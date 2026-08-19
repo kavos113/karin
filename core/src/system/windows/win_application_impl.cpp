@@ -43,7 +43,9 @@ void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
 bool WinApplicationImpl::waitEvent(EventPayload &event)
 {
     if (!m_isRunning)
+    {
         m_isRunning = true;
+    }
 
     if (!m_eventQueue.empty())
     {
