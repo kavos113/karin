@@ -3,6 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <unistd.h>
+#include <sys/eventfd.h>
+
 #include "x11_window_impl.h"
 #include "x11_context.h"
 
@@ -12,10 +15,22 @@ X11ApplicationImpl::X11ApplicationImpl()
 {
     XSetErrorHandler(errorHandler);
     XSynchronize(X11Context::instance().display(), True);
+
+    m_x11fd = ConnectionNumber(X11Context::instance().display());
+    m_eventfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if (m_eventfd == -1)
+    {
+        throw std::runtime_error("failed to create eventfd");
+    }
 }
 
 X11ApplicationImpl::~X11ApplicationImpl()
 {
+    if (m_eventfd != -1)
+    {
+        close(m_eventfd);
+    }
+
     XCloseDisplay(X11Context::instance().display());
 }
 

@@ -31,6 +31,9 @@ private:
 
     bool m_running = true;
     std::queue<EventPayload> m_eventQueue;
+
+    int m_x11fd;
+    int m_eventfd;
 };
 } // karin
 
