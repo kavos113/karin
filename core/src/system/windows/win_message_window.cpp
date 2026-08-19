@@ -21,7 +21,13 @@ WinMessageWindow::WinMessageWindow(WinApplicationImpl* appImpl)
     );
 }
 
-WinMessageWindow::~WinMessageWindow() = default;
+WinMessageWindow::~WinMessageWindow()
+{
+    if (m_hwnd)
+    {
+        DestroyWindow(m_hwnd);
+    }
+}
 
 void WinMessageWindow::setDispatcher(ActionEventDispatcher* dispatcher)
 {
