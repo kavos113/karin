@@ -10,13 +10,12 @@
 
 #include <application_impl.h>
 #include <action_event_manager.h>
-#include <action_event_dispatcher.h>
 
-#define WM_KARIN_ACTION (WM_USER + 1)
+#include "win_message_window.h"
 
 namespace karin
 {
-class WinApplicationImpl : public IApplicationImpl, public IActionEventManager
+class WinApplicationImpl : public IApplicationImpl
 {
 public:
     WinApplicationImpl();
@@ -27,22 +26,17 @@ public:
 
     void pushEvent(const Event& event, WindowID window);
 
-    void setDispatcher(ActionEventDispatcher* dispatcher) override;
-
-    void notifyActionEvent() override;
-    void addActionEvent(const ActionEvent& event) override;
+    IActionEventManager *getActionEventManager() const;
 
     bool m_isRunning = false;
 
     static constexpr auto CLASS_NAME = L"KarinWindow";
 
 private:
-    void createMessageWindow();
-
     std::queue<EventPayload> m_eventQueue;
     ActionEventDispatcher *m_dispatcher = nullptr;
 
-    HWND m_messageWindow = nullptr;
+    std::unique_ptr<WinMessageWindow> m_messageWindow;
 };
 } // karin
 

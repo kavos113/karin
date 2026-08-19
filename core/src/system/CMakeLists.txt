@@ -20,6 +20,7 @@ if (WIN32)
             windows/win_converter.cpp
             windows/win_context.cpp
             windows/win_message_handler.h
+            windows/win_message_window.h
     )
     set(SYSTEM_HEADER ${SYSTEM_HEADER}
             windows/win_application_impl.h
@@ -29,7 +30,7 @@ if (WIN32)
             windows/win_converter.h
             windows/win_context.h
             windows/win_message_handler.h
-
+            windows/win_message_window.cpp
     )
 elseif (UNIX)
     set(SYSTEM_SOURCE ${SYSTEM_SOURCE}

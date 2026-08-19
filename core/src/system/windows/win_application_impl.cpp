@@ -25,7 +25,7 @@ WinApplicationImpl::WinApplicationImpl()
 
     WinContext::instance().windowClassRegistry().registerClass(wc, CLASS_NAME);
 
-    createMessageWindow();
+    m_messageWindow = std::make_unique<WinMessageWindow>(this);
 }
 
 void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
@@ -76,18 +76,8 @@ void WinApplicationImpl::shutdown()
     PostQuitMessage(0);
 }
 
-void WinApplicationImpl::setDispatcher(ActionEventDispatcher* dispatcher)
+IActionEventManager* WinApplicationImpl::getActionEventManager() const
 {
-    m_dispatcher = dispatcher;
-}
-
-void WinApplicationImpl::notifyActionEvent()
-{
-    PostMessage(m_messageWindow, WM_KARIN_ACTION, 0, 0);
-}
-
-void WinApplicationImpl::addActionEvent(const ActionEvent& event)
-{
-    pushEvent(event, 0);
+    return m_messageWindow.get();
 }
 } // karin
