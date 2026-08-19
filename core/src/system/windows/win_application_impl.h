@@ -11,10 +11,10 @@
 #include <application_impl.h>
 #include <action_event_manager.h>
 
-#include "win_message_window.h"
-
 namespace karin
 {
+class WinMessageWindow;
+
 class WinApplicationImpl : public IApplicationImpl
 {
 public:
