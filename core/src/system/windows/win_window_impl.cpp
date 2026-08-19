@@ -42,7 +42,7 @@ WinWindowImpl::WinWindowImpl(
         nullptr,
         nullptr,
         GetModuleHandle(nullptr),
-        this
+        static_cast<IWinMessageHandler*>(this)
     );
     if (!m_hwnd)
     {

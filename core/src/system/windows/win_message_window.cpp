@@ -17,7 +17,7 @@ WinMessageWindow::WinMessageWindow(WinApplicationImpl* appImpl)
         HWND_MESSAGE,
         nullptr,
         GetModuleHandle(nullptr),
-        this
+        static_cast<IWinMessageHandler*>(this)
     );
 }
 
