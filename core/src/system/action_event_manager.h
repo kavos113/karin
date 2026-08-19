@@ -5,6 +5,8 @@
 
 namespace karin
 {
+class ActionEventDispatcher;
+
 class IActionEventManager
 {
 public:

@@ -4,7 +4,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <any>
 
 #include <karin/common/geometry/point.h>
 #include <karin/common/geometry/size.h>
@@ -14,10 +13,10 @@ namespace karin
 {
 
 using WindowID = uint32_t;
+constexpr WindowID WINDOW_ID_NONE = 0;
 
 class IWindowImpl;
 class IApplicationImpl;
-class ActionEventDispatcher;
 
 class Window
 {
@@ -77,8 +76,6 @@ public:
     // request redraw, will trigger paint callbacks
     void invalidate();
 
-    void sendActionEvent(uint32_t actionId, const std::any& data) const;
-
     void setUserData(void* data);
     void* userData() const;
 
@@ -93,7 +90,6 @@ private:
     WindowID m_id;
 
     std::unique_ptr<IWindowImpl> m_impl;
-    std::unique_ptr<ActionEventDispatcher> m_eventDispatcher;
 };
 
 } // karin

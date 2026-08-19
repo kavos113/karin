@@ -1,10 +1,10 @@
 #include "win_application_impl.h"
 
-#include <windows.h>
-
 #include "win_window_class_registry.h"
 #include "win_window_impl.h"
 #include "win_context.h"
+#include "win_message_handler.h"
+#include "win_message_window.h"
 
 namespace karin
 {
@@ -13,7 +13,7 @@ WinApplicationImpl::WinApplicationImpl()
     WNDCLASSEX wc = {
         .cbSize = sizeof(WNDCLASSEX),
         .style = 0,
-        .lpfnWndProc = WinWindowImpl::windowProc,
+        .lpfnWndProc = windowProc,
         .cbClsExtra = 0,
         .cbWndExtra = 0,
         .hInstance = GetModuleHandle(nullptr),
@@ -25,7 +25,11 @@ WinApplicationImpl::WinApplicationImpl()
     };
 
     WinContext::instance().windowClassRegistry().registerClass(wc, CLASS_NAME);
+
+    m_messageWindow = std::make_unique<WinMessageWindow>(this);
 }
+
+WinApplicationImpl::~WinApplicationImpl() = default;
 
 void WinApplicationImpl::pushEvent(const Event& event, WindowID window)
 {
@@ -73,5 +77,10 @@ void WinApplicationImpl::shutdown()
         return;
 
     PostQuitMessage(0);
+}
+
+IActionEventManager* WinApplicationImpl::getActionEventManager() const
+{
+    return m_messageWindow.get();
 }
 } // karin
