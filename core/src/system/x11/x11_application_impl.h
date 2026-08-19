@@ -42,7 +42,7 @@ private:
 
     struct pollfd m_pollfds[2] = {};
 
-    ActionEventDispatcher *m_dispatcher;
+    ActionEventDispatcher *m_dispatcher = nullptr;
 };
 } // karin
 
