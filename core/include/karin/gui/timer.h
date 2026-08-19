@@ -8,14 +8,12 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "application.h"
-
 namespace karin::gui
 {
 class Timer
 {
 public:
-    Timer(Application *target, uint32_t intervalMs, const std::function<void(uint32_t)>& handler);
+    Timer(uint32_t intervalMs, const std::function<void(uint32_t)>& handler);
     ~Timer();
 
     void start();
@@ -34,8 +32,6 @@ private:
     std::jthread m_timerThread;
     std::mutex m_mtx;
     std::condition_variable_any m_cv;
-
-    Application *m_app;
 };
 } // karin
 

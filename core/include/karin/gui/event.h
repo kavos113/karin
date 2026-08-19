@@ -5,11 +5,9 @@
 
 #include <functional>
 
-#include "application.h"
-
 namespace karin::gui
 {
-void setTimeout(Application *target, uint32_t milliseconds, const std::function<void()>& handler);
+void setTimeout(uint32_t milliseconds, const std::function<void()>& handler);
 }
 
 #endif //CORE_KARIN_GUI_EVENT_H
