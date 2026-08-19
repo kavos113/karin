@@ -68,4 +68,9 @@ Application::Application()
     m_eventDispatcher = std::make_unique<ActionEventDispatcher>(manager);
     manager->setDispatcher(m_eventDispatcher.get());
 }
+
+void Application::sendActionEvent(uint32_t actionId, const std::any& data) const
+{
+    m_eventDispatcher->sendActionEvent(actionId, data);
+}
 }
