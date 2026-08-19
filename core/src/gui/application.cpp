@@ -13,6 +13,7 @@ Application::Application()
     }
 
     m_context = std::make_unique<ApplicationContext>();
+    m_actionEventExecuter = std::make_unique<ActionEventExecuter>();
     s_appContext = m_context.get();
 }
 
