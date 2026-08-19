@@ -30,6 +30,11 @@ public:
 
     void run();
 
+    static uint32_t addActionEventHandler(const std::function<void(std::any)>& handler);
+    static void clearActionEvent(uint32_t id);
+    static void sendActionEvent(uint32_t id, const std::any& data);
+    static void sendTaskEvent(const std::function<void()>& task);
+
 private:
     std::unique_ptr<ApplicationContext> m_context;
 

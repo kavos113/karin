@@ -68,6 +68,26 @@ void Application::run()
     }
 }
 
+uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler)
+{
+    return s_appContext->addActionEventHandler(handler);
+}
+
+void Application::clearActionEvent(uint32_t id)
+{
+    return s_appContext->clearActionEvent(id);
+}
+
+void Application::sendActionEvent(uint32_t id, const std::any& data)
+{
+    s_appContext->sendActionEvent(id, data);
+}
+
+void Application::sendTaskEvent(const std::function<void()>& task)
+{
+    s_appContext->sendTaskEvent(task);
+}
+
 ApplicationContext& getAppContext()
 {
     if (!s_appContext)
