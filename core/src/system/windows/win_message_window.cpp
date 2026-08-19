@@ -44,6 +44,11 @@ void WinMessageWindow::addActionEvent(const ActionEvent& event)
     m_appImpl->pushEvent(event, WINDOW_ID_NONE);
 }
 
+void WinMessageWindow::addTaskEvent(const TaskEvent& event)
+{
+    m_appImpl->pushEvent(event, WINDOW_ID_NONE);
+}
+
 LRESULT WinMessageWindow::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (message == WM_KARIN_ACTION)
