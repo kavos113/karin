@@ -69,29 +69,6 @@ void Window::dispatchEvent(const Event& event) const
     }
 }
 
-uint32_t Window::addActionEventHandler(const std::function<void(std::any)>& handler) const
-{
-    if (m_eventDispatcher)
-    {
-        return m_eventDispatcher->addActionEventHandler(handler);
-    }
-
-    return 0;
-}
-
-void Window::triggerActionEvent(uint32_t id, const std::any& data) const
-{
-    m_window->sendActionEvent(id, data);
-}
-
-void Window::clearActionEvent(uint32_t id) const
-{
-    if (m_eventDispatcher)
-    {
-        m_eventDispatcher->clearActionEvent(id);
-    }
-}
-
 void Window::registerDisposable(const std::function<void()>& disposable)
 {
     m_disposables.push_back(disposable);

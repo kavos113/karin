@@ -68,6 +68,22 @@ void Application::run()
     }
 }
 
+uint32_t Application::addActionEventHandler(const std::function<void(std::any)>& handler) const
+{
+    return m_dispatcher->addActionEventHandler(handler);
+}
+
+void Application::clearActionEvent(uint32_t id) const
+{
+    m_dispatcher->clearActionEvent(id);
+}
+
+void Application::sendActionEvent(uint32_t id, const std::any& data) const
+{
+    karin::Application& app = karin::Application::instance();
+    app.sendActionEvent(id, data);
+}
+
 ApplicationContext& getAppContext()
 {
     if (!s_appContext)

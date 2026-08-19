@@ -30,6 +30,10 @@ public:
 
     void run();
 
+    uint32_t addActionEventHandler(const std::function<void(std::any)>& handler) const;
+    void clearActionEvent(uint32_t id) const;
+    void sendActionEvent(uint32_t id, const std::any& data) const;
+
 private:
     std::unique_ptr<ApplicationContext> m_context;
     std::unique_ptr<ApplicationEventDispatcher> m_dispatcher;
