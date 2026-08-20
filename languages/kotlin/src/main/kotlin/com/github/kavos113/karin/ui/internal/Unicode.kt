@@ -18,3 +18,15 @@ internal fun String.unicodeSubstr(start: Int, end: Int): String {
 internal fun String.unicodeLength(): Int {
     return this.codePointCount(0, this.length)
 }
+
+internal fun String.unicodeInsert(index: Int, str: String): String {
+    val charIndex = this.offsetByCodePoints(0, index)
+    return this.substring(0, charIndex) + str + this.substring(charIndex)
+}
+
+internal fun String.unicodeRemove(index: Int, count: Int): String {
+    val cutStart = this.offsetByCodePoints(0, index)
+    val cutEnd = this.offsetByCodePoints(cutStart, count)
+
+    return this.substring(0, cutStart) + this.substring(cutEnd)
+}
