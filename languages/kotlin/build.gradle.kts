@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.kotlinx.coroutines)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.mockk)
