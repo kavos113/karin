@@ -160,4 +160,40 @@ class UnicodeTest {
         val str = "Hello, 世界"
         assertEquals("Hello, 🍋🍋🍋世界", str.unicodeInsert(7, "🍋🍋🍋"))
     }
+
+    @Test
+    fun testUnicodeRemove_includeJapaneseText() {
+        val str = "Hello, 世界"
+        assertEquals("Hello, ", str.unicodeRemove(7, 2))
+    }
+
+    @Test
+    fun testUnicodeRemove_includeEmoji() {
+        val str = "Hello, 世界🌍"
+        assertEquals("Hello, 世界", str.unicodeRemove(9, 1))
+    }
+
+    @Test
+    fun testUnicodeRemove_removeMiddleEmoji() {
+        val str = "Hello, 世界🌍だよ"
+        assertEquals("Hello, 世界だよ", str.unicodeRemove(9, 1))
+    }
+
+    @Test
+    fun testUnicodeRemove_removeMultipleCharacters() {
+        val str = "Hello, 世界🌍だよ"
+        assertEquals("Hello, 世界", str.unicodeRemove(9, 3))
+    }
+
+    @Test
+    fun testUnicodeRemove_includeSurrogatePairs() {
+        val str = "Hello, 世界𠜎"
+        assertEquals("Hello, 世界", str.unicodeRemove(9, 1))
+    }
+
+    @Test
+    fun testUnicodeRemove_removeMultipleSurrogatePairs() {
+        val str = "Hello, 世界𠜎𠜏"
+        assertEquals("Hello, 世界", str.unicodeRemove(9, 2))
+    }
 }
