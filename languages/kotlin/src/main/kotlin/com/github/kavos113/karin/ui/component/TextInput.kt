@@ -16,9 +16,13 @@ import com.github.kavos113.karin.ui.text.ParagraphStyle
 import com.github.kavos113.karin.ui.text.TextStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -29,9 +33,11 @@ private val BORDER_HOVER_COLOR = Color(0x303030ff)
 private val BORDER_FOCUS_COLOR = Color(0x3870d9ff)
 
 private val CARET_BLINK_DURATION = 500.milliseconds
+private val CARET_BLINK_DEBOUNCE = 1000.milliseconds
 
 private const val DEFAULT_WIDTH = 120f
 
+@OptIn(FlowPreview::class)
 fun UiBuilder.TextInput(
     initialText: String,
     style: Style = Style.Default,
@@ -54,6 +60,7 @@ fun UiBuilder.TextInput(
     val disposable = text.onChange {
         onTextChange(it)
     }
+    registerDisposable(disposable)
 
     val finalStyle: Style = if (style == Style.Default) {
         style
@@ -66,8 +73,42 @@ fun UiBuilder.TextInput(
     }
 
     var isEnableCaret = false
+    var isFocused = false
     var blinkJob: Job? = null
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val flow = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
+    val startBlink = {
+        blinkJob?.cancel()
+
+        blinkJob = scope.launch {
+            while (isActive) {
+                isEnableCaret = !isEnableCaret
+                textNodeHandle.setEnableCaret(isEnableCaret)
+                textNodeHandle.requestRedraw()
+
+                delay(CARET_BLINK_DURATION)
+            }
+        }
+    }
+
+    val stopBlink = {
+        blinkJob?.cancel()
+        blinkJob = null
+    }
+
+    scope.launch {
+        flow
+            .debounce(CARET_BLINK_DEBOUNCE)
+            .collect {
+                if (isFocused) {
+                    startBlink()
+                }
+            }
+    }
 
     val finalEvent = event
         .onKeyType {
@@ -79,6 +120,15 @@ fun UiBuilder.TextInput(
             text.value += it
             caretIndex.value += it.unicodeLength()
             println("current text: ${text.value}")
+
+            stopBlink()
+            if (!isEnableCaret) {
+                isEnableCaret = true
+                textNodeHandle.setEnableCaret(true)
+                textNodeHandle.requestRedraw()
+            }
+
+            flow.tryEmit(Unit)
         }
         .onKeyDown {
             when (it.key) {
@@ -101,23 +151,22 @@ fun UiBuilder.TextInput(
                 // TODO: tab, delete, etc..
                 else -> {}
             }
+
+            stopBlink()
+            if (!isEnableCaret) {
+                isEnableCaret = true
+                textNodeHandle.setEnableCaret(true)
+                textNodeHandle.requestRedraw()
+            }
+            flow.tryEmit(Unit)
         }
         .onChangeFocus {
+            isFocused = it
+
             if (it) {
-                blinkJob?.cancel()
-
-                blinkJob = scope.launch {
-                    while (isActive) {
-                        isEnableCaret = !isEnableCaret
-                        textNodeHandle.setEnableCaret(isEnableCaret)
-                        textNodeHandle.requestRedraw()
-
-                        delay(CARET_BLINK_DURATION)
-                    }
-                }
+                startBlink()
             } else {
-                blinkJob?.cancel()
-                blinkJob = null
+                stopBlink()
 
                 isEnableCaret = false
                 textNodeHandle.setEnableCaret(false)
@@ -151,6 +200,4 @@ fun UiBuilder.TextInput(
         }
         registerDisposable(caretDisposable)
     }
-
-    registerDisposable(disposable)
 }
