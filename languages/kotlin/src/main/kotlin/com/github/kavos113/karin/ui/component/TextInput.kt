@@ -14,11 +14,21 @@ import com.github.kavos113.karin.ui.props.Style
 import com.github.kavos113.karin.ui.style.LineStyle
 import com.github.kavos113.karin.ui.text.ParagraphStyle
 import com.github.kavos113.karin.ui.text.TextStyle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 private val BACKGROUND_COLOR = Color(0xfdfdfdff)
 private val BORDER_COLOR = Color(0x808080ff)
 private val BORDER_HOVER_COLOR = Color(0x303030ff)
 private val BORDER_FOCUS_COLOR = Color(0x3870d9ff)
+
+private val CARET_BLINK_DURATION = 500.milliseconds
 
 private const val DEFAULT_WIDTH = 120f
 
@@ -55,6 +65,10 @@ fun UiBuilder.TextInput(
         style
     }
 
+    var isEnableCaret = false
+    var blinkJob: Job? = null
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     val finalEvent = event
         .onKeyType {
             val codePoint = it.codePointAt(0)
@@ -89,7 +103,26 @@ fun UiBuilder.TextInput(
             }
         }
         .onChangeFocus {
-            textNodeHandle.setEnableCaret(it)
+            if (it) {
+                blinkJob?.cancel()
+
+                blinkJob = scope.launch {
+                    while (isActive) {
+                        isEnableCaret = !isEnableCaret
+                        textNodeHandle.setEnableCaret(isEnableCaret)
+                        textNodeHandle.requestRedraw()
+
+                        delay(CARET_BLINK_DURATION)
+                    }
+                }
+            } else {
+                blinkJob?.cancel()
+                blinkJob = null
+
+                isEnableCaret = false
+                textNodeHandle.setEnableCaret(false)
+                textNodeHandle.requestRedraw()
+            }
         }
 
     val height = layout.height ?: (textStyle.fontSize + 4)
