@@ -6,7 +6,9 @@ import com.github.kavos113.karin.ui.UiBuilder
 import com.github.kavos113.karin.ui.common.Color
 import com.github.kavos113.karin.ui.event.Key
 import com.github.kavos113.karin.ui.internal.isControlChar
+import com.github.kavos113.karin.ui.internal.unicodeInsert
 import com.github.kavos113.karin.ui.internal.unicodeLength
+import com.github.kavos113.karin.ui.internal.unicodeRemove
 import com.github.kavos113.karin.ui.internal.unicodeSubstr
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
@@ -48,14 +50,14 @@ fun UiBuilder.TextInput(
     onTextChange: (String) -> Unit,
 ) {
     val text = State<String>(initialText)
-    val caretIndex = State<Int>(initialText.unicodeLength())
+    val editingIndex = State<Int>(initialText.unicodeLength())
 
     val textNodeHandle = TextNodeHandle(
         text = text.value,
         style = textStyle,
         paragraphStyle = paragraphStyle
     )
-    textNodeHandle.setCaretIndex(caretIndex.value)
+    textNodeHandle.setCaretIndex(editingIndex.value)
 
     val disposable = text.onChange {
         onTextChange(it)
@@ -117,8 +119,8 @@ fun UiBuilder.TextInput(
                 return@onKeyType
             }
 
-            text.value += it
-            caretIndex.value += it.unicodeLength()
+            text.value = text.value.unicodeInsert(editingIndex.value, it)
+            editingIndex.value += it.unicodeLength()
             println("current text: ${text.value}")
 
             stopBlink()
@@ -133,19 +135,21 @@ fun UiBuilder.TextInput(
         .onKeyDown {
             when (it.key) {
                 Key.Backspace -> {
-                    text.value = text.value.unicodeSubstr(0, text.value.unicodeLength() - 1)
-                    if (caretIndex.value > 0) {
-                        caretIndex.value--
+                    if (editingIndex.value == 0) {
+                        return@onKeyDown
                     }
+
+                    text.value = text.value.unicodeRemove(editingIndex.value - 1, 1)
+                    editingIndex.value--
                 }
                 Key.LeftArrow -> {
-                    if (caretIndex.value > 0) {
-                        caretIndex.value--
+                    if (editingIndex.value > 0) {
+                        editingIndex.value--
                     }
                 }
                 Key.RightArrow -> {
-                    if (caretIndex.value < text.value.unicodeLength()) {
-                        caretIndex.value++
+                    if (editingIndex.value < text.value.unicodeLength()) {
+                        editingIndex.value++
                     }
                 }
                 // TODO: tab, delete, etc..
@@ -194,7 +198,7 @@ fun UiBuilder.TextInput(
         }
         registerDisposable(disposable)
 
-        val caretDisposable = caretIndex.onChange { newIndex ->
+        val caretDisposable = editingIndex.onChange { newIndex ->
             textNodeHandle.setCaretIndex(newIndex)
             textNodeHandle.requestRedraw()
         }
