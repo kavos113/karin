@@ -1,8 +1,5 @@
 #include <karin/gui/text_node.h>
 
-#include <ranges>
-#include <algorithm>
-
 #include "application_context.h"
 
 namespace karin::gui
@@ -18,8 +15,13 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
 
 void TextNode::setText(const std::string& text)
 {
-    m_text = text;
-    requestRelayout();
+    if (m_text != text)
+    {
+        m_text = text;
+        requestRelayout();
+
+        YGNodeMarkDirty(m_yogaNode);
+    }
 }
 
 void TextNode::drawInternal(GraphicsContext& gc) const
