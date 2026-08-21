@@ -14,11 +14,67 @@ env:
   
 jobs:
   core-build:
-    uses: ./.github/workflows/core-build/ubuntu.yml
-    with:
-      cmake-build-type: ${{ env.CMAKE_BUILD_TYPE }}
-      cmake-preset: ${{ env.CMAKE_PRESET }}
-      build-dir: ${{ env.BUILD_DIR }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-vulkan-ubuntu
+
+      - name: Install dependencies
+        run: |
+          sudo apt install -y cmake g++ make libx11-dev vulkan-sdk ninja-build
+
+      - name: Vcpkg Cache
+        id: cache-vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./vcpkg
+            ./${{ env.BUILD_DIR }}/${{ env.CMAKE_PRESET }}/vcpkg_installed
+          key: ${{ env.CMAKE_PRESET }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            ${{ env.CMAKE_PRESET }}-vcpkg-
+
+      - name: Install vcpkg
+        run: |
+          if [ ! -d "./vcpkg" ]; then
+            git clone https://github.com/microsoft/vcpkg.git            
+          fi
+          ./vcpkg/bootstrap-vcpkg.sh
+
+      - name: set permission
+        run: |
+          chmod +x ./core/scripts/*.sh
+
+      - name: Configure CMake
+        run: |
+          mkdir -p ${{ env.BUILD_DIR }}
+          cd ${{ env.BUILD_DIR }}
+
+          cmake -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} \
+            -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            --preset ${{ env.CMAKE_PRESET }} ..
+
+      - name: Build
+        run: |
+          cd ${{ env.BUILD_DIR }}
+          cmake --build  ${{ env.CMAKE_PRESET }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: core-${{ env.CMAKE_PRESET }}-build
+          path: ${{ env.BUILD_DIR }}
+          overwrite: 'true'
 
   core-test:
     runs-on: ubuntu-latest
