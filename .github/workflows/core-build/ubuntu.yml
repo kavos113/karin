@@ -1,0 +1,78 @@
+name: "Core Build - Ubuntu"
+
+on:
+  workflow_call:
+    inputs:
+      cmake-build-type:
+        required: true
+        type: string
+      cmake-preset:
+        required: true
+        type: string
+      build-dir:
+        required: true
+        type: string
+
+jobs:
+  core-build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-vulkan-ubuntu
+
+      - name: Install dependencies
+        run: |
+          sudo apt install -y cmake g++ make libx11-dev vulkan-sdk ninja-build
+
+      - name: Vcpkg Cache
+        id: cache-vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./vcpkg
+            ./${{ inputs.build-dir }}/${{ inputs.cmake-preset }}/vcpkg_installed
+          key: ${{ inputs.cmake-preset }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            ${{ inputs.cmake-preset }}-vcpkg-
+
+      - name: Install vcpkg
+        run: |
+          if [ ! -d "./vcpkg" ]; then
+            git clone https://github.com/microsoft/vcpkg.git            
+          fi
+          ./vcpkg/bootstrap-vcpkg.sh
+
+      - name: set permission
+        run: |
+          chmod +x ./core/scripts/*.sh
+
+      - name: Configure CMake
+        run: |
+          mkdir -p ${{ inputs.build-dir }}
+          cd ${{ inputs.build-dir }}
+
+          cmake -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
+            -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            --preset ${{ inputs.cmake-preset }} ..
+
+      - name: Build
+        run: |
+          cd ${{ inputs.build-dir }}
+          cmake --build  ${{ inputs.cmake-preset }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: core-${{ inputs.cmake-preset }}-build
+          path: ${{ inputs.build-dir }}
+          overwrite: 'true'

@@ -15,66 +15,12 @@ env:
 
 jobs:
   core-build:
-    runs-on: windows-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Install dependencies
-        run: |
-          choco install ninja -y
-
-      - name: Setup Vulkan SDK
-        uses: ./.github/actions/setup-vulkan-windows
-        with:
-          vulkan-version: ${{ env.VULKAN_SDK_VERSION }}
-
-      - name: Vcpkg Cache
-        id: cache-vcpkg
-        uses: actions/cache@v4
-        with:
-          path: |
-            .\vcpkg
-            .\${{ env.BUILD_DIR }}\${{ env.CMAKE_PRESET }}\vcpkg_installed
-          key: ${{ env.CMAKE_PRESET }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
-          restore-keys: |
-            ${{ env.CMAKE_PRESET }}-vcpkg-
-
-      - name: Install vcpkg
-        run: |
-          if (-not (Test-Path -Path .\vcpkg)) {
-            git clone https://github.com/microsoft/vcpkg.git
-          }
-          .\vcpkg\bootstrap-vcpkg.bat
-        shell: pwsh
-
-      - name: Configure CMake
-        run: |
-          New-Item -Path .\${{ env.BUILD_DIR }} -ItemType Directory -Force
-          Push-Location -Path .\${{ env.BUILD_DIR }}
-          
-          cmake -G Ninja `
-            -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} `
-            -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake" `
-            -DCMAKE_C_COMPILER=clang `
-            -DCMAKE_CXX_COMPILER=clang++ `
-            --preset ${{ env.CMAKE_PRESET }} ..
-
-      - name: Build
-        run: |
-          Push-Location -Path .\${{ env.BUILD_DIR }}
-          cmake --build ${{ env.CMAKE_PRESET }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: core-${{ env.CMAKE_PRESET }}-build
-          path: ${{ env.BUILD_DIR }}
-          overwrite: 'true'
+    uses: ./.github/workflows/core-build/windows-vulkan.yml
+    with:
+      cmake-build-type: ${{ env.CMAKE_BUILD_TYPE }}
+      cmake-preset: ${{ env.CMAKE_PRESET }}
+      build-dir: ${{ env.BUILD_DIR }}
+      vulkan-sdk-version: ${{ env.VULKAN_SDK_VERSION }}
 
   core-test:
     runs-on: windows-latest
