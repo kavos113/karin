@@ -184,10 +184,11 @@ fun UiBuilder.TextInput(
         .height(height)
         .width(width)
 
-    Box(
+    Column(
         style = finalStyle,
         layout = finalLayout,
-        event = finalEvent
+        event = finalEvent,
+        enableClip = true
     ) {
         parentContainer.addChild(textNodeHandle)
         childrenCount++
