@@ -16,9 +16,9 @@ jobs:
   core-build:
     uses: ./.github/workflows/core-build/ubuntu.yml
     with:
-      cmake-build-type: ${{ env.CMAKE_BUILD_TYPE }}
-      cmake-preset: ${{ env.CMAKE_PRESET }}
-      build-dir: ${{ env.BUILD_DIR }}
+      cmake-build-type: Release
+      cmake-preset: ubuntu-debug-headless
+      build-dir: build
 
   core-test:
     runs-on: ubuntu-latest
