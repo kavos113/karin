@@ -2,6 +2,18 @@ core:
 - changed-files:
   - any-glob-to-any-file: 'core/**'
 
+graphics:
+- changed-files:
+  - any-glob-to-any-file: 'core/graphics/**'
+
+gui:
+- changed-files:
+  - any-glob-to-any-file: 'core/gui/**'
+
+system:
+- changed-files:
+  - any-glob-to-any-file: 'core/system/**'
+
 ci:
 - changed-files:
   - any-glob-to-any-file: '.github/**'
