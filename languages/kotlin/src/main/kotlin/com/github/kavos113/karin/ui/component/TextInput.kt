@@ -58,6 +58,7 @@ fun UiBuilder.TextInput(
         paragraphStyle = paragraphStyle
     )
     textNodeHandle.setCaretIndex(editingIndex.value)
+    textNodeHandle.setAlignToParent(true)
 
     val disposable = text.onChange {
         onTextChange(it)

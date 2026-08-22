@@ -12,6 +12,7 @@ class JniViewNode {
     static native void setHeight(long nodePtr, float height);
     static native void setBackgroundColor(long nodePtr, float r, float g, float b, float a);
     static native void setOpacity(long nodePtr, float opacity);
+    static native void setAlignToParent(long nodePtr, boolean alignToParent);
 
     @SuppressWarnings("unused") static final char SIDE_LEFT = 1;
     @SuppressWarnings("unused") static final char SIDE_TOP = 2;
