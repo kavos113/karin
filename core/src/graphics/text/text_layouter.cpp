@@ -268,6 +268,9 @@ std::vector<GlyphInfo> TextLayouter::layout(
         penY += lineHeight;
     }
 
+    // last line break is not needed
+    penY -= lineHeight;
+
     outContentSize = {
         .width = maxX,
         .height = penY,
