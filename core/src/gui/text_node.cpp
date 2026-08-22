@@ -32,6 +32,23 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
+    std::cout << "layout size: " << layout.size << std::endl;
+
+    if (m_origin == CalculateOrigin::Left)
+    {
+        if (m_offsetIndex < textBlob.glyphs.size())
+        {
+            const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
+
+            // TODO: multi-line text is not working
+            start = Point(target.position.x, start.y);
+        }
+    }
+    else if (m_origin == CalculateOrigin::Right)
+    {
+
+    }
+
     gc.drawText(textBlob, start, m_pattern);
 
     if (m_drawCaret)
@@ -45,6 +62,9 @@ YGSize TextNode::measure(Size availableSize) const
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, availableSize);
 
+    std::cout << "measured size: "<< textBlob.layoutSize << std::endl;
+    std::cout << "available size: " << availableSize << std::endl;
+
     Size measuredSize = textBlob.layoutSize;
     return YGSize{measuredSize.width, measuredSize.height};
 }
@@ -57,6 +77,12 @@ void TextNode::setDrawCaret(bool drawCaret)
 void TextNode::setCaretIndex(uint32_t caretIndex)
 {
     m_caretIndex = caretIndex;
+}
+
+void TextNode::setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index)
+{
+    m_origin = origin;
+    m_offsetIndex = index;
 }
 
 void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
