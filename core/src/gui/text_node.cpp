@@ -93,12 +93,6 @@ void TextNode::setCaretIndex(uint32_t caretIndex)
     m_caretIndex = caretIndex;
 }
 
-void TextNode::setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index)
-{
-    m_origin = origin;
-    m_offsetIndex = index;
-}
-
 TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
 {
     if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())

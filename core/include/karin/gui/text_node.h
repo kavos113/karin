@@ -22,20 +22,11 @@ public:
     );
     ~TextNode() override = default;
 
-    enum class CalculateOrigin : uint8_t
-    {
-        None = 0,
-        Left = 1,
-        Right = 2,
-    };
-
     void setText(const std::string& text);
     void setDrawCaret(bool drawCaret);
 
     // draw caret behind text[caretIndex]. 0 <= caretIndex <= text.length
     void setCaretIndex(uint32_t caretIndex);
-
-    void setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index);
 
     void drawInternal(GraphicsContext& gc) override;
 
@@ -60,9 +51,6 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
-
-    CalculateOrigin m_origin = CalculateOrigin::None;
-    uint32_t m_offsetIndex = 0;
     float m_scrollOffset = 0;
 
     static constexpr float CARET_WIDTH = 1.0f;

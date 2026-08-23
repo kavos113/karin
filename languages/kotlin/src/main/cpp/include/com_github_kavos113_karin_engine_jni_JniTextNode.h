@@ -39,14 +39,6 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setCaretIndex
   (JNIEnv *, jclass, jlong, jint);
 
-/*
- * Class:     com_github_kavos113_karin_engine_jni_JniTextNode
- * Method:    setDrawOffsetCharIndex
- * Signature: (JII)V
- */
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setDrawOffsetCharIndex
-  (JNIEnv *, jclass, jlong, jint, jint);
-
 #ifdef __cplusplus
 }
 #endif

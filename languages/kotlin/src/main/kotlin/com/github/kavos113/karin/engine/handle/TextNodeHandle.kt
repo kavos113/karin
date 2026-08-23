@@ -6,12 +6,6 @@ import com.github.kavos113.karin.ui.text.TextStyle
 
 internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
 
-    enum class CalculateOrigin(val value: Int) {
-        None(0),
-        Left(1),
-        Right(2),
-    }
-
     constructor(
         text: String = "",
         style: TextStyle = TextStyle(),
@@ -53,9 +47,5 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
 
     fun setCaretIndex(caretIndex: Int) {
         JniTextNodeBridge.setCaretIndex(ptr, caretIndex)
-    }
-
-    fun setDrawOffsetCharIndex(origin: CalculateOrigin, index: Int) {
-        JniTextNodeBridge.setDrawOffsetCharIndex(ptr, origin.value, index)
     }
 }
