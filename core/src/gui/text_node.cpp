@@ -34,26 +34,36 @@ void TextNode::drawInternal(GraphicsContext& gc) const
 
     std::cout << "layout size: " << layout.size << std::endl;
 
-    if (m_origin == CalculateOrigin::Left)
-    {
-        if (m_offsetIndex < textBlob.glyphs.size())
-        {
-            const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
+    Point offset(0, 0);
 
-            // TODO: multi-line text is not working
-            start = Point(target.position.x, start.y);
+    // scroll offset only if text overflow
+    if (layout.size.width < textBlob.layoutSize.width || layout.size.height < textBlob.layoutSize.width)
+    {
+        if (m_origin == CalculateOrigin::Left)
+        {
+            if (m_offsetIndex < textBlob.glyphs.size())
+            {
+                const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
+
+                // TODO: multi-line text is not working
+                offset = Point(-target.position.x, 0);
+            }
+        }
+        else if (m_origin == CalculateOrigin::Right)
+        {
+            if (m_offsetIndex < textBlob.glyphs.size())
+            {
+                const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
+                offset = Point(-target.position.x - target.advanceX + layout.size.width, 0);
+            }
         }
     }
-    else if (m_origin == CalculateOrigin::Right)
-    {
 
-    }
-
-    gc.drawText(textBlob, start, m_pattern);
+    gc.drawText(textBlob, start + offset, m_pattern);
 
     if (m_drawCaret)
     {
-        drawCaret(gc, textBlob);
+        drawCaret(gc, textBlob, offset);
     }
 }
 
@@ -85,7 +95,7 @@ void TextNode::setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index)
     m_offsetIndex = index;
 }
 
-void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
+void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset) const
 {
     if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
     {
@@ -112,7 +122,7 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        gc.drawLine(top + offset, bottom + offset, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
     else
     {
@@ -122,7 +132,7 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        gc.drawLine(top + offset, bottom + offset, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
 }
 } // karin::gui

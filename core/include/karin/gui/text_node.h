@@ -43,7 +43,7 @@ protected:
     YGSize measure(Size availableSize) const override;
 
 private:
-    void drawCaret(GraphicsContext& gc, const TextBlob& blob) const;
+    void drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset) const;
 
     std::string m_text;
 
