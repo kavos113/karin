@@ -65,7 +65,7 @@ private:
     uint32_t m_offsetIndex = 0;
     float m_scrollOffset = 0;
 
-    static constexpr float CARET_WIDTH = 2.0f;
+    static constexpr float CARET_WIDTH = 1.0f;
 };
 } // karin::gui
 

@@ -1,5 +1,7 @@
 #include <karin/gui/text_node.h>
 
+#include <algorithm>
+
 #include "application_context.h"
 
 namespace karin::gui
@@ -34,30 +36,40 @@ void TextNode::drawInternal(GraphicsContext& gc)
 
     if (m_drawCaret)
     {
+
         auto caretPos = calcCaretPosition(textBlob);
-        float caretX = caretPos.start.x + m_scrollOffset;
+        float caretX = caretPos.start.x - m_scrollOffset;
 
-        // adjust caret to left bound
-        if (caretX < 0)
+        if (textBlob.layoutSize.width <= layout.size.width)
         {
-            m_scrollOffset = -caretPos.start.x;
+            m_scrollOffset = 0.0f;
         }
-        // adjust caret to right bound
-        else if (caretX > layout.size.width)
+        else
         {
-            m_scrollOffset -= caretX - layout.size.width;
+            // adjust caret to left bound
+            if (caretX < 0)
+            {
+                m_scrollOffset = caretPos.start.x - CARET_WIDTH;
+            }
+            // adjust caret to right bound
+            else if (caretX > layout.size.width)
+            {
+                m_scrollOffset += caretX - layout.size.width;
+            }
+
+            m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
         }
 
-        start.x += m_scrollOffset;
+        start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
 
-        caretPos.start.x += m_scrollOffset;
-        caretPos.end.x += m_scrollOffset;
+        caretPos.start.x -= m_scrollOffset;
+        caretPos.end.x -= m_scrollOffset;
         gc.drawLine(caretPos.start, caretPos.end, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
     }
     else
     {
-        start.x += m_scrollOffset;
+        start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
     }
 }
@@ -113,6 +125,16 @@ TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
 
         const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
+
+        return {false, top, bottom};
+    }
+    else if (m_caretIndex == 0)
+    {
+        const GlyphInfo glyph = blob.glyphs[0];
+
+        const float x = glyph.position.x + CARET_WIDTH / 2;
+        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
         return {false, top, bottom};
     }
