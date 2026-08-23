@@ -14,7 +14,7 @@ public:
     explicit LeafNode(Size size) : ViewNode(size) {}
     ~LeafNode() override = default;
 
-    void drawInternal(GraphicsContext& gc) const override = 0;
+    void drawInternal(GraphicsContext& gc) override = 0;
 
 protected:
     virtual YGSize measure(Size availableSize) const = 0;

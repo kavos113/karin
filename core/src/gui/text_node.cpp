@@ -24,7 +24,7 @@ void TextNode::setText(const std::string& text)
     }
 }
 
-void TextNode::drawInternal(GraphicsContext& gc) const
+void TextNode::drawInternal(GraphicsContext& gc)
 {
     Rectangle layout = getLayout();
     Point start = layout.pos;
@@ -32,38 +32,33 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
-    std::cout << "layout size: " << layout.size << std::endl;
-
-    Point offset(0, 0);
-
-    // scroll offset only if text overflow
-    if (layout.size.width < textBlob.layoutSize.width || layout.size.height < textBlob.layoutSize.width)
-    {
-        if (m_origin == CalculateOrigin::Left)
-        {
-            if (m_offsetIndex < textBlob.glyphs.size())
-            {
-                const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
-
-                // TODO: multi-line text is not working
-                offset = Point(-target.position.x, 0);
-            }
-        }
-        else if (m_origin == CalculateOrigin::Right)
-        {
-            if (m_offsetIndex < textBlob.glyphs.size())
-            {
-                const GlyphInfo target = textBlob.glyphs[m_offsetIndex];
-                offset = Point(-target.position.x - target.advanceX + layout.size.width, 0);
-            }
-        }
-    }
-
-    gc.drawText(textBlob, start + offset, m_pattern);
-
     if (m_drawCaret)
     {
-        drawCaret(gc, textBlob, offset);
+        auto caretPos = calcCaretPosition(textBlob);
+        float caretX = caretPos.start.x + m_scrollOffset;
+
+        // adjust caret to left bound
+        if (caretX < 0)
+        {
+            m_scrollOffset = -caretPos.start.x;
+        }
+        // adjust caret to right bound
+        else if (caretX > layout.size.width)
+        {
+            m_scrollOffset -= caretX - layout.size.width;
+        }
+
+        start.x += m_scrollOffset;
+        gc.drawText(textBlob, start, m_pattern);
+
+        caretPos.start.x += m_scrollOffset;
+        caretPos.end.x += m_scrollOffset;
+        gc.drawLine(caretPos.start, caretPos.end, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+    }
+    else
+    {
+        start.x += m_scrollOffset;
+        gc.drawText(textBlob, start, m_pattern);
     }
 }
 
@@ -71,9 +66,6 @@ YGSize TextNode::measure(Size availableSize) const
 {
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, availableSize);
-
-    std::cout << "measured size: "<< textBlob.layoutSize << std::endl;
-    std::cout << "available size: " << availableSize << std::endl;
 
     Size measuredSize = textBlob.layoutSize;
     return YGSize{measuredSize.width, measuredSize.height};
@@ -95,11 +87,11 @@ void TextNode::setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index)
     m_offsetIndex = index;
 }
 
-void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset) const
+TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
 {
     if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
     {
-        return;
+        return {true};
     }
 
     const FontMetrics metrics = blob.fontFace->getFontMetrics();
@@ -122,7 +114,7 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset
         const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top + offset, bottom + offset, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        return {false, top, bottom};
     }
     else
     {
@@ -132,7 +124,7 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset
         const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top + offset, bottom + offset, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        return {false, top, bottom};
     }
 }
 } // karin::gui

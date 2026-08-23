@@ -124,7 +124,7 @@ public:
     void triggerChangeFocusStateHandler(bool focusState) const;
 
 protected:
-    virtual void drawInternal(GraphicsContext& gc) const = 0;
+    virtual void drawInternal(GraphicsContext& gc) = 0;
     virtual bool needLayer() const;
 
     YGNodeRef m_yogaNode;

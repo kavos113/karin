@@ -37,13 +37,19 @@ public:
 
     void setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index);
 
-    void drawInternal(GraphicsContext& gc) const override;
+    void drawInternal(GraphicsContext& gc) override;
 
 protected:
     YGSize measure(Size availableSize) const override;
 
 private:
-    void drawCaret(GraphicsContext& gc, const TextBlob& blob, Point offset) const;
+    struct CaretPosition
+    {
+        bool isInvalid = false;
+        Point start = Point(0, 0);
+        Point end = Point(0, 0);
+    };
+    CaretPosition calcCaretPosition(const TextBlob& blob) const;
 
     std::string m_text;
 
@@ -57,6 +63,7 @@ private:
 
     CalculateOrigin m_origin = CalculateOrigin::None;
     uint32_t m_offsetIndex = 0;
+    float m_scrollOffset = 0;
 
     static constexpr float CARET_WIDTH = 2.0f;
 };

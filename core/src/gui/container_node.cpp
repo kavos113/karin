@@ -60,7 +60,7 @@ void ContainerNode::onDetachFromWindow()
     }
 }
 
-void ContainerNode::drawInternal(GraphicsContext& gc) const
+void ContainerNode::drawInternal(GraphicsContext& gc)
 {
     Rectangle layout = getLayout();
     drawBackground(gc);
