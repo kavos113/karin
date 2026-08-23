@@ -82,7 +82,7 @@ ViewNode::~ViewNode()
     YGNodeFree(m_yogaNode);
 }
 
-void ViewNode::draw(GraphicsContext& gc) const
+void ViewNode::draw(GraphicsContext& gc)
 {
     if (needLayer())
     {

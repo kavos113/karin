@@ -67,7 +67,7 @@ public:
     explicit ViewNode(Size size);
     virtual ~ViewNode();
 
-    void draw(GraphicsContext& gc) const;
+    void draw(GraphicsContext& gc);
 
     /**
      * Check nodes and find target node.
