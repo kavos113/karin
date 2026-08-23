@@ -241,11 +241,13 @@ void ViewNode::setAlignToParent(bool alignToParent)
 {
     if (alignToParent)
     {
-        YGNodeStyleSetFlexShrink(m_yogaNode, 1.0f);
+        YGNodeStyleSetMaxWidthPercent(m_yogaNode, 100.0f);
+        YGNodeStyleSetMaxHeightPercent(m_yogaNode, 100.0f);
     }
     else
     {
-        YGNodeStyleSetFlexShrink(m_yogaNode, 0.0f);
+        YGNodeStyleSetMaxWidth(m_yogaNode, YGUndefined);
+        YGNodeStyleSetMaxHeight(m_yogaNode, YGUndefined);
     }
 }
 
