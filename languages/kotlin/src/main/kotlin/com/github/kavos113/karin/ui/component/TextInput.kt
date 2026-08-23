@@ -9,7 +9,6 @@ import com.github.kavos113.karin.ui.internal.isControlChar
 import com.github.kavos113.karin.ui.internal.unicodeInsert
 import com.github.kavos113.karin.ui.internal.unicodeLength
 import com.github.kavos113.karin.ui.internal.unicodeRemove
-import com.github.kavos113.karin.ui.internal.unicodeSubstr
 import com.github.kavos113.karin.ui.props.Event
 import com.github.kavos113.karin.ui.props.Layout
 import com.github.kavos113.karin.ui.props.Style
@@ -122,7 +121,6 @@ fun UiBuilder.TextInput(
 
             text.value = text.value.unicodeInsert(editingIndex.value, it)
             editingIndex.value += it.unicodeLength()
-            println("current text: ${text.value}")
 
             stopBlink()
             if (!isEnableCaret) {
