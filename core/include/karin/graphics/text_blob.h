@@ -16,6 +16,7 @@ struct GlyphInfo
 {
     // position in layout. pixels
     // bottom-left of the glyph bounding box
+    // bounding box of all glyphs starts with (0, 0)
     Point position;
 
     float advanceX;

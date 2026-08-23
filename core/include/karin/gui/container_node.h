@@ -47,7 +47,7 @@ public:
     ViewNode* hitTest(const Point& point, EventType type) override;
 
 protected:
-    void drawInternal(GraphicsContext& gc) const final;
+    void drawInternal(GraphicsContext& gc) final;
     bool needLayer() const final;
 
     virtual void drawBackground(GraphicsContext& gc) const {}

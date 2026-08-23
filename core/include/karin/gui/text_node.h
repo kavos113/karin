@@ -28,11 +28,19 @@ public:
     // draw caret behind text[caretIndex]. 0 <= caretIndex <= text.length
     void setCaretIndex(uint32_t caretIndex);
 
-    void drawInternal(GraphicsContext& gc) const override;
+    void drawInternal(GraphicsContext& gc) override;
+
+protected:
     YGSize measure(Size availableSize) const override;
 
 private:
-    void drawCaret(GraphicsContext& gc, const TextBlob& blob) const;
+    struct CaretPosition
+    {
+        bool isInvalid = false;
+        Point start = Point(0, 0);
+        Point end = Point(0, 0);
+    };
+    CaretPosition calcCaretPosition(const TextBlob& blob) const;
 
     std::string m_text;
 
@@ -43,8 +51,9 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
+    float m_scrollOffset = 0;
 
-    static constexpr float CARET_WIDTH = 2.0f;
+    static constexpr float CARET_WIDTH = 1.0f;
 };
 } // karin::gui
 

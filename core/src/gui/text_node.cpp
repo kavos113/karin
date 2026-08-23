@@ -1,6 +1,5 @@
 #include <karin/gui/text_node.h>
 
-#include <ranges>
 #include <algorithm>
 
 #include "application_context.h"
@@ -18,11 +17,16 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
 
 void TextNode::setText(const std::string& text)
 {
-    m_text = text;
-    requestRelayout();
+    if (m_text != text)
+    {
+        m_text = text;
+        requestRelayout();
+
+        YGNodeMarkDirty(m_yogaNode);
+    }
 }
 
-void TextNode::drawInternal(GraphicsContext& gc) const
+void TextNode::drawInternal(GraphicsContext& gc)
 {
     Rectangle layout = getLayout();
     Point start = layout.pos;
@@ -30,11 +34,43 @@ void TextNode::drawInternal(GraphicsContext& gc) const
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
-    gc.drawText(textBlob, start, m_pattern);
-
     if (m_drawCaret)
     {
-        drawCaret(gc, textBlob);
+
+        auto caretPos = calcCaretPosition(textBlob);
+        float caretX = caretPos.start.x - m_scrollOffset;
+
+        if (textBlob.layoutSize.width <= layout.size.width)
+        {
+            m_scrollOffset = 0.0f;
+        }
+        else
+        {
+            // adjust caret to left bound
+            if (caretX < 0)
+            {
+                m_scrollOffset = caretPos.start.x - CARET_WIDTH;
+            }
+            // adjust caret to right bound
+            else if (caretX > layout.size.width)
+            {
+                m_scrollOffset += caretX - layout.size.width;
+            }
+
+            m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
+        }
+
+        start.x -= m_scrollOffset;
+        gc.drawText(textBlob, start, m_pattern);
+
+        caretPos.start.x -= m_scrollOffset;
+        caretPos.end.x -= m_scrollOffset;
+        gc.drawLine(caretPos.start, caretPos.end, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+    }
+    else
+    {
+        start.x -= m_scrollOffset;
+        gc.drawText(textBlob, start, m_pattern);
     }
 }
 
@@ -57,11 +93,11 @@ void TextNode::setCaretIndex(uint32_t caretIndex)
     m_caretIndex = caretIndex;
 }
 
-void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
+TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
 {
     if (m_caretIndex < 0 || m_caretIndex > blob.glyphs.size())
     {
-        return;
+        return {true};
     }
 
     const FontMetrics metrics = blob.fontFace->getFontMetrics();
@@ -84,7 +120,17 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         const Point top = Point(baseLeft.x, baseLeft.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(baseLeft.x, baseLeft.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        return {false, top, bottom};
+    }
+    else if (m_caretIndex == 0)
+    {
+        const GlyphInfo glyph = blob.glyphs[0];
+
+        const float x = glyph.position.x + CARET_WIDTH / 2;
+        const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
+        const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
+
+        return {false, top, bottom};
     }
     else
     {
@@ -94,7 +140,7 @@ void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const
         const Point top = Point(x, glyph.position.y - static_cast<float>(metrics.ascender) * scale);
         const Point bottom = Point(x, glyph.position.y + static_cast<float>(metrics.descender) * scale);
 
-        gc.drawLine(top, bottom, m_caretPattern, StrokeStyle{.width = CARET_WIDTH});
+        return {false, top, bottom};
     }
 }
 } // karin::gui

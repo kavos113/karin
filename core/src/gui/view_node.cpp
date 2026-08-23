@@ -82,7 +82,7 @@ ViewNode::~ViewNode()
     YGNodeFree(m_yogaNode);
 }
 
-void ViewNode::draw(GraphicsContext& gc) const
+void ViewNode::draw(GraphicsContext& gc)
 {
     if (needLayer())
     {
@@ -235,6 +235,20 @@ void ViewNode::setOpacity(float opacity)
 void ViewNode::setShadow(float offsetX, float offsetY, Color color, float blurRadius, float spreadRadius)
 {
     m_shadow = ShadowParams{offsetX, offsetY, color, blurRadius, spreadRadius};
+}
+
+void ViewNode::setAlignToParent(bool alignToParent)
+{
+    if (alignToParent)
+    {
+        YGNodeStyleSetMaxWidthPercent(m_yogaNode, 100.0f);
+        YGNodeStyleSetMaxHeightPercent(m_yogaNode, 100.0f);
+    }
+    else
+    {
+        YGNodeStyleSetMaxWidth(m_yogaNode, YGUndefined);
+        YGNodeStyleSetMaxHeight(m_yogaNode, YGUndefined);
+    }
 }
 
 YGNodeRef ViewNode::getYogaNode() const

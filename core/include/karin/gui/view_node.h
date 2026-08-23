@@ -67,7 +67,7 @@ public:
     explicit ViewNode(Size size);
     virtual ~ViewNode();
 
-    void draw(GraphicsContext& gc) const;
+    void draw(GraphicsContext& gc);
 
     /**
      * Check nodes and find target node.
@@ -96,6 +96,7 @@ public:
     void setBackgroundColor(Color color);
     void setOpacity(float opacity);
     void setShadow(float offsetX, float offsetY, Color color, float blurRadius = 0.0f, float spreadRadius = 0.0f);
+    void setAlignToParent(bool alignToParent);
 
     YGNodeRef getYogaNode() const;
 
@@ -123,7 +124,7 @@ public:
     void triggerChangeFocusStateHandler(bool focusState) const;
 
 protected:
-    virtual void drawInternal(GraphicsContext& gc) const = 0;
+    virtual void drawInternal(GraphicsContext& gc) = 0;
     virtual bool needLayer() const;
 
     YGNodeRef m_yogaNode;
