@@ -48,4 +48,8 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     fun setCaretIndex(caretIndex: Int) {
         JniTextNodeBridge.setCaretIndex(ptr, caretIndex)
     }
+
+    fun setAlignToParent(alignToParent: Boolean) {
+        JniTextNodeBridge.setAlignToParent(ptr, alignToParent)
+    }
 }

@@ -116,3 +116,15 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
         textNode->setCaretIndex(caretIndex);
     });
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setAlignToParent
+    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean alignToParent)
+{
+    CHECK_JNI_PTR(viewPtr);
+    auto *node = reinterpret_cast<TextNode *>(viewPtr);
+
+    Application::sendTaskEvent([node, alignToParent]
+    {
+        node->setAlignToParent(alignToParent);
+    });
+}

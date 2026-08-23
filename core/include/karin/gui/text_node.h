@@ -36,6 +36,7 @@ public:
     void setCaretIndex(uint32_t caretIndex);
 
     void setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index);
+    void setAlignToParent(bool alignToParent);
 
     void drawInternal(GraphicsContext& gc) const override;
 
@@ -57,6 +58,7 @@ private:
 
     CalculateOrigin m_origin = CalculateOrigin::None;
     uint32_t m_offsetIndex = 0;
+    bool m_alignToParent = false;
 
     static constexpr float CARET_WIDTH = 2.0f;
 };

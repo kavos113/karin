@@ -70,18 +70,6 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
     });
 }
 
-JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setAlignToParent
-    (JNIEnv *env, jclass cls, jlong viewPtr, jboolean alignToParent)
-{
-    CHECK_JNI_PTR(viewPtr);
-    auto *node = reinterpret_cast<ViewNode *>(viewPtr);
-
-    Application::sendTaskEvent([node, alignToParent]
-    {
-        node->setAlignToParent(alignToParent);
-    });
-}
-
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setMargin
     (JNIEnv *env, jclass cls, jlong viewPtr, jchar flags, jfloat left, jfloat top, jfloat right, jfloat bottom)
 {

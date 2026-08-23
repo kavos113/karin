@@ -8,7 +8,6 @@ internal object JniViewNodeBridge {
     fun setHeight(nodePtr: Long, height: Float) = JniViewNode.setHeight(nodePtr, height)
     fun setBackgroundColor(nodePtr: Long, r: Float, g: Float, b: Float, a: Float) = JniViewNode.setBackgroundColor(nodePtr, r, g, b, a)
     fun setOpacity(nodePtr: Long, opacity: Float) = JniViewNode.setOpacity(nodePtr, opacity)
-    fun setAlignToParent(nodePtr: Long, alignToParent: Boolean) = JniViewNode.setAlignToParent(nodePtr, alignToParent)
 
     const val SIDE_FLAG_LEFT = 0b0001
     const val SIDE_FLAG_TOP = 0b0010

@@ -96,7 +96,6 @@ public:
     void setBackgroundColor(Color color);
     void setOpacity(float opacity);
     void setShadow(float offsetX, float offsetY, Color color, float blurRadius = 0.0f, float spreadRadius = 0.0f);
-    void setAlignToParent(bool alignToParent);
 
     YGNodeRef getYogaNode() const;
 

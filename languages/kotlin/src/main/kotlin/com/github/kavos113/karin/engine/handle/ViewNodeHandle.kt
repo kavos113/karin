@@ -63,10 +63,6 @@ internal open class ViewNodeHandle(
         JniViewNodeBridge.setOpacity(ptr, opacity)
     }
 
-    fun setAlignToParent(alignToParent: Boolean) {
-        JniViewNodeBridge.setAlignToParent(ptr, alignToParent)
-    }
-
     fun setMargin(flags: Char, left: Float, top: Float, right: Float, bottom: Float) {
         JniViewNodeBridge.setMargin(ptr, flags, left, top, right, bottom)
     }
