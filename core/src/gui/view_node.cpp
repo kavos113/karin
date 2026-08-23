@@ -237,6 +237,18 @@ void ViewNode::setShadow(float offsetX, float offsetY, Color color, float blurRa
     m_shadow = ShadowParams{offsetX, offsetY, color, blurRadius, spreadRadius};
 }
 
+void ViewNode::setAlignToParent(bool alignToParent)
+{
+    if (alignToParent)
+    {
+        YGNodeStyleSetFlexShrink(m_yogaNode, 1.0f);
+    }
+    else
+    {
+        YGNodeStyleSetFlexShrink(m_yogaNode, 0.0f);
+    }
+}
+
 YGNodeRef ViewNode::getYogaNode() const
 {
     return m_yogaNode;

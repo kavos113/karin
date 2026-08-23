@@ -53,5 +53,4 @@ internal object JniTextNodeBridge {
 
     fun setEnableCaret(nodePtr: Long, enableCaret: Boolean) = JniTextNode.setEnableCaret(nodePtr, enableCaret)
     fun setCaretIndex(nodePtr: Long, caretIndex: Int) = JniTextNode.setCaretIndex(nodePtr, caretIndex)
-    fun setAlignToParent(nodePtr: Long, alignToParent: Boolean) = JniTextNode.setAlignToParent(nodePtr, alignToParent)
 }

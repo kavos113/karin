@@ -34,5 +34,4 @@ class JniTextNode {
 
     static native void setEnableCaret(long ptr, boolean enableCaret);
     static native void setCaretIndex(long ptr, int caretIndex);
-    static native void setAlignToParent(long nodePtr, boolean alignToParent);
 }

@@ -66,14 +66,6 @@ YGSize TextNode::measure(Size availableSize) const
     std::cout << "available size: " << availableSize << std::endl;
 
     Size measuredSize = textBlob.layoutSize;
-    if (m_alignToParent)
-    {
-        return {
-            std::min(availableSize.width, measuredSize.width),
-            std::min(availableSize.height, measuredSize.height)
-        };
-    }
-
     return YGSize{measuredSize.width, measuredSize.height};
 }
 
@@ -91,11 +83,6 @@ void TextNode::setDrawOffsetCharIndex(CalculateOrigin origin, uint32_t index)
 {
     m_origin = origin;
     m_offsetIndex = index;
-}
-
-void TextNode::setAlignToParent(bool alignToParent)
-{
-    m_alignToParent = alignToParent;
 }
 
 void TextNode::drawCaret(GraphicsContext& gc, const TextBlob& blob) const

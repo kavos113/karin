@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_set
 
 /*
  * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
+ * Method:    setAlignToParent
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniViewNode_setAlignToParent
+  (JNIEnv *, jclass, jlong, jboolean);
+
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniViewNode
  * Method:    setMargin
  * Signature: (JCFFFF)V
  */
