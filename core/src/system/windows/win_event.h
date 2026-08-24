@@ -8,7 +8,7 @@
 
 namespace karin
 {
-std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lParam);
+std::optional<Event> translateWinEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 } // karin
 
 #endif //SYSTEM_WINDOWS_WIN_EVENT_H

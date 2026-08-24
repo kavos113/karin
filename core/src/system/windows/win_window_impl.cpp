@@ -54,7 +54,7 @@ WinWindowImpl::~WinWindowImpl() = default;
 
 LRESULT WinWindowImpl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    std::optional<Event> event = translateWinEvent(message, wParam, lParam);
+    std::optional<Event> event = translateWinEvent(m_hwnd, message, wParam, lParam);
     if (event.has_value())
     {
         m_appImpl->pushEvent(*event, m_owner);
