@@ -24,6 +24,7 @@ public:
 
     void setText(const std::string& text);
     void setDrawCaret(bool drawCaret);
+    void setEnableScroll(bool enableScroll);
 
     // draw caret behind text[caretIndex]. 0 <= caretIndex <= text.length
     void setCaretIndex(uint32_t caretIndex);
@@ -51,6 +52,8 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
+
+    bool m_enableScroll = false;
     float m_scrollOffset = 0;
 
     static constexpr float CARET_WIDTH = 1.0f;

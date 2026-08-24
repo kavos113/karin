@@ -34,6 +34,12 @@ void TextNode::drawInternal(GraphicsContext& gc)
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
+    if (!m_enableScroll)
+    {
+        gc.drawText(textBlob, start, m_pattern);
+        return;
+    }
+
     if (m_drawCaret)
     {
 
@@ -86,6 +92,11 @@ YGSize TextNode::measure(Size availableSize) const
 void TextNode::setDrawCaret(bool drawCaret)
 {
     m_drawCaret = drawCaret;
+}
+
+void TextNode::setEnableScroll(bool enableScroll)
+{
+    m_enableScroll = enableScroll;
 }
 
 void TextNode::setCaretIndex(uint32_t caretIndex)

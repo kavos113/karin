@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
 JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setCaretIndex
   (JNIEnv *, jclass, jlong, jint);
 
+/*
+ * Class:     com_github_kavos113_karin_engine_jni_JniTextNode
+ * Method:    setEnableScroll
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setEnableScroll
+  (JNIEnv *, jclass, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif
