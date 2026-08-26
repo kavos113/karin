@@ -101,6 +101,9 @@ struct MouseWheelEvent
     int delta;
     int x;
     int y;
+
+    // align to windows API
+    static constexpr int DELTA_UNIT = 120;
 };
 
 struct WindowEvent

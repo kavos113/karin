@@ -143,6 +143,7 @@ private:
 
     float m_opacity = 1.0f;
     bool m_isFocusable = false;
+    bool m_alignToParent = false;
 
     std::function<void(Point)> m_pointerMoveHandler = nullptr;
     std::function<void(Point, MouseButtonType)> m_pointerDownHandler = nullptr;

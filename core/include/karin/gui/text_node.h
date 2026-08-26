@@ -1,13 +1,19 @@
 #ifndef KARIN_GUI_TEXT_NODE_H
 #define KARIN_GUI_TEXT_NODE_H
 
+#include <cstdint>
+
+#include <mutex>
+#include <string>
+
+#include <karin/common/geometry/size.h>
+#include <karin/common/geometry/point.h>
 #include <karin/graphics/text_style.h>
 #include <karin/graphics/paragraph_style.h>
 #include <karin/graphics/pattern.h>
+#include <karin/graphics/graphics_context.h>
 
 #include "leaf_node.h"
-
-#include <string>
 
 namespace karin::gui
 {
@@ -42,6 +48,7 @@ private:
         Point end = Point(0, 0);
     };
     CaretPosition calcCaretPosition(const TextBlob& blob) const;
+    void alignScrollToCaret(const TextBlob& blob, const CaretPosition& caretPos);
 
     std::string m_text;
 
@@ -52,11 +59,14 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
+    bool m_needAlignToCaret = false;
 
     bool m_enableScroll = false;
     float m_scrollOffset = 0;
+    std::mutex m_scrollOffsetMutex;
 
     static constexpr float CARET_WIDTH = 1.0f;
+    static constexpr float WHEEL_SCROLL_BY_DELTA_UNIT = 10.0f;
 };
 } // karin::gui
 
