@@ -3,7 +3,6 @@
 
 #include <cstdint>
 
-#include <mutex>
 #include <string>
 
 #include <karin/common/geometry/size.h>
@@ -63,7 +62,6 @@ private:
 
     bool m_enableScroll = false;
     float m_scrollOffset = 0;
-    std::mutex m_scrollOffsetMutex;
 
     static constexpr float CARET_WIDTH = 1.0f;
     static constexpr float WHEEL_SCROLL_BY_DELTA_UNIT = 10.0f;

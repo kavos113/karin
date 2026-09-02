@@ -41,8 +41,6 @@ void TextNode::drawInternal(GraphicsContext& gc)
         return;
     }
 
-    std::cout << "scroll offset: " << m_scrollOffset << std::endl;
-
     if (m_drawCaret)
     {
         auto caretPos = calcCaretPosition(textBlob);
@@ -53,10 +51,9 @@ void TextNode::drawInternal(GraphicsContext& gc)
             m_needAlignToCaret = false;
         }
 
-        {
-            std::lock_guard lock(m_scrollOffsetMutex);
-            m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
-        }
+        m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
+
+        std::cout << "scroll offset: " << m_scrollOffset << std::endl;
 
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
@@ -67,10 +64,9 @@ void TextNode::drawInternal(GraphicsContext& gc)
     }
     else
     {
-        {
-            std::lock_guard lock(m_scrollOffsetMutex);
-            m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
-        }
+        m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
+
+        std::cout << "scroll offset: " << m_scrollOffset << std::endl;
 
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
@@ -104,15 +100,15 @@ void TextNode::setEnableScroll(bool enableScroll)
     {
         setMouseWheelHandler([this](Point, int delta)
         {
+            Application::sendTaskEvent([this, delta]
             {
-                std::lock_guard lock(m_scrollOffsetMutex);
                 m_scrollOffset -= static_cast<float>(delta) * WHEEL_SCROLL_BY_DELTA_UNIT / MouseWheelEvent::DELTA_UNIT;
                 if (m_scrollOffset < 0)
                 {
                     m_scrollOffset = 0;
                 }
-            }
-            requestRedraw();
+                requestRedraw();
+            });
         });
     }
     else
@@ -186,25 +182,21 @@ void TextNode::alignScrollToCaret(const TextBlob& blob, const CaretPosition& car
     Rectangle layout = getLayout();
     float caretX = caretPos.start.x - m_scrollOffset;
 
+    if (blob.layoutSize.width <= layout.size.width)
     {
-        std::lock_guard lock(m_scrollOffsetMutex);
-
-        if (blob.layoutSize.width <= layout.size.width)
+        m_scrollOffset = 0.0f;
+    }
+    else
+    {
+        // adjust caret to left bound
+        if (caretX < 0)
         {
-            m_scrollOffset = 0.0f;
+            m_scrollOffset = caretPos.start.x - CARET_WIDTH;
         }
-        else
+        // adjust caret to right bound
+        else if (caretX > layout.size.width)
         {
-            // adjust caret to left bound
-            if (caretX < 0)
-            {
-                m_scrollOffset = caretPos.start.x - CARET_WIDTH;
-            }
-            // adjust caret to right bound
-            else if (caretX > layout.size.width)
-            {
-                m_scrollOffset += caretX - layout.size.width;
-            }
+            m_scrollOffset += caretX - layout.size.width;
         }
     }
 }
