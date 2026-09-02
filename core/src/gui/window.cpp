@@ -35,6 +35,8 @@ void Window::beforeRun()
                 return;
             }
 
+            m_isDirtyDraw = false;
+
             if (m_needRelayout)
             {
                 m_rootView->calculateLayout();
@@ -81,11 +83,17 @@ void Window::setRootView(std::unique_ptr<ViewNode> rootView)
 void Window::requestRelayout()
 {
     m_needRelayout = true;
-    m_window->invalidate();
+    requestRedraw();
 }
 
-void Window::requestRedraw() const
+void Window::requestRedraw()
 {
+    if (m_isDirtyDraw)
+    {
+        return;
+    }
+
+    m_isDirtyDraw = true;
     m_window->invalidate();
 }
 } // karin::gui
