@@ -53,8 +53,6 @@ void TextNode::drawInternal(GraphicsContext& gc)
 
         m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
 
-        std::cout << "scroll offset: " << m_scrollOffset << std::endl;
-
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
 
@@ -65,8 +63,6 @@ void TextNode::drawInternal(GraphicsContext& gc)
     else
     {
         m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
-
-        std::cout << "scroll offset: " << m_scrollOffset << std::endl;
 
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
