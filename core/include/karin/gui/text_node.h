@@ -62,9 +62,11 @@ private:
 
     bool m_enableScroll = false;
     float m_scrollOffset = 0;
+    Pattern m_scrollbarPattern;
 
     static constexpr float CARET_WIDTH = 1.0f;
     static constexpr float WHEEL_SCROLL_BY_DELTA_UNIT = 10.0f;
+    static constexpr float SCROLLBAR_WIDTH = 2.0f;
 };
 } // karin::gui
 
