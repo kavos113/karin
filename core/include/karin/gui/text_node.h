@@ -30,6 +30,7 @@ public:
     void setText(const std::string& text);
     void setDrawCaret(bool drawCaret);
     void setEnableScroll(bool enableScroll);
+    void setDrawScrollBar(bool drawScrollBar);
 
     // draw caret behind text[caretIndex]. 0 <= caretIndex <= text.length
     void setCaretIndex(uint32_t caretIndex);
@@ -61,6 +62,7 @@ private:
     bool m_needAlignToCaret = false;
 
     bool m_enableScroll = false;
+    bool m_drawScrollBar = false;
     float m_scrollOffset = 0;
     Pattern m_scrollbarPattern;
 

@@ -69,22 +69,25 @@ void TextNode::drawInternal(GraphicsContext& gc)
         gc.drawText(textBlob, start, m_pattern);
     }
 
-    if (textBlob.layoutSize.width <= 0.0f || layout.size.width > textBlob.layoutSize.width )
+    if (m_drawScrollBar)
     {
-        return;
+        if (textBlob.layoutSize.width <= 0.0f || layout.size.width > textBlob.layoutSize.width )
+        {
+            return;
+        }
+
+        float scale = layout.size.width / textBlob.layoutSize.width;
+        float scrollbarStart = m_scrollOffset * scale + layout.pos.x;
+        float scrollbarEnd = (m_scrollOffset + layout.size.width) * scale + layout.pos.x;
+        float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
+
+        gc.drawLine(
+            Point(scrollbarStart, scrollBarY),
+            Point(scrollbarEnd, scrollBarY),
+            m_scrollbarPattern,
+            StrokeStyle{.width = SCROLLBAR_WIDTH, .start_cap_style = StrokeStyle::CapStyle::Round, .end_cap_style = StrokeStyle::CapStyle::Round}
+        );
     }
-
-    float scale = layout.size.width / textBlob.layoutSize.width;
-    float scrollbarStart = m_scrollOffset * scale + layout.pos.x;
-    float scrollbarEnd = (m_scrollOffset + layout.size.width) * scale + layout.pos.x;
-    float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
-
-    gc.drawLine(
-        Point(scrollbarStart, scrollBarY),
-        Point(scrollbarEnd, scrollBarY),
-        m_scrollbarPattern,
-        StrokeStyle{.width = SCROLLBAR_WIDTH, .start_cap_style = StrokeStyle::CapStyle::Round, .end_cap_style = StrokeStyle::CapStyle::Round}
-    );
 }
 
 YGSize TextNode::measure(Size availableSize) const
@@ -138,6 +141,11 @@ void TextNode::setCaretIndex(uint32_t caretIndex)
         m_caretIndex = caretIndex;
         m_needAlignToCaret = true;
     }
+}
+
+void TextNode::setDrawScrollBar(bool drawScrollBar)
+{
+    m_drawScrollBar = drawScrollBar;
 }
 
 TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
