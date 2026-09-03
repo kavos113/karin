@@ -52,4 +52,8 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     fun setEnableScroll(enableScroll: Boolean) {
         JniTextNodeBridge.setEnableScroll(ptr, enableScroll)
     }
+
+    fun setDrawScrollBar(drawScrollBar: Boolean) {
+        JniTextNodeBridge.setDrawScrollBar(ptr, drawScrollBar)
+    }
 }

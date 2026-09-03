@@ -57,8 +57,10 @@ fun UiBuilder.TextInput(
         paragraphStyle = paragraphStyle
     )
     textNodeHandle.setCaretIndex(editingIndex.value)
+    // TODO: このあたりパラメータで変えられるようにする
     textNodeHandle.setAlignToParent(true)
     textNodeHandle.setEnableScroll(true)
+    textNodeHandle.setDrawScrollBar(true)
 
     val disposable = text.onChange {
         onTextChange(it)

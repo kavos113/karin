@@ -54,4 +54,5 @@ internal object JniTextNodeBridge {
     fun setEnableCaret(nodePtr: Long, enableCaret: Boolean) = JniTextNode.setEnableCaret(nodePtr, enableCaret)
     fun setCaretIndex(nodePtr: Long, caretIndex: Int) = JniTextNode.setCaretIndex(nodePtr, caretIndex)
     fun setEnableScroll(nodePtr: Long, enableScroll: Boolean) = JniTextNode.setEnableScroll(nodePtr, enableScroll)
+    fun setDrawScrollBar(nodePtr: Long, drawScrollBar: Boolean) = JniTextNode.setDrawScrollBar(nodePtr, drawScrollBar)
 }

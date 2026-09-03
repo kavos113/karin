@@ -128,3 +128,15 @@ JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_set
         textNode->setEnableScroll(enableScroll);
     });
 }
+
+JNIEXPORT void JNICALL Java_com_github_kavos113_karin_engine_jni_JniTextNode_setDrawScrollBar
+    (JNIEnv *env, jclass cls, jlong nodePtr, jboolean drawScrollBar)
+{
+    CHECK_JNI_PTR(nodePtr);
+    TextNode *textNode = reinterpret_cast<TextNode*>(nodePtr);
+
+    Application::sendTaskEvent([textNode, drawScrollBar]
+    {
+        textNode->setDrawScrollBar(drawScrollBar);
+    });
+}
