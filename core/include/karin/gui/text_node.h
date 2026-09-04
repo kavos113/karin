@@ -49,7 +49,9 @@ private:
     };
     CaretPosition calcCaretPosition(const TextBlob& blob) const;
     void alignScrollToCaret(const TextBlob& blob, const CaretPosition& caretPos);
+
     void calcScrollBarPosition(const TextBlob& blob);
+    bool hitScrollBar(Point point) const;
 
     std::string m_text;
 

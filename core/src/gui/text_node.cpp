@@ -136,7 +136,17 @@ void TextNode::setCaretIndex(uint32_t caretIndex)
 
 void TextNode::setDrawScrollBar(bool drawScrollBar)
 {
+    if (drawScrollBar == m_drawScrollBar)
+    {
+        return;
+    }
+
     m_drawScrollBar = drawScrollBar;
+
+    if (drawScrollBar)
+    {
+
+    }
 }
 
 TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
@@ -229,5 +239,10 @@ void TextNode::calcScrollBarPosition(const TextBlob& blob)
 
     float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
     m_scrollBarStart.y = m_scrollBarEnd.y = scrollBarY;
+}
+
+bool TextNode::hitScrollBar(Point point) const
+{
+    return (m_scrollBarStart.x <= point.x && point.x <= m_scrollBarEnd.x) && (std::abs(point.y - m_scrollBarStart.y) <= SCROLLBAR_WIDTH / 2.0);
 }
 } // karin::gui
