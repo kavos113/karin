@@ -67,7 +67,8 @@ private:
     bool m_enableScroll = false;
     bool m_drawScrollBar = false;
     float m_scrollOffset = 0;
-    Pattern m_scrollbarPattern;
+    Pattern m_scrollBarPattern;
+    Pattern m_scrollBarPressedPattern;
     Point m_scrollBarStart;
     Point m_scrollBarEnd;
     float m_scrollBarScale;

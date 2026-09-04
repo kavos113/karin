@@ -12,7 +12,8 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
     , m_paragraphStyle(paragraphStyle)
     , m_pattern(std::move(pattern))
     , m_caretPattern(SolidColorPattern(Color(Color::Black)))
-    , m_scrollbarPattern(SolidColorPattern(Color(0.6f, 0.6f, 0.6f)))
+    , m_scrollBarPattern(SolidColorPattern(Color(0.6f, 0.6f, 0.6f)))
+    , m_scrollBarPressedPattern(SolidColorPattern(Color(0.4f, 0.4f, 0.4f)))
 {
 }
 
@@ -78,7 +79,7 @@ void TextNode::drawInternal(GraphicsContext& gc)
 
         gc.drawLine(
             m_scrollBarStart, m_scrollBarEnd,
-            m_scrollbarPattern,
+            m_isScrollBarPressed ? m_scrollBarPressedPattern : m_scrollBarPattern,
             StrokeStyle{.width = SCROLLBAR_WIDTH, .start_cap_style = StrokeStyle::CapStyle::Round, .end_cap_style = StrokeStyle::CapStyle::Round}
         );
     }
