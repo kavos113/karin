@@ -49,6 +49,7 @@ private:
     };
     CaretPosition calcCaretPosition(const TextBlob& blob) const;
     void alignScrollToCaret(const TextBlob& blob, const CaretPosition& caretPos);
+    void calcScrollBarPosition(const TextBlob& blob);
 
     std::string m_text;
 
@@ -65,6 +66,8 @@ private:
     bool m_drawScrollBar = false;
     float m_scrollOffset = 0;
     Pattern m_scrollbarPattern;
+    Point m_scrollBarStart;
+    Point m_scrollBarEnd;
 
     static constexpr float CARET_WIDTH = 1.0f;
     static constexpr float WHEEL_SCROLL_BY_DELTA_UNIT = 10.0f;

@@ -71,19 +71,10 @@ void TextNode::drawInternal(GraphicsContext& gc)
 
     if (m_drawScrollBar)
     {
-        if (textBlob.layoutSize.width <= 0.0f || layout.size.width > textBlob.layoutSize.width )
-        {
-            return;
-        }
-
-        float scale = layout.size.width / textBlob.layoutSize.width;
-        float scrollbarStart = m_scrollOffset * scale + layout.pos.x;
-        float scrollbarEnd = (m_scrollOffset + layout.size.width) * scale + layout.pos.x;
-        float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
+        calcScrollBarPosition(textBlob);
 
         gc.drawLine(
-            Point(scrollbarStart, scrollBarY),
-            Point(scrollbarEnd, scrollBarY),
+            m_scrollBarStart, m_scrollBarEnd,
             m_scrollbarPattern,
             StrokeStyle{.width = SCROLLBAR_WIDTH, .start_cap_style = StrokeStyle::CapStyle::Round, .end_cap_style = StrokeStyle::CapStyle::Round}
         );
@@ -221,5 +212,22 @@ void TextNode::alignScrollToCaret(const TextBlob& blob, const CaretPosition& car
             m_scrollOffset += caretX - layout.size.width;
         }
     }
+}
+
+void TextNode::calcScrollBarPosition(const TextBlob& blob)
+{
+    Rectangle layout = getLayout();
+
+    if (blob.layoutSize.width <= 0.0f || layout.size.width > blob.layoutSize.width )
+    {
+        return;
+    }
+
+    float scale = layout.size.width / blob.layoutSize.width;
+    m_scrollBarStart.x = m_scrollOffset * scale + layout.pos.x;
+    m_scrollBarEnd.x = (m_scrollOffset + layout.size.width) * scale + layout.pos.x;
+
+    float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
+    m_scrollBarStart.y = m_scrollBarEnd.y = scrollBarY;
 }
 } // karin::gui
