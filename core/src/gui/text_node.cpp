@@ -71,7 +71,10 @@ void TextNode::drawInternal(GraphicsContext& gc)
 
     if (m_drawScrollBar)
     {
-        calcScrollBarPosition(textBlob);
+        if (!calcScrollBarPosition(textBlob))
+        {
+            return;
+        }
 
         gc.drawLine(
             m_scrollBarStart, m_scrollBarEnd,
@@ -145,7 +148,56 @@ void TextNode::setDrawScrollBar(bool drawScrollBar)
 
     if (drawScrollBar)
     {
+        setPointerDownHandler([this](Point point, MouseButtonType type)
+        {
+            if (type != MouseButtonType::Left)
+            {
+                return;
+            }
 
+            Application::sendTaskEvent([this, point]
+            {
+                if (!hitScrollBar(point))
+                {
+                    return;
+                }
+
+                m_scrollBarPressedPosition = point;
+                m_isScrollBarPressed = true;
+            });
+        });
+
+        setPointerMoveHandler([this](Point point)
+        {
+            if (!m_isScrollBarPressed)
+            {
+                return;
+            }
+
+            Application::sendTaskEvent([this, point]
+            {
+                m_scrollOffset += (point.x - m_scrollBarPressedPosition.x) / m_scrollBarScale;
+            });
+        });
+
+        setPointerUpHandler([this](Point, MouseButtonType type)
+        {
+            if (type != MouseButtonType::Left)
+            {
+                return;
+            }
+
+            Application::sendTaskEvent([this]
+            {
+                m_isScrollBarPressed = false;
+            });
+        });
+    }
+    else
+    {
+        setPointerDownHandler(nullptr);
+        setPointerMoveHandler(nullptr);
+        setPointerUpHandler(nullptr);
     }
 }
 
@@ -224,13 +276,13 @@ void TextNode::alignScrollToCaret(const TextBlob& blob, const CaretPosition& car
     }
 }
 
-void TextNode::calcScrollBarPosition(const TextBlob& blob)
+bool TextNode::calcScrollBarPosition(const TextBlob& blob)
 {
     Rectangle layout = getLayout();
 
     if (blob.layoutSize.width <= 0.0f || layout.size.width > blob.layoutSize.width )
     {
-        return;
+        return false;
     }
 
     float scale = layout.size.width / blob.layoutSize.width;
@@ -239,6 +291,9 @@ void TextNode::calcScrollBarPosition(const TextBlob& blob)
 
     float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
     m_scrollBarStart.y = m_scrollBarEnd.y = scrollBarY;
+    m_scrollBarScale = scale;
+
+    return true;
 }
 
 bool TextNode::hitScrollBar(Point point) const
