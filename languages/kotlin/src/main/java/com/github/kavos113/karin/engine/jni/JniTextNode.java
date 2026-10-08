@@ -34,4 +34,6 @@ class JniTextNode {
 
     static native void setEnableCaret(long ptr, boolean enableCaret);
     static native void setCaretIndex(long ptr, int caretIndex);
+    static native void setEnableScroll(long ptr, boolean enableScroll);
+    static native void setDrawScrollBar(long ptr, boolean drawScrollBar);
 }

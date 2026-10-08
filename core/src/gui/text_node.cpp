@@ -12,6 +12,8 @@ TextNode::TextNode(std::string text, TextStyle textStyle, ParagraphStyle paragra
     , m_paragraphStyle(paragraphStyle)
     , m_pattern(std::move(pattern))
     , m_caretPattern(SolidColorPattern(Color(Color::Black)))
+    , m_scrollBarPattern(SolidColorPattern(Color(0.6f, 0.6f, 0.6f)))
+    , m_scrollBarPressedPattern(SolidColorPattern(Color(0.4f, 0.4f, 0.4f)))
 {
 }
 
@@ -22,6 +24,7 @@ void TextNode::setText(const std::string& text)
         m_text = text;
         requestRelayout();
 
+        m_needAlignToCaret = true;
         YGNodeMarkDirty(m_yogaNode);
     }
 }
@@ -34,31 +37,23 @@ void TextNode::drawInternal(GraphicsContext& gc)
     auto& textEngine = getAppContext().textEngine;
     auto textBlob = textEngine->layoutText(m_text, m_textStyle, m_paragraphStyle, layout.size);
 
+    if (!m_enableScroll)
+    {
+        gc.drawText(textBlob, start, m_pattern);
+        return;
+    }
+
     if (m_drawCaret)
     {
-
         auto caretPos = calcCaretPosition(textBlob);
-        float caretX = caretPos.start.x - m_scrollOffset;
 
-        if (textBlob.layoutSize.width <= layout.size.width)
+        if (m_needAlignToCaret)
         {
-            m_scrollOffset = 0.0f;
+            alignScrollToCaret(textBlob, caretPos);
+            m_needAlignToCaret = false;
         }
-        else
-        {
-            // adjust caret to left bound
-            if (caretX < 0)
-            {
-                m_scrollOffset = caretPos.start.x - CARET_WIDTH;
-            }
-            // adjust caret to right bound
-            else if (caretX > layout.size.width)
-            {
-                m_scrollOffset += caretX - layout.size.width;
-            }
 
-            m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
-        }
+        m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
 
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
@@ -69,8 +64,24 @@ void TextNode::drawInternal(GraphicsContext& gc)
     }
     else
     {
+        m_scrollOffset = std::clamp(m_scrollOffset, 0.0f, textBlob.layoutSize.width - layout.size.width + CARET_WIDTH);
+
         start.x -= m_scrollOffset;
         gc.drawText(textBlob, start, m_pattern);
+    }
+
+    if (m_drawScrollBar)
+    {
+        if (!calcScrollBarPosition(textBlob))
+        {
+            return;
+        }
+
+        gc.drawLine(
+            m_scrollBarStart, m_scrollBarEnd,
+            m_isScrollBarPressed ? m_scrollBarPressedPattern : m_scrollBarPattern,
+            StrokeStyle{.width = SCROLLBAR_WIDTH, .start_cap_style = StrokeStyle::CapStyle::Round, .end_cap_style = StrokeStyle::CapStyle::Round}
+        );
     }
 }
 
@@ -88,9 +99,107 @@ void TextNode::setDrawCaret(bool drawCaret)
     m_drawCaret = drawCaret;
 }
 
+void TextNode::setEnableScroll(bool enableScroll)
+{
+    if (enableScroll == m_enableScroll)
+    {
+        return;
+    }
+
+    m_enableScroll = enableScroll;
+
+    if (enableScroll)
+    {
+        setMouseWheelHandler([this](Point, int delta)
+        {
+            Application::sendTaskEvent([this, delta]
+            {
+                m_scrollOffset -= static_cast<float>(delta) * WHEEL_SCROLL_BY_DELTA_UNIT / MouseWheelEvent::DELTA_UNIT;
+                if (m_scrollOffset < 0)
+                {
+                    m_scrollOffset = 0;
+                }
+                requestRedraw();
+            });
+        });
+    }
+    else
+    {
+        setMouseWheelHandler(nullptr);
+    }
+}
+
 void TextNode::setCaretIndex(uint32_t caretIndex)
 {
-    m_caretIndex = caretIndex;
+    if (caretIndex != m_caretIndex)
+    {
+        m_caretIndex = caretIndex;
+        m_needAlignToCaret = true;
+    }
+}
+
+void TextNode::setDrawScrollBar(bool drawScrollBar)
+{
+    if (drawScrollBar == m_drawScrollBar)
+    {
+        return;
+    }
+
+    m_drawScrollBar = drawScrollBar;
+
+    if (drawScrollBar)
+    {
+        setPointerDownHandler([this](Point point, MouseButtonType type)
+        {
+            if (type != MouseButtonType::Left)
+            {
+                return;
+            }
+
+            Application::sendTaskEvent([this, point]
+            {
+                if (!hitScrollBar(point))
+                {
+                    return;
+                }
+
+                m_scrollBarPressedPosition = point;
+                m_isScrollBarPressed = true;
+            });
+        });
+
+        setPointerMoveHandler([this](Point point)
+        {
+            if (!m_isScrollBarPressed)
+            {
+                return;
+            }
+
+            Application::sendTaskEvent([this, point]
+            {
+                m_scrollOffset += (point.x - m_scrollBarPressedPosition.x) / m_scrollBarScale;
+            });
+        });
+
+        setPointerUpHandler([this](Point, MouseButtonType type)
+        {
+            if (type != MouseButtonType::Left)
+            {
+                return;
+            }
+
+            Application::sendTaskEvent([this]
+            {
+                m_isScrollBarPressed = false;
+            });
+        });
+    }
+    else
+    {
+        setPointerDownHandler(nullptr);
+        setPointerMoveHandler(nullptr);
+        setPointerUpHandler(nullptr);
+    }
 }
 
 TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
@@ -142,5 +251,54 @@ TextNode::CaretPosition TextNode::calcCaretPosition(const TextBlob& blob) const
 
         return {false, top, bottom};
     }
+}
+
+void TextNode::alignScrollToCaret(const TextBlob& blob, const CaretPosition& caretPos)
+{
+    Rectangle layout = getLayout();
+    float caretX = caretPos.start.x - m_scrollOffset;
+
+    if (blob.layoutSize.width <= layout.size.width)
+    {
+        m_scrollOffset = 0.0f;
+    }
+    else
+    {
+        // adjust caret to left bound
+        if (caretX < 0)
+        {
+            m_scrollOffset = caretPos.start.x - CARET_WIDTH;
+        }
+        // adjust caret to right bound
+        else if (caretX > layout.size.width)
+        {
+            m_scrollOffset += caretX - layout.size.width;
+        }
+    }
+}
+
+bool TextNode::calcScrollBarPosition(const TextBlob& blob)
+{
+    Rectangle layout = getLayout();
+
+    if (blob.layoutSize.width <= 0.0f || layout.size.width > blob.layoutSize.width )
+    {
+        return false;
+    }
+
+    float scale = layout.size.width / blob.layoutSize.width;
+    m_scrollBarStart.x = m_scrollOffset * scale + layout.pos.x;
+    m_scrollBarEnd.x = (m_scrollOffset + layout.size.width) * scale + layout.pos.x;
+
+    float scrollBarY = layout.pos.y + layout.size.height + SCROLLBAR_WIDTH / 2.0f;
+    m_scrollBarStart.y = m_scrollBarEnd.y = scrollBarY;
+    m_scrollBarScale = scale;
+
+    return true;
+}
+
+bool TextNode::hitScrollBar(Point point) const
+{
+    return (m_scrollBarStart.x <= point.x && point.x <= m_scrollBarEnd.x) && (std::abs(point.y - m_scrollBarStart.y) <= SCROLLBAR_WIDTH / 2.0);
 }
 } // karin::gui

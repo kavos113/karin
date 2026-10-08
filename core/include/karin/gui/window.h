@@ -35,7 +35,7 @@ public:
 
     void setRootView(std::unique_ptr<ViewNode> rootView);
     void requestRelayout();
-    void requestRedraw() const;
+    void requestRedraw();
 
     void dispatchEvent(const Event& event) const;
 
@@ -48,6 +48,7 @@ private:
     std::unique_ptr<WindowEventDispatcher> m_eventDispatcher;
 
     bool m_needRelayout = true;
+    bool m_isDirtyDraw = false;
 };
 } // karin::gui
 

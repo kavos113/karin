@@ -48,4 +48,12 @@ internal class TextNodeHandle(ptr: Long) : ViewNodeHandle(ptr) {
     fun setCaretIndex(caretIndex: Int) {
         JniTextNodeBridge.setCaretIndex(ptr, caretIndex)
     }
+
+    fun setEnableScroll(enableScroll: Boolean) {
+        JniTextNodeBridge.setEnableScroll(ptr, enableScroll)
+    }
+
+    fun setDrawScrollBar(drawScrollBar: Boolean) {
+        JniTextNodeBridge.setDrawScrollBar(ptr, drawScrollBar)
+    }
 }

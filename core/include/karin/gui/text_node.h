@@ -1,13 +1,18 @@
 #ifndef KARIN_GUI_TEXT_NODE_H
 #define KARIN_GUI_TEXT_NODE_H
 
+#include <cstdint>
+
+#include <string>
+
+#include <karin/common/geometry/size.h>
+#include <karin/common/geometry/point.h>
 #include <karin/graphics/text_style.h>
 #include <karin/graphics/paragraph_style.h>
 #include <karin/graphics/pattern.h>
+#include <karin/graphics/graphics_context.h>
 
 #include "leaf_node.h"
-
-#include <string>
 
 namespace karin::gui
 {
@@ -24,6 +29,8 @@ public:
 
     void setText(const std::string& text);
     void setDrawCaret(bool drawCaret);
+    void setEnableScroll(bool enableScroll);
+    void setDrawScrollBar(bool drawScrollBar);
 
     // draw caret behind text[caretIndex]. 0 <= caretIndex <= text.length
     void setCaretIndex(uint32_t caretIndex);
@@ -41,6 +48,10 @@ private:
         Point end = Point(0, 0);
     };
     CaretPosition calcCaretPosition(const TextBlob& blob) const;
+    void alignScrollToCaret(const TextBlob& blob, const CaretPosition& caretPos);
+
+    bool calcScrollBarPosition(const TextBlob& blob);
+    bool hitScrollBar(Point point) const;
 
     std::string m_text;
 
@@ -51,9 +62,22 @@ private:
     bool m_drawCaret = false;
     uint32_t m_caretIndex = 0;
     Pattern m_caretPattern;
+    bool m_needAlignToCaret = false;
+
+    bool m_enableScroll = false;
+    bool m_drawScrollBar = false;
     float m_scrollOffset = 0;
+    Pattern m_scrollBarPattern;
+    Pattern m_scrollBarPressedPattern;
+    Point m_scrollBarStart;
+    Point m_scrollBarEnd;
+    float m_scrollBarScale;
+    bool m_isScrollBarPressed = false;
+    Point m_scrollBarPressedPosition;
 
     static constexpr float CARET_WIDTH = 1.0f;
+    static constexpr float WHEEL_SCROLL_BY_DELTA_UNIT = 10.0f;
+    static constexpr float SCROLLBAR_WIDTH = 2.0f;
 };
 } // karin::gui
 

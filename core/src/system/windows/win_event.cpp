@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include <windowsx.h>
+
 #include <karin/system/event.h>
 #include <utils/string.h>
 
@@ -12,7 +14,7 @@
 
 namespace karin
 {
-std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lParam)
+std::optional<Event> translateWinEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
@@ -93,11 +95,17 @@ std::optional<Event> translateWinEvent(UINT message, WPARAM wParam, LPARAM lPara
         );
 
     case WM_MOUSEWHEEL:
+    {
+        POINT p;
+        p.x = GET_X_LPARAM(lParam);
+        p.y = GET_Y_LPARAM(lParam);
+        ScreenToClient(hwnd, &p);
         return MouseWheelEvent(
             GET_WHEEL_DELTA_WPARAM(wParam),
-            LOWORD(lParam),
-            HIWORD(lParam)
+            p.x,
+            p.y
         );
+    }
 
     case WM_CLOSE:
         return WindowEvent(WindowEvent::Type::Close);
